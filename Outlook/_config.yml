@@ -90,5 +90,5 @@ theme: landscape
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repo: git@outlook:tenyears-fu/tenyears.github.io.git 
+  repo: git@outlook:tenyears-fu/tenyears-fu.github.io.git 
   branch: master
