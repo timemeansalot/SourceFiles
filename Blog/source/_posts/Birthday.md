@@ -9,8 +9,6 @@ tags: Birthday
 
 <!--more-->
 
-<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=27570622&auto=1&height=66"></iframe>
-
 # <center>回家</center>
 > 年少时老是嫌你们烦
 巴不得离你们远点
