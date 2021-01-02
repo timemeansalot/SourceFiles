@@ -3,11 +3,11 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: abetterus
+title: timemeansalot
 subtitle: 努力、奋斗
 description: 一定很牛逼的我们
 keywords:
-author: yaoyao
+author: FuJie
 language: zh-Hans
 timezone:
 
@@ -79,7 +79,7 @@ theme: next
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repo: git@myGmail:abetterus/abetterus.github.io.git
+  repo: https://gitee.com/timemeansalot/timemeansalot.git
   branch: master
 
 # 字数统计
