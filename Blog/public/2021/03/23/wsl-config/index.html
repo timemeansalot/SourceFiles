@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="wsl,">
 
 
 
@@ -81,19 +81,18 @@
 
 
 
-<meta name="description" content="世界上最让人底气十足的，不是尊重和平等，而是被偏爱。  我们一起做的有趣的事情 玩拼图 看完《变形金刚》、《霍比特人》 做菜 点”肥宅外卖——啤酒炸鸡“ 井盖涂鸦 自习到最后  我们2019年的计划 五一节去邳州 暑假幺幺陪我回家 吃完“觅香”里提到的所有美食  运动目标   name quatity     跑步 5圈   俯卧撑 100个   引体向上 3组    我喜欢的大司马">
-<meta property="og:type" content="website">
-<meta property="og:title" content="偏偏爱你">
-<meta property="og:url" content="http://timemeansalot.gitee.io/about/index.html">
+<meta name="description" content="Windows利用WSL配置Linux开发环境的详细教程 [[TOC]]">
+<meta name="keywords" content="wsl">
+<meta property="og:type" content="article">
+<meta property="og:title" content="wsl_config">
+<meta property="og:url" content="http://timemeansalot.gitee.io/2021/03/23/wsl-config/index.html">
 <meta property="og:site_name" content="timemeansalot">
-<meta property="og:description" content="世界上最让人底气十足的，不是尊重和平等，而是被偏爱。  我们一起做的有趣的事情 玩拼图 看完《变形金刚》、《霍比特人》 做菜 点”肥宅外卖——啤酒炸鸡“ 井盖涂鸦 自习到最后  我们2019年的计划 五一节去邳州 暑假幺幺陪我回家 吃完“觅香”里提到的所有美食  运动目标   name quatity     跑步 5圈   俯卧撑 100个   引体向上 3组    我喜欢的大司马">
+<meta property="og:description" content="Windows利用WSL配置Linux开发环境的详细教程 [[TOC]]">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://s2.ax1x.com/2019/01/03/FoWkgH.md.jpg">
-<meta property="og:updated_time" content="2021-03-16T04:23:05.414Z">
+<meta property="og:updated_time" content="2021-03-23T05:39:42.295Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="偏偏爱你">
-<meta name="twitter:description" content="世界上最让人底气十足的，不是尊重和平等，而是被偏爱。  我们一起做的有趣的事情 玩拼图 看完《变形金刚》、《霍比特人》 做菜 点”肥宅外卖——啤酒炸鸡“ 井盖涂鸦 自习到最后  我们2019年的计划 五一节去邳州 暑假幺幺陪我回家 吃完“觅香”里提到的所有美食  运动目标   name quatity     跑步 5圈   俯卧撑 100个   引体向上 3组    我喜欢的大司马">
-<meta name="twitter:image" content="https://s2.ax1x.com/2019/01/03/FoWkgH.md.jpg">
+<meta name="twitter:title" content="wsl_config">
+<meta name="twitter:description" content="Windows利用WSL配置Linux开发环境的详细教程 [[TOC]]">
 
 
 
@@ -123,7 +122,7 @@
 
 
 
-  <link rel="canonical" href="http://timemeansalot.gitee.io/about/">
+  <link rel="canonical" href="http://timemeansalot.gitee.io/2021/03/23/wsl-config/">
 
 
 
@@ -139,7 +138,7 @@
   daovoice('update');
   </script>
 
-  <title>偏偏爱你 | timemeansalot</title>
+  <title>wsl_config | timemeansalot</title>
   
 
 
@@ -289,81 +288,236 @@
 
   <div id="posts" class="posts-expand">
     
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://timemeansalot.gitee.io/2021/03/23/wsl-config/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="FuJie">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://s2.ax1x.com/2019/03/19/AuQxUJ.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="timemeansalot">
+    </span>
+
     
-    
-    <div class="post-block page">
       <header class="post-header">
 
-	<h1 class="post-title" itemprop="name headline">偏偏爱你</h1>
-
-
-
-</header>
-
-      
-      
-      
-      <div class="post-body">
         
         
-          <blockquote>
-<p>世界上最让人底气十足的，不是尊重和平等，而是被偏爱。</p>
-</blockquote>
-<h1 id="我们一起做的有趣的事情"><a href="#我们一起做的有趣的事情" class="headerlink" title="我们一起做的有趣的事情"></a><center>我们一起做的有趣的事情</center></h1><ol>
-<li>玩拼图</li>
-<li>看完《变形金刚》、《霍比特人》</li>
-<li>做菜</li>
-<li>点”肥宅外卖——啤酒炸鸡“</li>
-<li>井盖涂鸦</li>
-<li>自习到最后</li>
-</ol>
-<h1 id="我们2019年的计划"><a href="#我们2019年的计划" class="headerlink" title="我们2019年的计划"></a><center>我们2019年的计划</center></h1><ol>
-<li>五一节去邳州</li>
-<li>暑假幺幺陪我回家</li>
-<li>吃完“觅香”里提到的所有美食</li>
-</ol>
-<h1 id="运动目标"><a href="#运动目标" class="headerlink" title="运动目标"></a><center>运动目标</center></h1><table>
-<thead>
-<tr>
-<th>name</th>
-<th>quatity</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>跑步</td>
-<td>5圈</td>
-</tr>
-<tr>
-<td>俯卧撑</td>
-<td>100个</td>
-</tr>
-<tr>
-<td>引体向上</td>
-<td>3组</td>
-</tr>
-</tbody>
-</table>
-<center>我喜欢的大司马</center>
-
-<center></center><iframe src="//player.bilibili.com/player.html?aid=19078047&cid=31121147&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" height="600" width="800"> </iframe>
-
-
-
-<blockquote>
-<p>初生牛犊不怕虎，偏偏怕你轻皱眉</p>
-</blockquote>
-<p><a href="https://imgchr.com/i/FoWkgH" target="_blank" rel="noopener"><img src="https://s2.ax1x.com/2019/01/03/FoWkgH.md.jpg" alt="FoWkgH.md.jpg"></a></p>
-
+          <h1 class="post-title" itemprop="name headline">wsl_config</h1>
         
-      </div>
+
+        <div class="post-meta">
+
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-23T13:34:43+08:00">
+                2021-03-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2021/03/23/wsl-config/" class="leancloud_visitors" data-flag-title="wsl_config">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  564
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  3
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
       
       
+
+      
+        <p>Windows利用WSL配置Linux开发环境的详细教程</p>
+<p>[[<em>TOC</em>]]</p>
+<a id="more"></a>
+<h1 id="本地安装WSL"><a href="#本地安装WSL" class="headerlink" title="本地安装WSL"></a>本地安装WSL</h1><p>在Windows应用商店直接可以安装wsl</p>
+<p>配置本地的WSL环境：<a href="https://172.16.2.224/mprojects/mnm/-/blob/master/tb/mnm_sdk_test.md" target="_blank" rel="noopener">https://172.16.2.224/mprojects/mnm/-/blob/master/tb/mnm_sdk_test.md</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">sudo apt update</span><br><span class="line">sudo apt install -y  gcc make  build-essential python2 libtool flex bison</span><br><span class="line"><span class="built_in">cd</span> /usr/bin/</span><br><span class="line">sudo ln -s python2 python</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> ~</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:/usr/local/lib:/lib'</span> &gt;&gt; .bashrc</span><br><span class="line"><span class="built_in">source</span> .bashrc</span><br><span class="line"></span><br><span class="line">sudo apt install gcc-10 g++-10 -y</span><br><span class="line">sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 40</span><br><span class="line">sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 40</span><br><span class="line">sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 50</span><br><span class="line">sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 50</span><br></pre></td></tr></table></figure>
+<h1 id="配置google-test"><a href="#配置google-test" class="headerlink" title="配置google test"></a>配置google test</h1><p>git clone <a href="https://gitee.com/milley/googletest.git" target="_blank" rel="noopener">https://gitee.com/milley/googletest.git</a><br>cd googletest<br>mkdir build<br>cd build<br>cmake ..<br>make<br>make install</p>
+<h1 id="配置SSH"><a href="#配置SSH" class="headerlink" title="配置SSH"></a>配置SSH</h1><p>建议重装之前先备份.ssh，这样重装了就不用更新服务器上的Key了</p>
+<p>install PcapPlusPlus</p>
+<p>参考：<a href="https://172.16.2.224/mprojects/mnm/-/tree/master/av_test/pkt_gen" target="_blank" rel="noopener">链接</a></p>
+<h1 id="安装PcapPlusPlus"><a href="#安装PcapPlusPlus" class="headerlink" title="安装PcapPlusPlus"></a>安装PcapPlusPlus</h1><p>PcapPlusPlus is available on Windows,  Linux, MacOS and FreeBSD (see more details <a href="https://pcapplusplus.github.io/docs/install" target="_blank" rel="noopener">here</a>). This file will show you how to set up PcapPlusPlus on WSL. </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install libpcap-dev</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://gitee.com/mirrors/PcapPlusPlus.git</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> PcapPlusPlus <span class="comment"># go to PcapPlusPlus folder that we clone</span></span><br><span class="line">./configure-linux.sh</span><br></pre></td></tr></table></figure>
+<p>To build the libraries only (without the unit-tests and examples) run <code>make libs</code> instead of <code>make all</code></p>
+<p>After compilation you can find the libraries, examples, header files and helpful makefiles under the <code>Dist</code> directory</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make libs</span><br></pre></td></tr></table></figure>
+<p>After build is complete you can run the installation script which will copy the library and header files to the installation directory:</p>
+<p>The default installation directory is <code>/usr/local</code> which means the header files will be copied to <code>/usr/local/include/pcapplusplus</code> and the library files will be copied to <code>/usr/local/lib</code>.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo make install</span><br></pre></td></tr></table></figure>
+<p>Example src codes are under <code>av_test/pkt_gen</code> folder. Below are the folder structure:</p>
+<ul>
+<li><code>example</code>: Demonstrate how to craft packet usinfg PcapPlusPlus and convert packet into core_ipm_ipp_if instance.</li>
+<li><code>ptk_gen.h</code>: Contains all the needed PcapPlusPlus header files, so we just need to include ptk_gen.h in example.cpp file.</li>
+<li><code>pkt_gen.cpp</code>: Implement ConvertToIppIntf function which can convert Packet instance into core_ipm_ipp_if instance.</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">jfu@JieFu:/mnt/d/codes/mersenne/mnm/av_test/pkt_gen$ tree</span><br><span class="line">.</span><br><span class="line">├── Makefile</span><br><span class="line">├── example.cpp</span><br><span class="line">├── pkt_gen.cpp</span><br><span class="line">└── pkt_gen.h</span><br></pre></td></tr></table></figure>
+<p>In order to make vscode identify PcapPlusPlus header files so that vscode can provide Intelligent Code Completion function, you can get the full instructions <a href="https://www.cnblogs.com/hubery/p/7375215.html" target="_blank" rel="noopener">here</a>. The basic operation steps are as follows:</p>
+<ul>
+<li><p>open vscode and redirect to mnm folder</p>
+</li>
+<li><p><code>ctrl+shift+p</code>and type in<code>Edit Configurations(JSON)</code>then press return button: this will create a folder named <code>.vscde</code>and a json file called <code>c_cpp_properties.json</code></p>
+</li>
+<li><p>replace all the json file with:</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"configurations"</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="attr">"name"</span>: <span class="string">"Linux"</span>,</span><br><span class="line">            <span class="attr">"includePath"</span>: [</span><br><span class="line">                <span class="string">"$&#123;workspaceFolder&#125;/**"</span>,</span><br><span class="line">                <span class="string">"/usr/local/include/pcapplusplus/**"</span></span><br><span class="line">            ],</span><br><span class="line">            <span class="attr">"defines"</span>: [],</span><br><span class="line">            <span class="attr">"compilerPath"</span>: <span class="string">"/usr/bin/gcc"</span>,</span><br><span class="line">            <span class="attr">"cStandard"</span>: <span class="string">"gnu17"</span>,</span><br><span class="line">            <span class="attr">"cppStandard"</span>: <span class="string">"gnu++14"</span>,</span><br><span class="line">            <span class="attr">"intelliSenseMode"</span>: <span class="string">"linux-gcc-x64"</span></span><br><span class="line">        &#125;</span><br><span class="line">    ],</span><br><span class="line">    <span class="attr">"version"</span>: <span class="number">4</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>As you can see, we just add <code>&quot;/usr/local/include/pcapplusplus/**&quot;</code>to includPath and that’s all.</p>
+</li>
+</ul>
+<p>If you want to learn more about how to use PcapPlusPlus, please click this <a href="https://pcapplusplus.github.io/docs/tutorials" target="_blank" rel="noopener">link</a>. It gives 5 detailed examples which demonstrate PcapPlusPlus main features.</p>
+
       
     </div>
     
     
     
+
+    
+
+    <div>
+  
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束,感谢您的阅读-------------</div>
+    
+</div>
+  
+</div>
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/wsl/" rel="tag"><i class="fa fa-tag"></i> wsl</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/03/23/internet-protocol-format/" rel="next" title="internet_protocol_format">
+                <i class="fa fa-chevron-left"></i> internet_protocol_format
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
   </div>
 
 
@@ -574,7 +728,7 @@ show_date_time();
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#我们一起做的有趣的事情"><span class="nav-number">1.</span> <span class="nav-text">我们一起做的有趣的事情</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#我们2019年的计划"><span class="nav-number">2.</span> <span class="nav-text">我们2019年的计划</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#运动目标"><span class="nav-number">3.</span> <span class="nav-text">运动目标</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#本地安装WSL"><span class="nav-number">1.</span> <span class="nav-text">本地安装WSL</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#配置google-test"><span class="nav-number">2.</span> <span class="nav-text">配置google test</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#配置SSH"><span class="nav-number">3.</span> <span class="nav-text">配置SSH</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装PcapPlusPlus"><span class="nav-number">4.</span> <span class="nav-text">安装PcapPlusPlus</span></a></li></ol></div>
             
 
           </div>
