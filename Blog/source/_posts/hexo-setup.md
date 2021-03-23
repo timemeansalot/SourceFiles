@@ -44,6 +44,7 @@ sudo npm install -g hexo-cli
 sudo npm install 
 
 sudo npm install hexo-deployer-git
+sudo npm install --save hexo-blog-encrypt
 
 hexo new page_name # 添加文章页面
 hexo s # 在本地调试页面
