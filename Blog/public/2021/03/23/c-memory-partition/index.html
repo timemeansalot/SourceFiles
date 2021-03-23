@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="C++,">
 
 
 
@@ -81,16 +81,20 @@
 
 
 
-<meta name="description" content="一定很牛逼的我们">
-<meta property="og:type" content="website">
-<meta property="og:title" content="timemeansalot">
-<meta property="og:url" content="http://timemeansalot.gitee.io/tags/Diary/index.html">
+<meta name="description" content="C++不同的数据，在内存中的存放位置">
+<meta name="keywords" content="C++">
+<meta property="og:type" content="article">
+<meta property="og:title" content="c++_memory_partition">
+<meta property="og:url" content="http://timemeansalot.gitee.io/2021/03/23/c-memory-partition/index.html">
 <meta property="og:site_name" content="timemeansalot">
-<meta property="og:description" content="一定很牛逼的我们">
+<meta property="og:description" content="C++不同的数据，在内存中的存放位置">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://i.loli.net/2021/03/23/mABKcR7lpUfrLjE.png">
+<meta property="og:updated_time" content="2021-03-23T06:26:10.289Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="timemeansalot">
-<meta name="twitter:description" content="一定很牛逼的我们">
+<meta name="twitter:title" content="c++_memory_partition">
+<meta name="twitter:description" content="C++不同的数据，在内存中的存放位置">
+<meta name="twitter:image" content="https://i.loli.net/2021/03/23/mABKcR7lpUfrLjE.png">
 
 
 
@@ -120,7 +124,7 @@
 
 
 
-  <link rel="canonical" href="http://timemeansalot.gitee.io/tags/Diary/">
+  <link rel="canonical" href="http://timemeansalot.gitee.io/2021/03/23/c-memory-partition/">
 
 
 
@@ -136,7 +140,7 @@
   daovoice('update');
   </script>
 
-  <title>标签: Diary | timemeansalot</title>
+  <title>c++_memory_partition | timemeansalot</title>
   
 
 
@@ -156,7 +160,7 @@
     
   
 
-  <div class="container sidebar-position-left ">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <a href="https://github.com/abetterus?tab=repositories" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewbox="0 0 250 250" style="fill:#FD6C6C; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
@@ -284,52 +288,231 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block tag">
+  <div id="posts" class="posts-expand">
+    
 
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h1>Diary<small>标签</small>
-        </h1>
-      </div>
+  
 
-      
-        
+  
+  
+  
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://timemeansalot.gitee.io/2021/03/23/c-memory-partition/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="FuJie">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://s2.ax1x.com/2019/03/19/AuQxUJ.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="timemeansalot">
+    </span>
+
+    
+      <header class="post-header">
+
         
-            <a class="post-title-link" href="/2019/03/10/Diary/" itemprop="url">
-              
-                <span itemprop="name">欢乐时光</span>
-              
-            </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">c++_memory_partition</h1>
+        
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-03-10T19:57:59+08:00" content="2019-03-10">
-          03-10
-        </time>
-      </div>
+        <div class="post-meta">
 
-    </header>
-  </article>
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-23T13:49:18+08:00">
+                2021-03-23
+              </time>
+            
 
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2021/03/23/c-memory-partition/" class="leancloud_visitors" data-flag-title="c++_memory_partition">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  574
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  2
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>C++不同的数据，在内存中的存放位置</p>
+<a id="more"></a>
+<p>[[<em>TOC</em>]]</p>
+<ul>
+<li><p>代码区</p>
+<p> 程序被操作系统加载到内存时，所有可执行的代码被加载到代码区，也叫代码段，存储程序的代码指令。程序运行时，这段区域数据不可被修改只可以被执行。</p>
+</li>
+<li><p>静态区</p>
+<p> 程序中的静态变量、全局变量存放在此区域（初始化的全局变量和静态变量在一块区域）。代码执行期间一直占用内存！</p>
+</li>
+<li><p>堆</p>
+<p> 堆是不连续的内存区域，获得的空间比较灵活，也比较大，一般速度比较慢，而且容易产生内存碎片,不过用起来最方便。需要程序员申请的内存空间，空间的释放一般由程序员控制(比如new, delete, malloc, free)。当程序员没有释放该内存空间的时候，程序运行完毕时操作系统会对该内存空间进行回收。</p>
+</li>
+<li><p>栈</p>
+<p> 栈是一块连续的内存的区域，一般栈的大小都是预先设置好的，如果申请的空间超过栈的剩余空间时，将提示overflow。存放的通常是变量通常是局部变量、函数参数等。</p>
+</li>
+<li><p>文字常量区</p>
+<p> 常量字符串就是放在这里的。 程序结束后由系统释放。</p>
+</li>
+<li><p>bss段</p>
+<p> 定义而没有赋初值的全局变量和静态变量,放在这个区域，通常只是记录变量名和大小，相当于一个占位符。</p>
+<p>一个程序本质上都是由<code>.bss</code>段、<code>.data</code>段、<code>.text</code>段三个组成的。<code>.data</code>段包含三个部分：heap(堆)、stack(栈)和静态数据区。<code>.text</code>段存放代码区。<code>.bss</code> 里面装载了未被初始化的数据；如图：</p>
+</li>
+</ul>
+<p><img src="https://i.loli.net/2021/03/23/mABKcR7lpUfrLjE.png" alt="image-20210323142417299"></p>
+<p>example: </p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">0</span>; <span class="comment">//全局初始化区（静态区） </span></span><br><span class="line"><span class="keyword">char</span> *p1;  <span class="comment">//全局未初始化区 （BSS段）</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"></span>&#123; </span><br><span class="line">    <span class="keyword">int</span> b; <span class="comment">//栈 </span></span><br><span class="line">    <span class="keyword">char</span> s[] = <span class="string">"abc"</span>; <span class="comment">//栈 </span></span><br><span class="line">    <span class="keyword">char</span> *p2; <span class="comment">//栈 </span></span><br><span class="line">    <span class="keyword">char</span> *p3 = <span class="string">"123456"</span>; <span class="comment">//123456/0在常量区，p3在栈上。 </span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">int</span> c = <span class="number">0</span>； <span class="comment">//全局（静态）初始化区 （静态区）</span></span><br><span class="line">    p1 = (<span class="keyword">char</span> *)<span class="built_in">malloc</span>(<span class="number">10</span>); <span class="comment">//分配得10和20字节的区域就在堆区。 </span></span><br><span class="line">    p2 = (<span class="keyword">char</span> *)<span class="built_in">malloc</span>(<span class="number">20</span>); </span><br><span class="line">    <span class="built_in">strcpy</span>(p1, <span class="string">"123456"</span>);  </span><br><span class="line">    <span class="comment">//123456/0放在常量区，编译器可能会将它与p3所指向的"123456"优化成一块。</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
       
     </div>
+    
+    
+    
 
+    
+
+    <div>
+  
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束,感谢您的阅读-------------</div>
+    
+</div>
+  
+</div>
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/C/" rel="tag"><i class="fa fa-tag"></i> C++</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/03/23/wsl-config/" rel="next" title="wsl_config">
+                <i class="fa fa-chevron-left"></i> wsl_config
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/03/23/c-link/" rel="prev" title="c++_link">
+                c++_link <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -337,6 +520,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -683,6 +870,10 @@ show_date_time();
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
