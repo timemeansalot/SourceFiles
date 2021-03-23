@@ -92,9 +92,9 @@ post_wordcount:
 
 
 encrypt:
-enable: true
-default_abstract: 密码是你的电脑开机密码
-default_message: 在这儿输入你的密码哦.
+   enable: true
+   default_abstract: time is very important
+   default_message: Input password to view diary.
 
 
 # Extensions RSS
