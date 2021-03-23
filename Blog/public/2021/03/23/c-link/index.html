@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="C++,Compile&Link,">
 
 
 
@@ -81,14 +81,22 @@
 
 
 
+<meta name="description" content="C++链接笔记">
+<meta name="keywords" content="C++,Compile&amp;Link">
 <meta property="og:type" content="article">
 <meta property="og:title" content="c++_link">
 <meta property="og:url" content="http://timemeansalot.gitee.io/2021/03/23/c-link/index.html">
 <meta property="og:site_name" content="timemeansalot">
+<meta property="og:description" content="C++链接笔记">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2021-03-23T05:49:31.257Z">
+<meta property="og:image" content="https://i.loli.net/2021/03/23/3SpHdBgDO75RUtF.png">
+<meta property="og:image" content="https://i.loli.net/2021/03/23/KFPUl6ZNiQmI3zv.png">
+<meta property="og:image" content="https://i.loli.net/2021/03/23/4j9ODCtuYQq7iTs.png">
+<meta property="og:updated_time" content="2021-03-23T06:53:22.682Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="c++_link">
+<meta name="twitter:description" content="C++链接笔记">
+<meta name="twitter:image" content="https://i.loli.net/2021/03/23/3SpHdBgDO75RUtF.png">
 
 
 
@@ -370,7 +378,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  0
+                  2k
                 </span>
               
 
@@ -386,7 +394,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  1
+                  6
                 </span>
               
             </div>
@@ -407,7 +415,62 @@
       
 
       
-        
+        <p>C++链接笔记</p>
+<a id="more"></a>
+<p>[[<em>TOC</em>]]</p>
+<h1 id="库"><a href="#库" class="headerlink" title="库"></a>库</h1><p>库是一种可执行代码的二进制形式，可以被操作系统载入内存执行。库有两种：静态库（.a、.lib）和动态库（.so、.dll）。</p>
+<h2 id="静态库"><a href="#静态库" class="headerlink" title="静态库"></a><strong>静态库</strong></h2><p>之所以称为【静态库】，是因为在链接阶段，会将汇编生成的目标文件.o与引用到的库一起链接打包到可执行文件中。因此对应的链接方式称为静态链接。首先，静态库对函数库的链接是放在编译时期完成的。其次，程序在运行时与函数库再无瓜葛，移植方便。静态库也有缺点如下图所示，造成空间内存浪费;</p>
+<p><img src="https://i.loli.net/2021/03/23/3SpHdBgDO75RUtF.png" alt="image-20210323144515021"></p>
+<h2 id="动态库"><a href="#动态库" class="headerlink" title="动态库"></a>动态库</h2><p>动态库在程序编译时并不会被连接到目标代码中，而是在程序运行是才被载入。不同的应用程序如果调用相同的库，那么在内存里只需要有一份该共享库的实例，规避了空间浪费问题。动态库在程序运行时才被载入，也解决了静态库对程序的更新、部署和发布页会带来麻烦。用户只需要更新动态库即可，增量更新。</p>
+<h1 id="编译过程"><a href="#编译过程" class="headerlink" title="编译过程"></a>编译过程</h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># main.c</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sum</span><span class="params">(<span class="keyword">int</span> *a,<span class="keyword">int</span> n)</span></span>;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">int</span> <span class="built_in">array</span>[<span class="number">2</span>]  = &#123;<span class="number">1</span>, <span class="number">2</span>&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> val = sum(<span class="built_in">array</span>,<span class="number">2</span> );</span><br><span class="line">    <span class="keyword">return</span> val;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta"># sum.c</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sum</span><span class="params">(<span class="keyword">int</span> *a, <span class="keyword">int</span> n)</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i, s = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span>( i = <span class="number">0</span>; i &lt; n ; i++)&#123;</span><br><span class="line">        s += a[i];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> s;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -Og -o prog main.c sum.c</span><br></pre></td></tr></table></figure>
+<p>以main.c为例，程序首先调用C预处理器，将main.c翻译成一个Ascii码的中间件，mian.i，接下来将main.i翻译成一个汇编语言文件main.s，然后调用汇编器将main.s翻译可重定位的目标文件main.o，同理会生成相应的sum.o文件。最后，运行链接器程序ld，将main.o和sum.o以及一些必要的文件组合起来，创建一个可执行文件prog。</p>
+<p>　　在构造可执行文件的时候，链接器要完成两个任务：</p>
+<p>　　1、符号解析，符号解析的目的是将每个<code>全局符号引用</code>与<code>符号定义</code>关联起来，即<strong>可重定位的目标文件</strong>定义了符号，而<strong>可执行的目标文件</strong>引用符号，将两者的符号相互绑定，这里的符号对应一个函数、一个全局变量、或者一个静态变量。</p>
+<p>　　2、重定位，编译器和汇编器生成从0开始的的代码和数据节，链接器将符号定义和内存的位置关联起来来重定位代码和数据节，然后修改所有这些对符号的引用，使得它们指向内存的位置。</p>
+<ul>
+<li><p>可重定位的目标文件：包含二进制数据和代码，其形式可以在编译时与其他可重定位合并起来，创建一个可执行的目标文件</p>
+</li>
+<li><p>可执行的目标文件：包含二进制和代码，可以直接复制到内存并执行</p>
+</li>
+<li><p>共享目标文件：一类特殊的可重定位目标文件，可以在加载或者运行时被动态的加载到内存执行。</p>
+</li>
+</ul>
+<p>一个典型的ELF（可执行、可链接格式）的可重定位目标文件包含几个重要的部分，如下图：</p>
+<p><img src="https://i.loli.net/2021/03/23/KFPUl6ZNiQmI3zv.png" alt="image-20210323145120783"></p>
+<ul>
+<li>.text 已编译程序的机器代码</li>
+<li>.data 已初始化的全局和静态C变量，局部C变量的值保存在栈中。</li>
+<li>.bss 未初始化的全局和静态C变量，以及所有被初始化为0的静态或全局变量。</li>
+<li>.sysmtab 一个符号表，存放程序中定义和引用的函数以及全局或静态变量，不包含局部变量的信息。</li>
+</ul>
+<p>链接器实际上会处理三种不同的符号，对应于代码中不同写法的部分：</p>
+<ul>
+<li>全局符号 Global symbols<br>在当前模块中定义，且可以被其他代码引用的符号，例如非静态 C 函数和非静态全局变量。</li>
+<li>外部符号 External symbols<br>同样是全局符号，但是是在其他模块（也就是其他的源代码）中定义的，但是可以在当前模块中引用。</li>
+<li>本地符号 Local symbols<br>在当前模块中定义，只能被当前模块引用的符号，例如静态函数和静态全局变量。<br>注意，Local linker symbol 并不是 local program variables</li>
+</ul>
+<h1 id="链接过程"><a href="#链接过程" class="headerlink" title="链接过程"></a>链接过程</h1><p>第一步 <strong>符号解析 Symbol resolution</strong><br>　　符号解析会将每个符号引用刚好和一个符号定义联系起来。汇编器生成可重定位目标文件后，内部符号都已被正确地符号解析， 外部符号可能会引用了非本模块的符号定义，汇编器无法找到符号定义，因此无法解析。 汇编器把外部符号放入”符号表“.symtab，同时把如何解析该符号的方法放入”重定位表“。链接器只知道非静态的全局变量/函数，而对于局部变量一无所知,局部非静态变量和局部静态变量的区别：</p>
+<p><strong>局部非静态变量会保存在栈中</strong><br><strong>局部静态变量会保存在 .bss 或 .data 中</strong></p>
+<p>链接器符号解析时会用到符号表：</p>
+<p>强符号与弱符号： 函数和初始化的全局变量叫强符号， 未初始化的全局变量叫弱符号。（extern int a是一个弱符号定义， int a 也是弱符号）</p>
+<p>符号解析规则：</p>
+<p> 1.（定义多个强符号） 当引用符号时，该符号的符号定义有不止一个强符号定义时，会出现符号重定义错误。<br> 2.（定义一个强符号和一个或者多个弱符号）当引用符号时， 该符号的符号定义有个强符号定义和一个和多个弱符号定义， 使用强符号定义。<br> 3.（定义多个弱符号）当引用符号时， 该符号的符号定义都是弱符号时， 选择任意一个定义。</p>
+<p>第二步 <strong>重定位 Relocation</strong> </p>
+<p>就是把不同可重定位对象文件拼成可执行对象文件，有三步，如下：</p>
+<p>1.合并可重定位目标文件中相同的节。<br>2.重定位节和符号定义，修改符号表。为节和符号定义分配虚拟地址。修改符号表中符号定义的值为刚分配的虚拟地址。<br>3.重定位节中的符号引用，修改代码段和数据段符号引用。使用重定位表.rel.text .rel.data， 修改text，data中符号引用的地址。</p>
+<p>例如下图,多个可重定位对象文件合并成可执行文件的过程所示：</p>
+<p><img src="https://i.loli.net/2021/03/23/4j9ODCtuYQq7iTs.png" alt="image-20210323145247201"></p>
+<p>对重定位的<strong>理解</strong>，在重定位，有两个步骤。</p>
+<p>　　首先重定位节和符号定义，链接器将不同目标文件所有相同类型的节合并到同一个新的聚合节中，例如，来自所有输入模块的.data节会被合并到同一个节中。然后链接器将运行时内存的地址赋给新的聚合节，赋给输入模块中定义的那个节和其中定义的每个符号。此时，程序中的每条指令和全局变量都有一个唯一的运行时内存了。</p>
+<p>　　其次是重定位符号的引用，修改数据节和代码节中符号的引用，使得他们指向正确的运行时内存地址。</p>
+<p>处理目标文件的一些<strong>工具</strong>，如下：</p>
+<ul>
+<li>AR ：创建静态库，插入、删除、列出和提取成员。</li>
+<li>NM ：列出一个目标文件的符号表中定义的符号。</li>
+<li>LDD ：列出一个可执行程序文件在运行时所需的共享库。</li>
+</ul>
+
       
     </div>
     
@@ -431,6 +494,14 @@
     
 
     <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/C/" rel="tag"><i class="fa fa-tag"></i> C++</a>
+          
+            <a href="/tags/Compile-Link/" rel="tag"><i class="fa fa-tag"></i> Compile&Link</a>
+          
+        </div>
       
 
       
@@ -501,8 +572,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -532,7 +612,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-count">9</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -661,6 +741,22 @@ show_date_time();
       </section>
 
       
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#库"><span class="nav-number">1.</span> <span class="nav-text">库</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#静态库"><span class="nav-number">1.1.</span> <span class="nav-text">静态库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动态库"><span class="nav-number">1.2.</span> <span class="nav-text">动态库</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#编译过程"><span class="nav-number">2.</span> <span class="nav-text">编译过程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#链接过程"><span class="nav-number">3.</span> <span class="nav-text">链接过程</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
 
       
 
@@ -671,7 +767,7 @@ show_date_time();
     <h3 class="widget-title">Tag Cloud</h3>
     <div id="myCanvasContainer" class="widget tagcloud">
         <canvas width="250" height="250" id="resCanvas" style="width=100%">
-            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Birthday/">Birthday</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C++</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Diary/">Diary</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/network/">network</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/programming/">programming</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/wsl/">wsl</a><span class="tag-list-count">1</span></li></ul>
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Birthday/">Birthday</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C++</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Compile-Link/">Compile&Link</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Diary/">Diary</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/network/">network</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/programming/">programming</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/wsl/">wsl</a><span class="tag-list-count">1</span></li></ul>
         </canvas>
     </div>
 </div>
@@ -702,7 +798,7 @@ show_date_time();
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">90k</span>
+    <span title="Site words total count">94.2k</span>
   
 </div>
 
