@@ -59,11 +59,31 @@ install PcapPlusPlus
 
 
 
+221 passwod
+
+`ao1ncc/PEe8jYLlumDLZviB+sVPB9WFe8csW6lniXQ`
 
 
 
 
 
+
+
+WSL mount 磁盘
+
+```bash
+在windows 下移动硬盘位 z
+
+在ubuntu 下输入命令：
+sudo mkdir /mnt/z
+(此命令为在 Windows 下新建一个 Z盘,访问 windows 下的文件 cd /mnt/z)
+
+挂载盘符 z
+sudo mount -t drvfs z: /mnt/z
+
+最后，输入 mnt/Z 和windows 下是一模一样的
+
+```
 
 
 

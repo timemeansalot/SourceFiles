@@ -89,7 +89,7 @@
 <meta property="og:site_name" content="timemeansalot">
 <meta property="og:description" content="Windows利用WSL配置Linux开发环境的详细教程 [[TOC]]">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2021-03-23T05:39:42.295Z">
+<meta property="og:updated_time" content="2021-03-23T10:56:49.286Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="wsl_config">
 <meta name="twitter:description" content="Windows利用WSL配置Linux开发环境的详细教程 [[TOC]]">
@@ -374,7 +374,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  564
+                  641
                 </span>
               
 
@@ -421,6 +421,10 @@
 <h1 id="配置SSH"><a href="#配置SSH" class="headerlink" title="配置SSH"></a>配置SSH</h1><p>建议重装之前先备份.ssh，这样重装了就不用更新服务器上的Key了</p>
 <p>install PcapPlusPlus</p>
 <p>参考：<a href="https://172.16.2.224/mprojects/mnm/-/tree/master/av_test/pkt_gen" target="_blank" rel="noopener">链接</a></p>
+<p>221 passwod</p>
+<p><code>ao1ncc/PEe8jYLlumDLZviB+sVPB9WFe8csW6lniXQ</code></p>
+<p>WSL mount 磁盘</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">在windows 下移动硬盘位 z</span><br><span class="line"></span><br><span class="line">在ubuntu 下输入命令：</span><br><span class="line">sudo mkdir /mnt/z</span><br><span class="line">(此命令为在 Windows 下新建一个 Z盘,访问 windows 下的文件 <span class="built_in">cd</span> /mnt/z)</span><br><span class="line"></span><br><span class="line">挂载盘符 z</span><br><span class="line">sudo mount -t drvfs z: /mnt/z</span><br><span class="line"></span><br><span class="line">最后，输入 mnt/Z 和windows 下是一模一样的</span><br></pre></td></tr></table></figure>
 <h1 id="安装PcapPlusPlus"><a href="#安装PcapPlusPlus" class="headerlink" title="安装PcapPlusPlus"></a>安装PcapPlusPlus</h1><p>PcapPlusPlus is available on Windows,  Linux, MacOS and FreeBSD (see more details <a href="https://pcapplusplus.github.io/docs/install" target="_blank" rel="noopener">here</a>). This file will show you how to set up PcapPlusPlus on WSL. </p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install libpcap-dev</span><br></pre></td></tr></table></figure>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://gitee.com/mirrors/PcapPlusPlus.git</span><br></pre></td></tr></table></figure>
@@ -581,7 +585,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -594,7 +598,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">11</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -749,7 +753,7 @@ show_date_time();
     <h3 class="widget-title">Tag Cloud</h3>
     <div id="myCanvasContainer" class="widget tagcloud">
         <canvas width="250" height="250" id="resCanvas" style="width=100%">
-            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Birthday/">Birthday</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C++</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Compile-Link/">Compile&Link</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Diary/">Diary</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/network/">network</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/programming/">programming</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/wsl/">wsl</a><span class="tag-list-count">1</span></li></ul>
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Birthday/">Birthday</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C++</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Compile-Link/">Compile&Link</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Diary/">Diary</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/imformal-essay/">imformal_essay</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/network/">network</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/post-graduate/">post_graduate</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/programming/">programming</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/wsl/">wsl</a><span class="tag-list-count">1</span></li></ul>
         </canvas>
     </div>
 </div>
@@ -780,7 +784,7 @@ show_date_time();
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">43.1k</span>
+    <span title="Site words total count">43k</span>
   
 </div>
 
