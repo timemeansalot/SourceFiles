@@ -16,4 +16,4 @@ about me!
 <!--more-->
 
 
-
+	Good morning, I am so glad to be here for this interview. First let me introduce myself, my name is Fu Jie and I am 22 years old. I study computer science in China University of Mining and Technology. I used to be a fun of computer when I was a 
