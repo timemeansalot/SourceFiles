@@ -2,7 +2,6 @@
 title: Postgraduate_retest_plan
 date: 2021-03-27 13:46:52
 tags: postgraduate
-password: timemeansalot
 ---
 
 
@@ -87,7 +86,7 @@ PPT3分钟内不能够吸引别人，就是失败。整理出自己的项目，�
 **指令并行**：
 
 - 发射单元一次发射多条指令
-- 超标量（硬件实现，将穿行的指令并行执行、x86）、超长指令字（软件实现：超长指令字是编译器或程序员在汇编语言中声明多条指令要在一个cycle内执行、RISC）
+- 超标量（硬件实现，将串行的指令并行执行、x86）、超长指令字（软件实现：超长指令字是编译器或程序员在汇编语言中声明多条指令要在一个cycle内执行、RISC）
 
 
 
@@ -140,9 +139,50 @@ SoC(System on Chip)
 
 
 
+## 活动变量
+
+[Link](https://blog.csdn.net/zhuliting/article/details/6839233?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522161700789916780264028634%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=161700789916780264028634&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~baidu_landing_v2~default-4-6839233.first_rank_v2_pc_rank_v29&utm_term=%E6%B4%BB%E5%8A%A8%E8%AE%B0%E5%BD%95&spm=1018.2226.3001.4187)
+
+一个函数被调用的时候，在栈上会存储一些内容，这些内容称为**一帧**，其中包括：
+
+- 参数
+- 返回地址
+- 老ebp（基指针寄存器）
+- 局部变量
+- 老ebp和esp（栈顶指针）
+
+![image-20210329165806801](https://i.loli.net/2021/03/29/woYvV6PFrAUldEX.png)
+
+## C语言动态存储管理
+
+[link](https://blog.csdn.net/m0_46959770/article/details/110518195?ops_request_misc=&request_id=&biz_id=102&utm_term=%E5%8A%A8%E6%80%81%E5%AD%98%E5%82%A8%E7%AE%A1%E7%90%86&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-5-110518195.first_rank_v2_pc_rank_v29&spm=1018.2226.3001.4187)
+
+- 代码区(text)：程序的二进制代码
+- stack：非静态局部变量、函数参数
+- heap：动态分配的变量
+- 数据区：其他的
 
 
 
+## 虚函数及其实现
+
+[Link](https://blog.csdn.net/A_LMY/article/details/50803619)
+
+多态：通过指向基类的指针或引用，访问子类中的同名函数
+
+虚函数的实现：编译器通过**虚函数表**实现动态绑定，虚函数表中的每一行元素都是指向代码中虚函数的一个函数指针。类的每个实例，都会通过**虚函数表指针**来对应一张虚函数表，该表中记录所有虚函数真实的地址，这样就能准确的访问到对应的函数了。
+
+
+
+## CMOS
+
+[Link](https://blog.csdn.net/vivid117/article/details/100187137?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522161700997416780357228491%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=161700997416780357228491&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~top_click~default-3-100187137.first_rank_v2_pc_rank_v29&utm_term=cmos&spm=1018.2226.3001.4187)
+
+[互补金属氧化物半导体](http://baike.baidu.com/view/4269850.htm)，电压控制的一种放大器件，是组成CMOS数字集成电路的 [基本单元](http://baike.baidu.com/view/693012.htm)。
+
+在计算机领域，其实CMOS是主板上的一块可读写的并行或串行FLASH芯片，是用来保存 [BIOS](http://baike.baidu.com/view/361.htm)的硬件配置和用户对某些参数的设定。
+
+二极管门电路 VS cmos门电路
 
 
 
@@ -154,7 +194,62 @@ SoC(System on Chip)
 
 
 
+# 编程语言
 
+面向对象：面向对象是一种对现实世界理解和抽象的方法、思想，通过将需求要素转化为对象进行
+问题处理的一种思想。三要素是：**继承、封装、多态**
+
+
+
+类 VS 结构体
+
+- 结构体存储在栈中，类的实例可以存储在栈中，也可以存储在堆中
+- 结构体的执行效率比类高
+- 结构体没有析构函数
+- 结构体不可以继承
+- 结构体默认是public，类默认是private
+
+
+
+静态函数：
+
+- 使用static修饰
+- 没有this指针
+- 只能操作静态成员变量
+- 如果类的函数不会修改任何变量，则设置成静态的比较好
+
+
+
+
+
+# 数据库
+
+事务
+
+事务是指满足ACID特性的一组操作，可以commit一个事务，也可以rall back一个事务
+
+
+
+异常操作：
+
+- 冗余数据
+- 修改异常
+- 删除异常
+- 插入异常
+
+
+
+完全依赖：假如A由a1和a2组成，若a1和a2共同决定B，则B完全依赖于A
+
+部分依赖：如果a1或者a2就可以决定B，则B部分依赖于A
+
+
+
+范式
+
+- 第一范式：属性不可分割，及属性是最小的原子属性
+- 第二范式：每个非主属性，完全依赖于键码，不满足会导致数据冗余
+- 第三范式：非主属性不传递依赖于键码，及属性不依赖于其他非主属性
 
 
 
