@@ -89,7 +89,7 @@
 <meta property="og:site_name" content="timemeansalot">
 <meta property="og:description" content="[[TOC]] 利用hexo和gitee搭建自己的博客">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2021-03-23T09:31:27.040Z">
+<meta property="og:updated_time" content="2021-04-07T15:10:43.140Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="hexo搭建博客">
 <meta name="twitter:description" content="[[TOC]] 利用hexo和gitee搭建自己的博客">
@@ -374,7 +374,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  218
+                  254
                 </span>
               
 
@@ -419,12 +419,12 @@
 <h1 id="nodejs-amp-npm"><a href="#nodejs-amp-npm" class="headerlink" title="nodejs &amp; npm"></a>nodejs &amp; npm</h1><blockquote>
 <p>不要选择高版本的nodejs，选择版本为12的，不然hexo d的时候会报错</p>
 </blockquote>
-<p><strong>使用NVM安装和管理nodejs</strong>：<a href="https://www.cnblogs.com/czql/articles/11064849.html。如果使用nvm，则不用手动安装nodejs了，可以直接利用nvm安装指定版本的nodejs" target="_blank" rel="noopener">https://www.cnblogs.com/czql/articles/11064849.html。如果使用nvm，则不用手动安装nodejs了，可以直接利用nvm安装指定版本的nodejs</a></p>
+<p><strong>使用NVM安装和管理nodejs</strong>：<a href="https://www.cnblogs.com/czql/articles/11064849.html。如果使用nvm，则不用手动安装nodejs了，可以直接利用nvm安装指定版本的nodejs" target="_blank" rel="noopener">https://www.cnblogs.com/czql/articles/11064849.html。如果使用nvm，则不用手动安装nodejs了，可以直接利用nvm安装指定版本的nodejs</a><br><em>Ubuntu 安装 nvm</em><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://gitee.com/abulo_hoo/nvm.git</span><br><span class="line"><span class="built_in">cd</span> nvm/</span><br><span class="line">ls</span><br><span class="line">git branch</span><br><span class="line"> chmod 777 nvm.sh</span><br><span class="line">cat nvm.sh</span><br><span class="line">. nvm.sh</span><br><span class="line">nvm --version</span><br><span class="line">nvm ls-remote</span><br><span class="line"><span class="built_in">export</span> NVM_NODEJS_ORG_MIRROR=https://npm.taobao.org/mirrors/node <span class="comment"># use ali repo</span></span><br><span class="line">nvm install 12.22.1 <span class="comment"># install nodejs 12</span></span><br></pre></td></tr></table></figure></p>
 <p>手动安装nodejs：<a href="https://www.cnblogs.com/qiangyuzhou/p/10836561.html" target="_blank" rel="noopener">https://www.cnblogs.com/qiangyuzhou/p/10836561.html</a></p>
 <p><a href="https://nodejs.org/en/" target="_blank" rel="noopener">https://nodejs.org/en/</a></p>
 <p>使用NVM安装和管理nodejs<a href="https://www.cnblogs.com/czql/articles/11064849.html" target="_blank" rel="noopener">https://www.cnblogs.com/czql/articles/11064849.html</a></p>
 <h1 id="hexo"><a href="#hexo" class="headerlink" title="hexo"></a>hexo</h1><p>安装hexo（ubuntu下加上sudo，Windows下载CMD中输入命令，不用添加sudo）</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">sudo npm config <span class="built_in">set</span> registry http://registry.npm.taobao.org </span><br><span class="line"></span><br><span class="line">sudo npm install -g hexo-cli </span><br><span class="line"></span><br><span class="line">sudo npm install </span><br><span class="line"></span><br><span class="line">sudo npm install hexo-deployer-git</span><br><span class="line">sudo npm install --save hexo-blog-encrypt</span><br><span class="line"></span><br><span class="line">hexo new page_name <span class="comment"># 添加文章页面</span></span><br><span class="line">hexo s <span class="comment"># 在本地调试页面</span></span><br><span class="line">hexo d -g <span class="comment"># 推送页面到GitHub</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">npm config <span class="built_in">set</span> registry http://registry.npm.taobao.org </span><br><span class="line">npm install -g hexo-cli </span><br><span class="line">npm install hexo-deployer-git</span><br><span class="line">npm install --save hexo-blog-encrypt</span><br><span class="line">npm install </span><br><span class="line"></span><br><span class="line">hexo new page_name <span class="comment"># 添加文章页面</span></span><br><span class="line">hexo s <span class="comment"># 在本地调试页面</span></span><br><span class="line">hexo d -g <span class="comment"># 推送页面到GitHub</span></span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -556,7 +556,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">15</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -569,7 +569,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -724,7 +724,7 @@ show_date_time();
     <h3 class="widget-title">Tag Cloud</h3>
     <div id="myCanvasContainer" class="widget tagcloud">
         <canvas width="250" height="250" id="resCanvas" style="width=100%">
-            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AI/">AI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Birthday/">Birthday</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C++</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Compile-Link/">Compile&Link</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Diary/">Diary</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LinkLayer/">LinkLayer</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/QinQ/">QinQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCAM/">TCAM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TensorFlow/">TensorFlow</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hardware/">hardware</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/imformal-essay/">imformal_essay</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/network/">network</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/plan/">plan</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/post-graduate/">post_graduate</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/programming/">programming</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/to-do/">to_do</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/wsl/">wsl</a><span class="tag-list-count">1</span></li></ul>
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AI/">AI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Birthday/">Birthday</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C++</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Compile-Link/">Compile&Link</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Diary/">Diary</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LinkLayer/">LinkLayer</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/QinQ/">QinQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCAM/">TCAM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TensorFlow/">TensorFlow</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hardware/">hardware</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/imformal-essay/">imformal_essay</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/network/">network</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/plan/">plan</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/programming/">programming</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/to-do/">to_do</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/wsl/">wsl</a><span class="tag-list-count">1</span></li></ul>
         </canvas>
     </div>
 </div>
