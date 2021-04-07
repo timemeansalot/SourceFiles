@@ -6,7 +6,7 @@ tags: imformal_essay
 
 
 
-about me!
+About me, and my plans.
 
 [[_TOC_]]
 
@@ -16,8 +16,7 @@ about me!
 
 
 
-Long Term Plan
+[Long Term Plan](https://timemeansalot.gitee.io/2021/04/06/long-term-plan/)
 
-Weekly Plan
+[Everyday Plan](https://timemeansalot.gitee.io/2021/04/06/everyday-plan/)
 
-Everyday Plan

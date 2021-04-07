@@ -20,7 +20,7 @@ Windows利用WSL配置Linux开发环境的详细教程
 
 ```bash
 sudo apt update
-sudo apt install -y  gcc make  build-essential python2 libtool flex bison
+sudo apt install -y  gcc make  cmake build-essential python2 libtool flex bison
 cd /usr/bin/
 sudo ln -s python2 python
 
@@ -45,7 +45,7 @@ mkdir build
 cd build
 cmake ..
 make
-make install
+sudo make install
 
 # 配置SSH
 
