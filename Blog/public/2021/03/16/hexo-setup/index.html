@@ -89,7 +89,7 @@
 <meta property="og:site_name" content="timemeansalot">
 <meta property="og:description" content="[[TOC]] 利用hexo和gitee搭建自己的博客">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2021-04-07T15:10:43.140Z">
+<meta property="og:updated_time" content="2021-04-07T15:25:35.270Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="hexo搭建博客">
 <meta name="twitter:description" content="[[TOC]] 利用hexo和gitee搭建自己的博客">
@@ -374,7 +374,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  254
+                  294
                 </span>
               
 
@@ -425,6 +425,8 @@
 <p>使用NVM安装和管理nodejs<a href="https://www.cnblogs.com/czql/articles/11064849.html" target="_blank" rel="noopener">https://www.cnblogs.com/czql/articles/11064849.html</a></p>
 <h1 id="hexo"><a href="#hexo" class="headerlink" title="hexo"></a>hexo</h1><p>安装hexo（ubuntu下加上sudo，Windows下载CMD中输入命令，不用添加sudo）</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">npm config <span class="built_in">set</span> registry http://registry.npm.taobao.org </span><br><span class="line">npm install -g hexo-cli </span><br><span class="line">npm install hexo-deployer-git</span><br><span class="line">npm install --save hexo-blog-encrypt</span><br><span class="line">npm install </span><br><span class="line"></span><br><span class="line">hexo new page_name <span class="comment"># 添加文章页面</span></span><br><span class="line">hexo s <span class="comment"># 在本地调试页面</span></span><br><span class="line">hexo d -g <span class="comment"># 推送页面到GitHub</span></span><br></pre></td></tr></table></figure>
+<h1 id="Trouble-Shot"><a href="#Trouble-Shot" class="headerlink" title="Trouble Shot"></a>Trouble Shot</h1><h2 id="Can’t-use-git-clone-on-mnt-d"><a href="#Can’t-use-git-clone-on-mnt-d" class="headerlink" title="Can’t use git clone on /mnt/d"></a>Can’t use git clone on /mnt/d</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">error: chmod on /mnt/d/codes/SourceFiles/.git/config.lock failed: Operation not permitted</span><br></pre></td></tr></table></figure>
+<p>Follow <a href="https://askubuntu.com/questions/1115564/wsl-ubuntu-distro-how-to-solve-operation-not-permitted-on-cloning-repository" target="_blank" rel="noopener">this link</a> to fix this:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo umount /mnt/d</span><br><span class="line">sudo mount -t drvfs D: /mnt/d -o metadata</span><br></pre></td></tr></table></figure></p>
 
       
     </div>
@@ -707,7 +709,7 @@ show_date_time();
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#picgo"><span class="nav-number">1.</span> <span class="nav-text">picgo</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#nodejs-amp-npm"><span class="nav-number">2.</span> <span class="nav-text">nodejs &amp; npm</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#hexo"><span class="nav-number">3.</span> <span class="nav-text">hexo</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#picgo"><span class="nav-number">1.</span> <span class="nav-text">picgo</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#nodejs-amp-npm"><span class="nav-number">2.</span> <span class="nav-text">nodejs &amp; npm</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#hexo"><span class="nav-number">3.</span> <span class="nav-text">hexo</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Trouble-Shot"><span class="nav-number">4.</span> <span class="nav-text">Trouble Shot</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Can’t-use-git-clone-on-mnt-d"><span class="nav-number">4.1.</span> <span class="nav-text">Can’t use git clone on /mnt/d</span></a></li></ol></li></ol></div>
             
 
           </div>

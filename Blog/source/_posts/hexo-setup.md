@@ -63,3 +63,14 @@ hexo s # 在本地调试页面
 hexo d -g # 推送页面到GitHub
 ```
 
+# Trouble Shot
+
+## Can't use git clone on /mnt/d
+```bash
+error: chmod on /mnt/d/codes/SourceFiles/.git/config.lock failed: Operation not permitted
+```
+Follow [this link](https://askubuntu.com/questions/1115564/wsl-ubuntu-distro-how-to-solve-operation-not-permitted-on-cloning-repository) to fix this:
+```bash
+sudo umount /mnt/d
+sudo mount -t drvfs D: /mnt/d -o metadata
+```
