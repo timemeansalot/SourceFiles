@@ -10,7 +10,7 @@ I hope I can accomplish my plans.
 
 Maybe I can go to MIT in the future to study CS.
 
-
+<!--more-->
 
 # April 5
 
