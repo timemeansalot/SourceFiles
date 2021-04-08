@@ -14,7 +14,7 @@ Maybe I can go to MIT in the future to study CS.
 
 # April 5
 
-Today is the ==14th== week of 2021. My plans are as follows:
+Today is the ==14th week== of 2021. My plans are as follows:
 
 1. Install Windows OS to my own laptop so I can learn FPGA on it.
 2. Write PPT about ISL MPL to share my understanding.
@@ -22,7 +22,12 @@ Today is the ==14th== week of 2021. My plans are as follows:
 
 
 
+**4.8 Thursday**
 
+1. Read one algorithm question and finish in leetcode in both C++ and Python.
+2. Build FPGA environment and read the first chapter of PFGA book
+3. Learn regex by [this link](https://gitee.com/timemeansalot/learn-regex#/timemeansalot/learn-regex/blob/master/translations/README-cn.md)
+4. `Delayed`:4.7.2(write diary)
 
 **4.7 Wednesday**
 
