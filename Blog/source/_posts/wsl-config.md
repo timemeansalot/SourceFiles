@@ -12,7 +12,124 @@ Windows利用WSL配置Linux开发环境的详细教程
 
 <!--more-->
 
-# 本地安装WSL
+
+
+# Install Ubuntu to Windows
+
+1. Open WSL function in Windows
+
+   Follow this [Guide](https://docs.microsoft.com/zh-cn/windows/wsl/install-win10) provided by Microsoft to enable WSL2 function in Windows. Do the following commands in `Power Shell` with administrator authority. 
+
+   - enable wsl function
+
+     ```shell
+     dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+     ```
+
+   - enable virtualization function
+
+     ```shell
+     dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+     ```
+
+     `Reboot Windows`
+
+   - set wsl default version to 2
+
+     Download WSL kernel update packet by this [link](https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi), run the update packet.
+
+     ```shell
+     wsl --set-version Ubuntu 2
+     wsl --set-default-version 2
+     ```
+
+   ```
+     
+     
+   ```
+
+2. Download Ubuntu-20.04 zip file
+
+   Go to [Link](https://docs.microsoft.com/en-us/windows/wsl/install-manual) to download Ubuntu20.04
+
+3. Install Ubuntu using LxRunOffline
+
+   Go to [Github Repo](https://github.com/DDoSolitary/LxRunOffline/releases) to donwload **[LxRunOffline-v3.5.0-msvc.zip](https://github.com/DDoSolitary/LxRunOffline/releases/download/v3.5.0/LxRunOffline-v3.5.0-msvc.zip)**. Extract the zip file and add folder route to PATH in Windows.
+
+   ```shell
+   # install ubuntu
+   ## LxRunOffline i -n <wsl_name> -d <install location> -f <source_folder/install.tar.gz>   for examle:
+   LxRunOffline.exe i -n Ubuntu -d "D:\Programming\WSL\Ubuntu" -f "D:\Programming\extract\install.tar.gz"
+   
+   # set default wsl version to Ubuntu
+   LxRunOffline.exe sd -n Ubuntu
+   # Create Link
+   LxRunOffline.exe s -n Ubuntu -f Ubuntu-20.04.lnk
+   ```
+
+   
+
+# Modify Ubuntu
+
+Run all the commands in `Ubuntu` by type `wsl` in Power Shell to launch Ubuntu.
+
+1. Change repository source to Tsinghua University
+
+   ```shell
+   vim /etc/apt/sources.list
+   ```
+
+   change the default text to:
+
+   ```
+   # 默认注释了源码镜像以提高 apt update 速度，如有需要可自行取消注释
+   deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal main restricted universe multiverse
+   # deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal main restricted universe multiverse
+   deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-updates main restricted universe multiverse
+   # deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-updates main restricted universe multiverse
+   deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-backports main restricted universe multiverse
+   # deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-backports main restricted universe multiverse
+   deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-security main restricted universe multiverse
+   # deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-security main restricted universe multiverse
+   
+   # 预发布软件源，不建议启用
+   # deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-proposed main restricted universe multiverse
+   # deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-proposed main restricted universe multiverse
+   ```
+
+2. Add user
+
+   ```bash
+   # add user and set password
+   useradd -m jfu -d /home/jfu -s /bin/bash 
+   passwd jfu
+   
+   # add user to suders group
+   chmod +w /etc/sudoers
+   vim /etc/sudoers
+   
+   root　ALL=(ALL:ALL) ALL
+   jfu ALL=(ALL:ALL) ALL # add this line
+   
+   chmod -w /etc/sudoers
+   ```
+
+3. Download and install MobaXterm
+
+   Go to this [Link](https://mobaxterm.mobatek.net/download-home-edition.html) to download MobaXterm, it is a very powerful and free shell application.
+
+4. Config ssh and git
+
+   ```bash
+   mkdir .ssh
+   cd .ssh
+   ssh-keygen -t rsa
+   # copy the public key to your repo ssh
+   ```
+
+   
+
+# Config WSL environment
 
 在Windows应用商店直接可以安装wsl
 

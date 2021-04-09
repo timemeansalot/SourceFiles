@@ -24,7 +24,7 @@ Today is the ==14th week== of 2021. My plans are as follows:
 
 **4.8 Thursday**
 
-1. Read one algorithm question and finish in leetcode in both C++ and Python.
+1. ~~Read one algorithm question and finish in leetcode in both C++ and Python.~~ 
 2. Build FPGA environment and read the first chapter of PFGA book
 3. Learn regex by [this link](https://gitee.com/timemeansalot/learn-regex#/timemeansalot/learn-regex/blob/master/translations/README-cn.md)
 4. `Delayed`:4.7.2(write diary)

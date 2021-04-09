@@ -89,7 +89,7 @@
 <meta property="og:site_name" content="timemeansalot">
 <meta property="og:description" content="Windows利用WSL配置Linux开发环境的详细教程 [[TOC]]">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2021-04-07T14:23:03.000Z">
+<meta property="og:updated_time" content="2021-04-08T14:22:09.794Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="wsl_config">
 <meta name="twitter:description" content="Windows利用WSL配置Linux开发环境的详细教程 [[TOC]]">
@@ -374,7 +374,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  643
+                  1.1k
                 </span>
               
 
@@ -390,7 +390,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  3
+                  6
                 </span>
               
             </div>
@@ -414,7 +414,50 @@
         <p>Windows利用WSL配置Linux开发环境的详细教程</p>
 <p>[[<em>TOC</em>]]</p>
 <a id="more"></a>
-<h1 id="本地安装WSL"><a href="#本地安装WSL" class="headerlink" title="本地安装WSL"></a>本地安装WSL</h1><p>在Windows应用商店直接可以安装wsl</p>
+<h1 id="Install-Ubuntu-to-Windows"><a href="#Install-Ubuntu-to-Windows" class="headerlink" title="Install Ubuntu to Windows"></a>Install Ubuntu to Windows</h1><ol>
+<li><p>Open WSL function in Windows</p>
+<p>Follow this <a href="https://docs.microsoft.com/zh-cn/windows/wsl/install-win10" target="_blank" rel="noopener">Guide</a> provided by Microsoft to enable WSL2 function in Windows. Do the following commands in <code>Power Shell</code> with administrator authority. </p>
+<ul>
+<li><p>enable wsl function</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>enable virtualization function</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart</span><br></pre></td></tr></table></figure>
+<p><code>Reboot Windows</code></p>
+</li>
+<li><p>set wsl default version to 2</p>
+<p>Download WSL kernel update packet by this <a href="https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi" target="_blank" rel="noopener">link</a>, run the update packet.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wsl --set-version Ubuntu 2</span><br><span class="line">wsl --set-default-version 2</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"> </span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Download Ubuntu-20.04 zip file</p>
+<p>Go to <a href="https://docs.microsoft.com/en-us/windows/wsl/install-manual" target="_blank" rel="noopener">Link</a> to download Ubuntu20.04</p>
+</li>
+<li><p>Install Ubuntu using LxRunOffline</p>
+<p>Go to <a href="https://github.com/DDoSolitary/LxRunOffline/releases" target="_blank" rel="noopener">Github Repo</a> to donwload <strong><a href="https://github.com/DDoSolitary/LxRunOffline/releases/download/v3.5.0/LxRunOffline-v3.5.0-msvc.zip" target="_blank" rel="noopener">LxRunOffline-v3.5.0-msvc.zip</a></strong>. Extract the zip file and add folder route to PATH in Windows.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> install ubuntu</span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># LxRunOffline i -n &lt;wsl_name&gt; -d &lt;install location&gt; -f &lt;source_folder/install.tar.gz&gt;   for examle:</span></span></span><br><span class="line">LxRunOffline.exe i -n Ubuntu -d "D:\Programming\WSL\Ubuntu" -f "D:\Programming\extract\install.tar.gz"</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> <span class="built_in">set</span> default wsl version to Ubuntu</span></span><br><span class="line">LxRunOffline.exe sd -n Ubuntu</span><br><span class="line"><span class="meta">#</span><span class="bash"> Create Link</span></span><br><span class="line">LxRunOffline.exe s -n Ubuntu -f Ubuntu-20.04.lnk</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h1 id="Modify-Ubuntu"><a href="#Modify-Ubuntu" class="headerlink" title="Modify Ubuntu"></a>Modify Ubuntu</h1><p>Run all the commands in <code>Ubuntu</code> by type <code>wsl</code> in Power Shell to launch Ubuntu.</p>
+<ol>
+<li><p>Change repository source to Tsinghua University</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/apt/sources.list</span><br></pre></td></tr></table></figure>
+<p>change the default text to:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># 默认注释了源码镜像以提高 apt update 速度，如有需要可自行取消注释</span><br><span class="line">deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal main restricted universe multiverse</span><br><span class="line"># deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal main restricted universe multiverse</span><br><span class="line">deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-updates main restricted universe multiverse</span><br><span class="line"># deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-updates main restricted universe multiverse</span><br><span class="line">deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-backports main restricted universe multiverse</span><br><span class="line"># deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-backports main restricted universe multiverse</span><br><span class="line">deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-security main restricted universe multiverse</span><br><span class="line"># deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-security main restricted universe multiverse</span><br><span class="line"></span><br><span class="line"># 预发布软件源，不建议启用</span><br><span class="line"># deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-proposed main restricted universe multiverse</span><br><span class="line"># deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-proposed main restricted universe multiverse</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Add user</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># add user and set password</span></span><br><span class="line">useradd -m jfu -d /home/jfu -s /bin/bash </span><br><span class="line">passwd jfu</span><br><span class="line"></span><br><span class="line"><span class="comment"># add user to suders group</span></span><br><span class="line">chmod +w /etc/sudoers</span><br><span class="line">vim /etc/sudoers</span><br><span class="line"></span><br><span class="line">root　ALL=(ALL:ALL) ALL</span><br><span class="line">jfu ALL=(ALL:ALL) ALL <span class="comment"># add this line</span></span><br><span class="line"></span><br><span class="line">chmod -w /etc/sudoers</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Download and install MobaXterm</p>
+<p>Go to this <a href="https://mobaxterm.mobatek.net/download-home-edition.html" target="_blank" rel="noopener">Link</a> to download MobaXterm, it is a very powerful and free shell application.</p>
+</li>
+<li><p>Config ssh and git</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mkdir .ssh</span><br><span class="line"><span class="built_in">cd</span> .ssh</span><br><span class="line">ssh-keygen -t rsa</span><br><span class="line"><span class="comment"># copy the public key to your repo ssh</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h1 id="Config-WSL-environment"><a href="#Config-WSL-environment" class="headerlink" title="Config WSL environment"></a>Config WSL environment</h1><p>在Windows应用商店直接可以安装wsl</p>
 <p>配置本地的WSL环境：<a href="https://172.16.2.224/mprojects/mnm/-/blob/master/tb/mnm_sdk_test.md" target="_blank" rel="noopener">https://172.16.2.224/mprojects/mnm/-/blob/master/tb/mnm_sdk_test.md</a></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">sudo apt update</span><br><span class="line">sudo apt install -y  gcc make  cmake build-essential python2 libtool flex bison</span><br><span class="line"><span class="built_in">cd</span> /usr/bin/</span><br><span class="line">sudo ln -s python2 python</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> ~</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:/usr/local/lib:/lib'</span> &gt;&gt; .bashrc</span><br><span class="line"><span class="built_in">source</span> .bashrc</span><br><span class="line"></span><br><span class="line">sudo apt install gcc-10 g++-10 -y</span><br><span class="line">sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 40</span><br><span class="line">sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 40</span><br><span class="line">sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 50</span><br><span class="line">sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 50</span><br></pre></td></tr></table></figure>
 <h1 id="配置google-test"><a href="#配置google-test" class="headerlink" title="配置google test"></a>配置google test</h1><p>git clone <a href="https://gitee.com/milley/googletest.git" target="_blank" rel="noopener">https://gitee.com/milley/googletest.git</a><br>cd googletest<br>mkdir build<br>cd build<br>cmake ..<br>make<br>sudo make install</p>
@@ -736,7 +779,7 @@ show_date_time();
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#本地安装WSL"><span class="nav-number">1.</span> <span class="nav-text">本地安装WSL</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#配置google-test"><span class="nav-number">2.</span> <span class="nav-text">配置google test</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#配置SSH"><span class="nav-number">3.</span> <span class="nav-text">配置SSH</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装PcapPlusPlus"><span class="nav-number">4.</span> <span class="nav-text">安装PcapPlusPlus</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Install-Ubuntu-to-Windows"><span class="nav-number">1.</span> <span class="nav-text">Install Ubuntu to Windows</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Modify-Ubuntu"><span class="nav-number">2.</span> <span class="nav-text">Modify Ubuntu</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Config-WSL-environment"><span class="nav-number">3.</span> <span class="nav-text">Config WSL environment</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#配置google-test"><span class="nav-number">4.</span> <span class="nav-text">配置google test</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#配置SSH"><span class="nav-number">5.</span> <span class="nav-text">配置SSH</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装PcapPlusPlus"><span class="nav-number">6.</span> <span class="nav-text">安装PcapPlusPlus</span></a></li></ol></div>
             
 
           </div>
@@ -753,7 +796,7 @@ show_date_time();
     <h3 class="widget-title">Tag Cloud</h3>
     <div id="myCanvasContainer" class="widget tagcloud">
         <canvas width="250" height="250" id="resCanvas" style="width=100%">
-            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AI/">AI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Birthday/">Birthday</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C++</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Compile-Link/">Compile&Link</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Diary/">Diary</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LinkLayer/">LinkLayer</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/QinQ/">QinQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCAM/">TCAM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TensorFlow/">TensorFlow</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hardware/">hardware</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/imformal-essay/">imformal_essay</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/network/">network</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/plan/">plan</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/programming/">programming</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/to-do/">to_do</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/wsl/">wsl</a><span class="tag-list-count">1</span></li></ul>
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AI/">AI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Birthday/">Birthday</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C++</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Compile-Link/">Compile&Link</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Diary/">Diary</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LinkLayer/">LinkLayer</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/QinQ/">QinQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCAM/">TCAM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TensorFlow/">TensorFlow</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/apps/">apps</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hardware/">hardware</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/imformal-essay/">imformal_essay</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/network/">network</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/plan/">plan</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/programming/">programming</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/wsl/">wsl</a><span class="tag-list-count">1</span></li></ul>
         </canvas>
     </div>
 </div>
@@ -784,7 +827,7 @@ show_date_time();
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">95.8k</span>
+    <span title="Site words total count">96.4k</span>
   
 </div>
 
