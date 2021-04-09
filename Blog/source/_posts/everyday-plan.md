@@ -20,17 +20,21 @@ Today is the ==14th week== of 2021. My plans are as follows:
 2. Write PPT about ISL MPL to share my understanding.
 3. Do exercise everyday so I can have 4 backs of abs in the end of this month.
 
+**4.9 Friday**
 
+1. Study one algorithm
+2. `Delayed`4.7.2(Today I must finish writing diary)
+3. `Delayed`4.8.3(learn regex)
 
 **4.8 Thursday**
 
 1. ~~Read one algorithm question and finish in leetcode in both C++ and Python.~~ 
-2. Build FPGA environment and read the first chapter of PFGA book
+2. ~~Build FPGA environment and read the first chapter of PFGA book~~
 3. Learn regex by [this link](https://gitee.com/timemeansalot/learn-regex#/timemeansalot/learn-regex/blob/master/translations/README-cn.md)
 4. `Delayed`:4.7.2(write diary)
 
 **4.7 Wednesday**
 
-1. Finish installing Windows OS to my laptop and build develop environment for FPGA, C++ and Python.
+1. ~~Finish installing Windows OS to my laptop and build develop environment for FPGA, C++ and Python.~~
 2. Write dairy about meeting with Fa Shan and the overturn happened in my company.
 3. Think of what I am going to do in this month.
