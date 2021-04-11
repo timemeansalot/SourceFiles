@@ -89,7 +89,7 @@
 <meta property="og:site_name" content="timemeansalot">
 <meta property="og:description" content="[[TOC]] 利用hexo和gitee搭建自己的博客">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2021-04-09T01:10:35.375Z">
+<meta property="og:updated_time" content="2021-04-11T08:35:01.776Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="hexo搭建博客">
 <meta name="twitter:description" content="[[TOC]] 利用hexo和gitee搭建自己的博客">
@@ -374,7 +374,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  294
+                  518
                 </span>
               
 
@@ -390,7 +390,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  1
+                  2
                 </span>
               
             </div>
@@ -419,7 +419,17 @@
 <h1 id="nodejs-amp-npm"><a href="#nodejs-amp-npm" class="headerlink" title="nodejs &amp; npm"></a>nodejs &amp; npm</h1><blockquote>
 <p>不要选择高版本的nodejs，选择版本为12的，不然hexo d的时候会报错</p>
 </blockquote>
-<p><strong>使用NVM安装和管理nodejs</strong>：<a href="https://www.cnblogs.com/czql/articles/11064849.html。如果使用nvm，则不用手动安装nodejs了，可以直接利用nvm安装指定版本的nodejs" target="_blank" rel="noopener">https://www.cnblogs.com/czql/articles/11064849.html。如果使用nvm，则不用手动安装nodejs了，可以直接利用nvm安装指定版本的nodejs</a><br><em>Ubuntu 安装 nvm</em><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://gitee.com/abulo_hoo/nvm.git</span><br><span class="line"><span class="built_in">cd</span> nvm/</span><br><span class="line">ls</span><br><span class="line">git branch</span><br><span class="line"> chmod 777 nvm.sh</span><br><span class="line">cat nvm.sh</span><br><span class="line">. nvm.sh</span><br><span class="line">nvm --version</span><br><span class="line">nvm ls-remote</span><br><span class="line"><span class="built_in">export</span> NVM_NODEJS_ORG_MIRROR=https://npm.taobao.org/mirrors/node <span class="comment"># use ali repo</span></span><br><span class="line">nvm install 12.22.1 <span class="comment"># install nodejs 12</span></span><br></pre></td></tr></table></figure></p>
+<p><strong>使用NVM安装和管理nodejs</strong>：<a href="https://www.cnblogs.com/czql/articles/11064849.html。" target="_blank" rel="noopener">https://www.cnblogs.com/czql/articles/11064849.html。</a></p>
+<p><strong>第一步：下载</strong></p>
+<p>下载地址：<a href="https://github.com/coreybutler/nvm-windows/releases" target="_blank" rel="noopener">https://github.com/coreybutler/nvm-windows/releases</a></p>
+<p><strong>第二步：安装</strong></p>
+<p>按照提示完成安装即可，安装完成后可以检测一下是否安装成功</p>
+<p>在cmd命令行输入nvm,如果出现nvm版本号和一系列帮助指令，则说明nvm安装成功。</p>
+<p><strong>第三步：修改settings.txt</strong></p>
+<p>在你安装的目录下找到settings.txt文件，打开后加上<br>node_mirror: <a href="https://npm.taobao.org/mirrors/node/" target="_blank" rel="noopener">https://npm.taobao.org/mirrors/node/</a><br>npm_mirror: <a href="https://npm.taobao.org/mirrors/npm/" target="_blank" rel="noopener">https://npm.taobao.org/mirrors/npm/</a></p>
+<p>这一步主要是将npm镜像改为淘宝的镜像，可以提高下载速度。</p>
+<p>如果使用nvm，则不用手动安装nodejs了，可以直接利用nvm安装指定版本的nodejs<br><em>Ubuntu 安装 nvm</em></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://gitee.com/abulo_hoo/nvm.git</span><br><span class="line"><span class="built_in">cd</span> nvm/</span><br><span class="line">ls</span><br><span class="line">git branch</span><br><span class="line"> chmod 777 nvm.sh</span><br><span class="line">cat nvm.sh</span><br><span class="line">. nvm.sh</span><br><span class="line">nvm --version</span><br><span class="line">nvm ls-remote</span><br><span class="line"><span class="built_in">export</span> NVM_NODEJS_ORG_MIRROR=https://npm.taobao.org/mirrors/node <span class="comment"># use ali repo</span></span><br><span class="line">nvm install 12.22.1 <span class="comment"># install nodejs 12</span></span><br></pre></td></tr></table></figure>
 <p>手动安装nodejs：<a href="https://www.cnblogs.com/qiangyuzhou/p/10836561.html" target="_blank" rel="noopener">https://www.cnblogs.com/qiangyuzhou/p/10836561.html</a></p>
 <p><a href="https://nodejs.org/en/" target="_blank" rel="noopener">https://nodejs.org/en/</a></p>
 <p>使用NVM安装和管理nodejs<a href="https://www.cnblogs.com/czql/articles/11064849.html" target="_blank" rel="noopener">https://www.cnblogs.com/czql/articles/11064849.html</a></p>
@@ -427,6 +437,12 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">npm config <span class="built_in">set</span> registry http://registry.npm.taobao.org </span><br><span class="line">npm install -g hexo-cli </span><br><span class="line">npm install hexo-deployer-git</span><br><span class="line">npm install --save hexo-blog-encrypt</span><br><span class="line">npm install </span><br><span class="line"></span><br><span class="line">hexo new page_name <span class="comment"># 添加文章页面</span></span><br><span class="line">hexo s <span class="comment"># 在本地调试页面</span></span><br><span class="line">hexo d -g <span class="comment"># 推送页面到GitHub</span></span><br></pre></td></tr></table></figure>
 <h1 id="Trouble-Shot"><a href="#Trouble-Shot" class="headerlink" title="Trouble Shot"></a>Trouble Shot</h1><h2 id="Can’t-use-git-clone-on-mnt-d"><a href="#Can’t-use-git-clone-on-mnt-d" class="headerlink" title="Can’t use git clone on /mnt/d"></a>Can’t use git clone on /mnt/d</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">error: chmod on /mnt/d/codes/SourceFiles/.git/config.lock failed: Operation not permitted</span><br></pre></td></tr></table></figure>
 <p>Follow <a href="https://askubuntu.com/questions/1115564/wsl-ubuntu-distro-how-to-solve-operation-not-permitted-on-cloning-repository" target="_blank" rel="noopener">this link</a> to fix this:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo umount /mnt/d</span><br><span class="line">sudo mount -t drvfs D: /mnt/d -o metadata</span><br></pre></td></tr></table></figure></p>
+<h2 id="每次打开Git都要ssh-agent-bash"><a href="#每次打开Git都要ssh-agent-bash" class="headerlink" title="每次打开Git都要ssh-agent bash"></a>每次打开Git都要ssh-agent bash</h2><p>在 git 的安装目录的 bash.bashrc 文件，末尾添加：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#ssh-add 改为你电脑的秘钥名称</span><br><span class="line">eval &quot;$(ssh-agent -s)&quot;</span><br><span class="line">ssh-add ~/.ssh/yes</span><br><span class="line">ssh-add ~/.ssh/gtwm</span><br></pre></td></tr></table></figure>
+<h2 id="hexo发生error：spawn-failed错误的解决方法"><a href="#hexo发生error：spawn-failed错误的解决方法" class="headerlink" title="hexo发生error：spawn failed错误的解决方法"></a>hexo发生error：spawn failed错误的解决方法</h2><ol>
+<li>删除<code>.deploy_git</code>文件夹;</li>
+<li>然后，依次执行：<br><code>hexo clean</code><br><code>hexo g</code><br><code>hexo d</code></li>
+</ol>
 
       
     </div>
@@ -709,7 +725,7 @@ show_date_time();
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#picgo"><span class="nav-number">1.</span> <span class="nav-text">picgo</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#nodejs-amp-npm"><span class="nav-number">2.</span> <span class="nav-text">nodejs &amp; npm</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#hexo"><span class="nav-number">3.</span> <span class="nav-text">hexo</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Trouble-Shot"><span class="nav-number">4.</span> <span class="nav-text">Trouble Shot</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Can’t-use-git-clone-on-mnt-d"><span class="nav-number">4.1.</span> <span class="nav-text">Can’t use git clone on /mnt/d</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#picgo"><span class="nav-number">1.</span> <span class="nav-text">picgo</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#nodejs-amp-npm"><span class="nav-number">2.</span> <span class="nav-text">nodejs &amp; npm</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#hexo"><span class="nav-number">3.</span> <span class="nav-text">hexo</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Trouble-Shot"><span class="nav-number">4.</span> <span class="nav-text">Trouble Shot</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Can’t-use-git-clone-on-mnt-d"><span class="nav-number">4.1.</span> <span class="nav-text">Can’t use git clone on /mnt/d</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#每次打开Git都要ssh-agent-bash"><span class="nav-number">4.2.</span> <span class="nav-text">每次打开Git都要ssh-agent bash</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hexo发生error：spawn-failed错误的解决方法"><span class="nav-number">4.3.</span> <span class="nav-text">hexo发生error：spawn failed错误的解决方法</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -757,7 +773,7 @@ show_date_time();
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">96.4k</span>
+    <span title="Site words total count">98k</span>
   
 </div>
 
