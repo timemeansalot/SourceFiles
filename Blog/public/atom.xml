@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://timemeansalot.gitee.io/"/>
-  <updated>2021-04-11T08:32:47.552Z</updated>
+  <updated>2021-04-11T13:30:20.946Z</updated>
   <id>http://timemeansalot.gitee.io/</id>
   
   <author>
@@ -15,6 +15,26 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>FPGA_Begin</title>
+    <link href="http://timemeansalot.gitee.io/2021/04/11/FPGA-Begin/"/>
+    <id>http://timemeansalot.gitee.io/2021/04/11/FPGA-Begin/</id>
+    <published>2021-04-11T09:25:41.000Z</published>
+    <updated>2021-04-11T13:30:20.946Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><p>开始学习Verilog啦！</p><a id="more"></a><p>学习网站：<a href="https://hdlbits.01xz.net/wiki/Main_Page" target="_blank" rel="noopener">HDLbits</a></p><p>RTL：</p><ul><li>组合电路</li><li>时序电路</li><li>状态机</li><li>RTL验证</li></ul><p>专业基础课：</p><ul><li>《EDA技术实用教程》第六版</li><li>《电路》第五版</li><li>《数字电子技术基础》第五版</li><li>《数字信号处理》第四版</li><li>《数字集成电路》第二版</li><li>《计算机体系结构量化研究方法》第五版</li><li>FPGA官方文档</li><li>《勇敢的芯伴你玩转Altera FPGA》</li></ul><p>工具：</p><ul><li>ModelSim</li><li>Quartus</li><li>调用常用的IP</li></ul><p>FPGA开发者技能：</p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;开始学习Verilog啦！&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="IC" scheme="http://timemeansalot.gitee.io/tags/IC/"/>
+    
+  </entry>
   
   <entry>
     <title>Useful_Apps</title>
@@ -41,9 +61,9 @@
     <link href="http://timemeansalot.gitee.io/2021/04/06/everyday-plan/"/>
     <id>http://timemeansalot.gitee.io/2021/04/06/everyday-plan/</id>
     <published>2021-04-06T06:52:30.000Z</published>
-    <updated>2021-04-11T08:32:47.553Z</updated>
+    <updated>2021-04-11T15:20:14.552Z</updated>
     
-    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><p>My weekly plan and everyday plan.</p><p>I hope I can accomplish my plans.</p><p>Maybe I can go to MIT in the future to study CS.</p><a id="more"></a><h1 id="April-5"><a href="#April-5" class="headerlink" title="April 5"></a>April 5</h1><p>Today is the ==14th week== of 2021. My plans are as follows:</p><ol><li>Install Windows OS to my own laptop so I can learn FPGA on it.</li><li>Write PPT about ISL MPL to share my understanding.</li><li>Do exercise everyday so I can have 4 backs of abs in the end of this month.</li></ol><p><strong>4.9 Friday</strong></p><ol><li>Study one algorithm</li><li><code>Delayed</code>4.7.2(Today I must finish writing diary)</li><li><code>Delayed</code>4.8.3(learn regex)</li></ol><p><strong>4.8 Thursday</strong></p><ol><li><del>Read one algorithm question and finish in leetcode in both C++ and Python.</del> </li><li><del>Build FPGA environment and read the first chapter of PFGA book</del></li><li>Learn regex by <a href="https://gitee.com/timemeansalot/learn-regex#/timemeansalot/learn-regex/blob/master/translations/README-cn.md" target="_blank" rel="noopener">this link</a></li><li><code>Delayed</code>:4.7.2(write diary)</li></ol><p><strong>4.7 Wednesday</strong></p><ol><li><del>Finish installing Windows OS to my laptop and build develop environment for FPGA, C++ and Python.</del></li><li>Write dairy about meeting with Fa Shan and the overturn happened in my company.</li><li>Think of what I am going to do in this month.</li></ol>]]></content>
+    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><p>My weekly plan and everyday plan.</p><p>I hope I can accomplish my plans.</p><p>Maybe I can go to MIT in the future to study CS.</p><a id="more"></a><p>This is my <a href="https://timemeansalot.gitee.io/2021/04/06/long-term-plan/">long term play</a></p><p>[[<em>TOC</em>]]</p><h1 id="April-12"><a href="#April-12" class="headerlink" title="April 12"></a>April 12</h1><p>Today is the ==15th week== of 2021.</p><ol><li><code>delayed</code> 4.8.3(learn regex).</li><li>Finish Quartus 2 learning in <a href="https://www.bilibili.com/video/BV1Mb411q7N7?p=2" target="_blank" rel="noopener">Bilibili</a>.</li><li>Do exercise in everyday morning.</li><li>Finish work in Mersenne.</li><li><code>Delayed</code> Make PPT about Memory Pool.</li></ol><p><strong>4.12 Monday</strong></p><ol><li>Do exercise in keep when I get up at 6:30.</li><li>Finish work for Mersenne at company.</li><li>Watch Quartus lessons when coming home.</li><li>Watch regex lessons after learning Quartus.</li></ol><h1 id="April-5"><a href="#April-5" class="headerlink" title="April 5"></a>April 5</h1><p>Today is the ==14th week== of 2021. My plans are as follows:</p><ol><li><del>Install Windows OS to my own laptop so I can learn FPGA on it.</del></li><li>Write PPT about ISL MPL to share my understanding.</li><li><del>Do exercise everyday so I can have 4 backs of abs in the end of this month.</del></li></ol><p><strong>4.9 Friday</strong></p><ol><li><del>Study one algorithm</del></li><li><del><code>Delayed</code>4.7.2(Today I must finish writing diary)</del></li><li><code>Delayed</code>4.8.3(learn regex)</li></ol><p><strong>4.8 Thursday</strong></p><ol><li><del>Read one algorithm question and finish in leetcode in both C++ and Python.</del> </li><li><del>Build FPGA environment and read the first chapter of PFGA book</del></li><li>Learn regex by <a href="https://gitee.com/timemeansalot/learn-regex#/timemeansalot/learn-regex/blob/master/translations/README-cn.md" target="_blank" rel="noopener">this link</a></li><li><del><code>Delayed</code>:4.7.2(write diary)</del></li></ol><p><strong>4.7 Wednesday</strong></p><ol><li><del>Finish installing Windows OS to my laptop and build develop environment for FPGA, C++ and Python.</del></li><li><del>Write dairy about meeting with Fa Shan and the overturn happened in my company.</del></li><li><del>Think of what I am going to do in this month.</del></li></ol>]]></content>
     
     <summary type="html">
     
@@ -63,14 +83,13 @@
     <link href="http://timemeansalot.gitee.io/2021/04/06/long-term-plan/"/>
     <id>http://timemeansalot.gitee.io/2021/04/06/long-term-plan/</id>
     <published>2021-04-06T06:51:59.000Z</published>
-    <updated>2021-04-11T08:32:47.554Z</updated>
+    <updated>2021-04-11T15:16:36.736Z</updated>
     
-    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><p>My long term plan list about study, travel and reading books.</p><p>[[<em>TOC</em>]]</p><a id="more"></a><h1 id="Study-Plan"><a href="#Study-Plan" class="headerlink" title="Study Plan"></a>Study Plan</h1><h2 id="Learn-FPGA"><a href="#Learn-FPGA" class="headerlink" title="Learn FPGA"></a>Learn FPGA</h2><ol><li>Learn the basic syntax of FPGA</li><li>Do demo like counter or comparator</li></ol><h2 id="Learn-Digital-Circuit-and-Artificial-Circuit"><a href="#Learn-Digital-Circuit-and-Artificial-Circuit" class="headerlink" title="Learn Digital Circuit and Artificial Circuit"></a>Learn Digital Circuit and Artificial Circuit</h2><h2 id="Learn-English"><a href="#Learn-English" class="headerlink" title="Learn English"></a>Learn English</h2><p>Final goal of learning English is to communicate in English fluently.</p><ol><li>Read English vocabulary everyday</li><li>Try to think and write in English in daily life</li></ol><h2 id="Do-Exercise"><a href="#Do-Exercise" class="headerlink" title="Do Exercise"></a>Do Exercise</h2><p>To have a toned body.</p><ol><li>Develop 6 packs of abs.</li><li>Do long-distance running.</li></ol><h2 id="Learn-Algorithm"><a href="#Learn-Algorithm" class="headerlink" title="Learn Algorithm"></a>Learn Algorithm</h2><p>Follow <a href="https://fantianzuo.blog.csdn.net/article/details/103438056" target="_blank" rel="noopener">this guide</a> to study algorithm in leetcode and write notes myself.</p><ol><li>Understand 5 questions every weekend</li><li>Understand 2 algorithms every weekend</li></ol><h2 id="Learn-Program-Skills"><a href="#Learn-Program-Skills" class="headerlink" title="Learn Program Skills"></a>Learn Program Skills</h2><ol><li>Learn regex expression</li><li>Learn Git</li></ol><h1 id="Travel-Plan"><a href="#Travel-Plan" class="headerlink" title="Travel Plan"></a>Travel Plan</h1><h1 id="Book-Plan"><a href="#Book-Plan" class="headerlink" title="Book Plan"></a>Book Plan</h1>]]></content>
+    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><p>My long term plan list about study, travel and reading books.</p><a id="more"></a><p>This is my <a href="https://timemeansalot.gitee.io/2021/04/06/everyday-plan/">Everyday Plan</a></p><p>[[<em>TOC</em>]]</p><h1 id="Study-Plan"><a href="#Study-Plan" class="headerlink" title="Study Plan"></a>Study Plan</h1><h2 id="Learn-FPGA"><a href="#Learn-FPGA" class="headerlink" title="Learn FPGA"></a>Learn FPGA</h2><ol><li>Learn the basic syntax of FPGA</li><li>Do demo like counter or comparator</li><li>Learn Quartus 2 in <a href="https://www.bilibili.com/video/BV1Mb411q7N7?p=1" target="_blank" rel="noopener">Bilibili</a></li></ol><h2 id="Learn-Digital-Circuit-and-Artificial-Circuit"><a href="#Learn-Digital-Circuit-and-Artificial-Circuit" class="headerlink" title="Learn Digital Circuit and Artificial Circuit"></a>Learn Digital Circuit and Artificial Circuit</h2><h2 id="Learn-English"><a href="#Learn-English" class="headerlink" title="Learn English"></a>Learn English</h2><p>Final goal of learning English is to communicate in English fluently.</p><ol><li>Read English vocabulary everyday</li><li>Try to think and write in English in daily life</li></ol><h2 id="Do-Exercise"><a href="#Do-Exercise" class="headerlink" title="Do Exercise"></a>Do Exercise</h2><p>To have a toned body.</p><ol><li>Do home exercise in the morning when I weak up.</li><li>Develop 6 packs of abs.</li><li>Do long-distance running.</li></ol><h2 id="Learn-Algorithm"><a href="#Learn-Algorithm" class="headerlink" title="Learn Algorithm"></a>Learn Algorithm</h2><p>Follow <a href="https://fantianzuo.blog.csdn.net/article/details/103438056" target="_blank" rel="noopener">this guide</a> to study algorithm in leetcode and write notes myself.</p><ol><li>Understand 5 questions every weekend</li><li>Understand 2 algorithms every weekend</li></ol><h2 id="Learn-Program-Skills"><a href="#Learn-Program-Skills" class="headerlink" title="Learn Program Skills"></a>Learn Program Skills</h2><ol><li>Learn regex expression</li><li>Learn Git</li></ol><h1 id="Travel-Plan"><a href="#Travel-Plan" class="headerlink" title="Travel Plan"></a>Travel Plan</h1><h1 id="Book-Plan"><a href="#Book-Plan" class="headerlink" title="Book Plan"></a>Book Plan</h1>]]></content>
     
     <summary type="html">
     
       &lt;p&gt;My long term plan list about study, travel and reading books.&lt;/p&gt;
-&lt;p&gt;[[&lt;em&gt;TOC&lt;/em&gt;]]&lt;/p&gt;
     
     </summary>
     

@@ -8,11 +8,11 @@ tags: plan
 
 My long term plan list about study, travel and reading books.
 
+<!--more-->
 
+This is my [Everyday Plan](https://timemeansalot.gitee.io/2021/04/06/everyday-plan/)
 
 [[_TOC_]]
-
-<!--more-->
 
 
 
@@ -22,6 +22,7 @@ My long term plan list about study, travel and reading books.
 
 1. Learn the basic syntax of FPGA
 2. Do demo like counter or comparator
+3. Learn Quartus 2 in [Bilibili](https://www.bilibili.com/video/BV1Mb411q7N7?p=1)
 
 ## Learn Digital Circuit and Artificial Circuit
 
@@ -36,8 +37,9 @@ Final goal of learning English is to communicate in English fluently.
 
 To have a toned body.
 
-1. Develop 6 packs of abs.
-2. Do long-distance running.
+1. Do home exercise in the morning when I weak up.
+2. Develop 6 packs of abs.
+3. Do long-distance running.
 
 ## Learn Algorithm
 
