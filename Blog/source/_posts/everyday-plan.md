@@ -25,12 +25,13 @@ Today is the ==15th week== of 2021.
 3. Do exercise in everyday morning.
 4. Finish work in Mersenne.
 5. `Delayed` Make PPT about Memory Pool.
+6. Write a essay about House and Future Plan.
 
 
 
 **4.12 Monday**
 
-1. Do exercise in keep when I get up at 6:30.
+1. ~~Do exercise in keep when I get up at 6:30.~~
 2. Finish work for Mersenne at company.
 3. Watch Quartus lessons when coming home.
 4. Watch regex lessons after learning Quartus.
