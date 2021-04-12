@@ -2,7 +2,10 @@
 title: My Everyday Plan
 date: 2021-04-06 14:52:30
 tags: plan
+top: true
 ---
+
+<center>![image-20210412195631890](https://i.loli.net/2021/04/12/6gaWB39YKGXUsvF.png)</center>
 
 My weekly plan and everyday plan.
 
@@ -12,7 +15,7 @@ Maybe I can go to MIT in the future to study CS.
 
 <!--more-->
 
-This is my [long term play](https://timemeansalot.gitee.io/2021/04/06/long-term-plan/)
+This is my [long term plan](https://timemeansalot.gitee.io/2021/04/06/long-term-plan/)
 
 [[_TOC_]]
 
@@ -34,7 +37,7 @@ Today is the ==15th week== of 2021.
 1. ~~Do exercise in keep when I get up at 6:30.~~
 2. Finish work for Mersenne at company.
 3. Watch Quartus lessons when coming home.
-4. Watch regex lessons after learning Quartus.
+4. `delayed`4.8.3(learn regex)
 
 # April 5
 

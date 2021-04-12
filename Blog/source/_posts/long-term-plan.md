@@ -23,6 +23,7 @@ This is my [Everyday Plan](https://timemeansalot.gitee.io/2021/04/06/everyday-pl
 1. Learn the basic syntax of FPGA
 2. Do demo like counter or comparator
 3. Learn Quartus 2 in [Bilibili](https://www.bilibili.com/video/BV1Mb411q7N7?p=1)
+4. Follow FPGA examples on [HDLBits](https://hdlbits.01xz.net/wiki/Main_Page)
 
 ## Learn Digital Circuit and Artificial Circuit
 
