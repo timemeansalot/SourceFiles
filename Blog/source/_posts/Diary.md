@@ -11,6 +11,10 @@ top: true
 
 # <center> <font color=#02F78E size=7> 付大爷的欢乐日常开始啦</font></center>
 
+# <center> <font color=#A52A2A size=7>期待的房子 </font></center>
+
+马上我要离开公司了，幺幺以后也不能在浦东继续工作，所以我们必须离开浦东，去普陀租房子了。相比于浦东，普陀的房价就不那么美丽了。看完了一圈之后，发现在普陀想要租我们现在这样的一个大房子，简直是不可能的事情。我和幺幺看了一晚上，直接就崩溃了。
+
 # <center> <font color=#A52A2A size=7>上岸后的打算 </font></center>
 
 > 挑战最终极的难题
