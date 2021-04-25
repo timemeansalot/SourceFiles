@@ -1,0 +1,155 @@
+---
+title: tempNotes
+date: 2021-04-25 16:11:18
+tags: TempNotese
+---
+
+
+
+
+
+My temp notes.
+
+<!--more-->
+
+[[_TOC_]]
+
+# Const
+
+const是由编译器提供支持的，编译器在编译的时候，会禁止对const变量的修改。
+
+
+
+## const & pointer
+
+```c++
+char *p; // non-const pointer, non-const data
+const char *p; // non-const pointer, const data 
+char const *p; //equat to above
+char * const p; // const pointer, non const data
+const char* const p; // const pointer, const data
+```
+
+
+
+## const & return
+
+通过const修饰返回值，可以避免对返回值的错误操作，如
+
+```c++
+const int sum(int a, int b)
+{
+    return a+b;
+}
+
+int a=10, b=20, c=30;
+if(sum(a,b)=c)
+{
+    printf("a+b==c");
+}
+else 
+{
+    printf("a+b!=c");
+}
+```
+
+加入我们想判断的a+b是否等于c，但是在判断的时候，错把==写成了=。
+
+- 如果使用const修改返回值int，则编译器会检查出这个错误（因为返回值用const修饰了，不可以被更改）
+- 如果不使用const修改返回值int，则编译器不会检查出这个错误。
+
+
+
+## const&成员函数
+
+const修饰成员函数，表示该函数不可以修改类的任何成员变量。
+
+```c++
+class Test
+{
+  private:
+    int a;
+    mutable int b;
+   public:
+   	int & getA() const
+    {
+        a=10; // 不合法
+        b=20;
+        return a;
+    }
+};
+int main()
+{
+    Test test;
+    test.getA()=10;
+}
+```
+
+getA函数由const修饰，所以是一个const成员函数，它不可以修改类的成员，故：
+
+- a=10不合法
+- b=20合法，因为被**mutable修饰的成员变量**即使在const函数内，也可以被修改。
+- 但是test.getA()合法：getA函数返回了一个a的引用，通过此引用修改a的值
+
+
+
+non-const成员函数可以调用const成员函数，但是const成员函数却不能调用non-const成员函数（因为const成员函数一定不能修改成员变量，但是non-const成员函数却不一定修改了成员变量，如果const成员函数调用的non-const成员函数修改了成员变量，则违反了const成员函数的规定）。
+
+```c++
+class TextBlock
+{
+  	private:
+      char *Text;
+    public:
+    
+      // const 版本
+      const char& operator [ ] (int position) const
+      {
+          return Text[position];
+      }
+     // non-const 版本调用const版本
+    char & operator [ ] (int position)
+    {
+        return 
+            const_cast<char &>(static_cast<const TextBlock &>(*this)[position]);
+    }
+};
+```
+
+non-const成员函数在调用const成员函数实现相似的逻辑的时候，发生了两次类型转换：
+
+- 将this转换为const类型以调用cosnt成员函数
+- 将返回值从const char &转换为char &
+
+
+
+
+
+# 构造、析构、赋值
+
+C++会为每个类自动生成：构造函数、析构函数、copy函数和赋值函数（如果需要且未被定义）。如果想要禁止这4个函数，可以手动将其声明为private但是不写定义。
+
+## 虚析构函数
+
+当父类的析构函数不是虚析构函数的时候，企图用父指针指向子类对象调用子类的析构函数，将只能调用父类的析构函数，会导致**部分析构错误**。
+
+虚函数的实现是通过**虚函数表和虚函数指针**实现的。
+
+一般只有当前的类会作为别的父类（当前类有virtual修饰的函数）时，才将其的虚构函数用virtual修饰，否则只会增加负担。即**一般会将父类的虚构函数用virtual修饰，这样才可以正确释放子类对象的资源**
+
+
+
+## 纯虚析构函数
+
+```c++
+class Test
+{
+  public:
+    virtual ~Test(){}=0; // 纯虚构函数
+};
+```
+
+- Test有纯虚函数，不可以实例化
+- 补充了虚函数的定义为{ }，必须这么做，因为析构的顺序是从子类开始，调用父类的虚构函数。如果父类虚构函数没有定义，则会报错。
+- PS：一般不要求给出纯虚函数的定义，但是析构函数作为纯虚函数时，必须给出定义。
+
