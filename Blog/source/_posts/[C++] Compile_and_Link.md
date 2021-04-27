@@ -1,18 +1,284 @@
 ---
-title: c++_link
+title: C++ 编译和链接
 date: 2021-03-23 13:49:31
-tags:
-- C++
-- Compile&Link
+tags: C++
 ---
 
-C++链接笔记
+C++ 预处理、编译、链接的过程。
 
 <!--more-->
 
 
 
 [[_TOC_]]
+
+
+
+# 预处理
+
+> 预处理唯一做的就是对应内容的**复制粘贴**。
+
+```c++
+// @file add.h
+int add(int a,int b)
+{
+    return a+b;
+}
+
+// @file main.cpp
+#include "add.h"
+#define a 10
+#define b 20
+int main()
+{
+    int c=a+b;
+    return add(1,2);
+}
+```
+
+预处理是在编译之前执行的，会将#include，#define替换成对应的内容
+
+通过命令(其中-E代表Preprocess only; do not compile, assemble or link)：
+
+```bash
+g++ -E main.cpp -o main.i
+```
+
+可以查看预处理之后的main文件main.i，内容如下：
+
+```c++
+# 1 "main.cpp"
+# 1 "<built-in>"
+# 1 "<command-line>"
+# 1 "/usr/include/stdc-predef.h" 1 3 4
+# 1 "<command-line>" 2
+# 1 "main.cpp"
+# 1 "add.h" 1
+int add(int a,int b)
+{
+    return a+b;
+}
+# 2 "main.cpp" 2
+
+
+int main()
+{
+    int c=10 +20;
+    return add(1,2);
+}
+
+```
+
+
+
+可见，对于所有的头文件，预处理都是将头文件中的内容复制粘贴到引用它们的文件中而已。
+
+
+
+
+
+# 编译
+
+预处理完成之后，可以通过编译指令，将对应的.i中间文件，编译成.o目标文件
+
+```bash
+# -c 代表只编译，不链接
+g++ -c -o main.o main.i
+```
+
+目标文件中有两个表：**导出符号表**和**未解决符号表**
+
+- 导出符号表：在链接时，该文件中可以被其他文件见到的符号（变量、函数等）
+- 未解决符号表：在链接时，该文件中用到的，但是没有在该文件中没有给出的符号（变量、函数等）
+
+## 未给出声明，编译器会报错
+
+听起来可能比较懵，下面举一个例子：
+
+```c++
+/**
+ * @file main.cpp
+ * @version v1.0
+*/
+int main()
+{
+    int c=add(1,2);
+    return 0;
+}
+```
+
+由如上main.cpp源文件，其中使用了函数add。此时直接使用*g++ -c main.o main.cpp*编译它，会报错。因为add在main中**没有声明**（编译器会检查出我们使用了没有声明的变量，并且报错），下面我们在main中添加add函数的声明。
+
+## 未给出定义，编译器不会报错
+
+```c++
+/**
+ * @file main.cpp
+ * @version v2.0
+*/
+
+int add(int ,int);
+int main()
+{
+    int c=add(1,2);
+    return 0;
+}
+```
+
+此时直接使用`g++ -c main.o main.cpp`编译它，不会报错（虽然我们没有给出add具体的定义，即没有指定add的具体操作，但是编译器相信我们会在别处给出add的定义，所以编译器不会报错）。
+
+在编译的时候，编译器会将没有给出定义的符号放到**未解决符号表**中，此时main中的add函数，就会被放到未解决符号表中（期待在链接的时候，找到这些未解决符号的定义）
+
+```c++
+/**
+ * @file add.cpp
+ * @version v1.0
+*/
+int add(int a, int b)
+{
+    return a + b;
+}
+```
+
+如上所示，假如我们在add.cpp文件中给出了add的定义。使用`g++ -c -o add.o add.cpp`编译它
+
+我们会得到add.cpp的目标文件add.o，它也有未解决符号表和导出符号表。
+
+显然，它的未解决符号表为空，但是由于add给出了定义，所以add会被添加到它的**导出符号表**中。
+
+
+
+# 链接
+
+使用命令：
+
+```bash
+g++ -o main main.o add.o
+```
+
+会得到可执行文件main
+
+在链接的过程中，链接器需要解决各个.obj文件中未解决符号表中的符号。
+
+- 链接器看到main.o的未解决符号表中有一个add符号，还没有找到定义
+- 链接器看到add.o的导出符号表中，有add符号的定义，所以链接器就认为main中的add的定义就是add.cpp中给出add
+
+
+
+## 重定义错误
+
+```c++
+/**
+ * @file newAdd.cpp
+ * @version v1.0
+*/
+int add(int a, int b)
+{
+    return a + b + 1;
+}
+```
+
+假如在另一个文件newAdd.cpp中也给出了add的定义。则add函数也会添加到newAdd.o的导出文件表中。
+
+这样编译器在链接的时候，就不知道采用哪个add函数的定义了，就会报`multiple definition`错误。
+
+
+
+```c++
+/**
+ * @file newAdd.cpp
+ * @version v2.0
+*/
+static int add(int a, int b)
+{
+    return a + b + 1;
+}
+```
+
+在编译时，编译器不会将`static`修饰的符号添加到导出符号表中（即static修饰的符号仅在本文件中可见）。这样，连解时就不会报错啦。
+
+另一种方法如下所示，使用`inline`关键字
+
+```c++
+/**
+ * @file newAdd.cpp
+ * @version v1.0
+*/
+inline int add(int a, int b)
+{
+    return a + b + 1;
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
