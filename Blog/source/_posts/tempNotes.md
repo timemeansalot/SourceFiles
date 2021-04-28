@@ -14,6 +14,65 @@ My temp notes.
 
 [[_TOC_]]
 
+# Link
+
+在C++中，每个.cpp文件可以被当做一个单独的编译单元，会生成对应的.obj文件；每个对应的.obj文件，会有两个表：
+
+- 导出符号表：该.cpp文件中的非static变量和函数定义
+- 未解决符号表：该.cpp文件中，未给出定义的变量和函数；需要由别的文件给出其定义
+
+
+
+
+
+```c++
+// @file Log.h
+#include <stdio.h>
+int log(const char *message)
+{
+    printf("Message is %s",message);
+}
+
+static int log1(const char *message)
+{
+    printf("Message is %s",message);
+}
+
+inline int log2(const char *message)
+{
+    printf("Message is %s",message);
+}
+
+class People
+{
+public:
+  int age;
+  void showAge()
+  {
+      printf("age is %d\n",age);
+  }
+};
+// @file Multiple.cpp
+#include "Log.h"
+int multipul(int a,int b)
+{
+    return a*b;
+}
+
+// @file main.cpp
+#include "Log.h"
+int main()
+{
+	printf("1*2=%d",multipul(1,2));    
+}
+```
+
+1. log会被复制到multiple和main中，所有会报multiple definition 错误（multiple对应的obj文件和main对应的obj文件的导出符号表都会有关于Log的定义，所以会报multiple definition错误）
+2. log1，log2和People都只在Log.h中可见，虽然预处理将其复制到了main和multiple文件中去，但是他们不会被添加到对应的obj文件的导出符号表中。（只有在多个导出符号表中的函数，才会报multiple definition错误）
+3. PS：一般将函数的声明放到头文件里，将函数的定义放到源文件里；一般将类的声明和定义都放到头文件里。
+
+
+
 # Const
 
 const是由编译器提供支持的，编译器在编译的时候，会禁止对const变量的修改。
