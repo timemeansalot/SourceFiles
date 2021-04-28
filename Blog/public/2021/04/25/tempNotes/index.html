@@ -89,7 +89,7 @@
 <meta property="og:site_name" content="timemeansalot">
 <meta property="og:description" content="My temp notes.">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2021-04-25T08:12:39.687Z">
+<meta property="og:updated_time" content="2021-04-28T12:02:35.621Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="tempNotes">
 <meta name="twitter:description" content="My temp notes.">
@@ -374,7 +374,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  939
+                  1.4k
                 </span>
               
 
@@ -390,7 +390,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  3
+                  5
                 </span>
               
             </div>
@@ -414,6 +414,17 @@
         <p>My temp notes.</p>
 <a id="more"></a>
 <p>[[<em>TOC</em>]]</p>
+<h1 id="Link"><a href="#Link" class="headerlink" title="Link"></a>Link</h1><p>在C++中，每个.cpp文件可以被当做一个单独的编译单元，会生成对应的.obj文件；每个对应的.obj文件，会有两个表：</p>
+<ul>
+<li>导出符号表：该.cpp文件中的非static变量和函数定义</li>
+<li>未解决符号表：该.cpp文件中，未给出定义的变量和函数；需要由别的文件给出其定义</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// @file Log.h</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">log</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *message)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Message is %s"</span>,message);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">log1</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *message)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Message is %s"</span>,message);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">inline</span> <span class="keyword">int</span> <span class="title">log2</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *message)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Message is %s"</span>,message);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">People</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="keyword">int</span> age;</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">showAge</span><span class="params">()</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">"age is %d\n"</span>,age);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// @file Multiple.cpp</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"Log.h"</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">multipul</span><span class="params">(<span class="keyword">int</span> a,<span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> a*b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// @file main.cpp</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"Log.h"</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"1*2=%d"</span>,multipul(<span class="number">1</span>,<span class="number">2</span>));    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>log会被复制到multiple和main中，所有会报multiple definition 错误（multiple对应的obj文件和main对应的obj文件的导出符号表都会有关于Log的定义，所以会报multiple definition错误）</li>
+<li>log1，log2和People都只在Log.h中可见，虽然预处理将其复制到了main和multiple文件中去，但是他们不会被添加到对应的obj文件的导出符号表中。（只有在多个导出符号表中的函数，才会报multiple definition错误）</li>
+<li>PS：一般将函数的声明放到头文件里，将函数的定义放到源文件里；一般将类的声明和定义都放到头文件里。</li>
+</ol>
 <h1 id="Const"><a href="#Const" class="headerlink" title="Const"></a>Const</h1><p>const是由编译器提供支持的，编译器在编译的时候，会禁止对const变量的修改。</p>
 <h2 id="const-amp-pointer"><a href="#const-amp-pointer" class="headerlink" title="const &amp; pointer"></a>const &amp; pointer</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> *p; <span class="comment">// non-const pointer, non-const data</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *p; <span class="comment">// non-const pointer, const data </span></span><br><span class="line"><span class="keyword">char</span> <span class="keyword">const</span> *p; <span class="comment">//equat to above</span></span><br><span class="line"><span class="keyword">char</span> * <span class="keyword">const</span> p; <span class="comment">// const pointer, non const data</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span>* <span class="keyword">const</span> p; <span class="comment">// const pointer, const data</span></span><br></pre></td></tr></table></figure>
 <h2 id="const-amp-return"><a href="#const-amp-return" class="headerlink" title="const &amp; return"></a>const &amp; return</h2><p>通过const修饰返回值，可以避免对返回值的错误操作，如</p>
@@ -446,8 +457,14 @@
 <ul>
 <li>Test有纯虚函数，不可以实例化</li>
 <li>补充了虚函数的定义为{ }，必须这么做，因为析构的顺序是从子类开始，调用父类的虚构函数。如果父类虚构函数没有定义，则会报错。</li>
-<li>PS：一般不要求给出纯虚函数的定义，但是析构函数作为纯虚函数时，必须给出定义。</li>
 </ul>
+<h1 id="智慧指针-amp-引用计数型智慧指针"><a href="#智慧指针-amp-引用计数型智慧指针" class="headerlink" title="智慧指针&amp;引用计数型智慧指针"></a>智慧指针&amp;引用计数型智慧指针</h1><p>这两者都是关于资源的管理类。</p>
+<ul>
+<li>智慧指针：std::auto_ptr&lt;&gt;</li>
+<li>引用计数型智慧指针：std::tr1::shared_ptr&lt;&gt;</li>
+</ul>
+<p>使用对象的形式来管理资源，其析构函数一定会在结束时释放资源。</p>
+<p>资源取得时机便是初始化时机ARII(Resource Acquisition is initialization)，可以避免错过对于资源的delete操作，造成资源泄露。</p>
 
       
     </div>
@@ -579,7 +596,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">12</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -592,7 +609,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -730,7 +747,7 @@ show_date_time();
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Const"><span class="nav-number">1.</span> <span class="nav-text">Const</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#const-amp-pointer"><span class="nav-number">1.1.</span> <span class="nav-text">const &amp; pointer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#const-amp-return"><span class="nav-number">1.2.</span> <span class="nav-text">const &amp; return</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#const-amp-成员函数"><span class="nav-number">1.3.</span> <span class="nav-text">const&amp;成员函数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#构造、析构、赋值"><span class="nav-number">2.</span> <span class="nav-text">构造、析构、赋值</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#虚析构函数"><span class="nav-number">2.1.</span> <span class="nav-text">虚析构函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#纯虚析构函数"><span class="nav-number">2.2.</span> <span class="nav-text">纯虚析构函数</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Link"><span class="nav-number">1.</span> <span class="nav-text">Link</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Const"><span class="nav-number">2.</span> <span class="nav-text">Const</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#const-amp-pointer"><span class="nav-number">2.1.</span> <span class="nav-text">const &amp; pointer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#const-amp-return"><span class="nav-number">2.2.</span> <span class="nav-text">const &amp; return</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#const-amp-成员函数"><span class="nav-number">2.3.</span> <span class="nav-text">const&amp;成员函数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#构造、析构、赋值"><span class="nav-number">3.</span> <span class="nav-text">构造、析构、赋值</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#虚析构函数"><span class="nav-number">3.1.</span> <span class="nav-text">虚析构函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#纯虚析构函数"><span class="nav-number">3.2.</span> <span class="nav-text">纯虚析构函数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#智慧指针-amp-引用计数型智慧指针"><span class="nav-number">4.</span> <span class="nav-text">智慧指针&amp;引用计数型智慧指针</span></a></li></ol></div>
             
 
           </div>
@@ -747,7 +764,7 @@ show_date_time();
     <h3 class="widget-title">Tag Cloud</h3>
     <div id="myCanvasContainer" class="widget tagcloud">
         <canvas width="250" height="250" id="resCanvas" style="width=100%">
-            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Birthday/">Birthday</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C++</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Compile-Link/">Compile&Link</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Diary/">Diary</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IC/">IC</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Network/">Network</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TempNotese/">TempNotese</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/apps/">apps</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/programming/">programming</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/wsl/">wsl</a><span class="tag-list-count">1</span></li></ul>
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Birthday/">Birthday</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C++</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Compile-Link/">Compile&Link</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Diary/">Diary</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IC/">IC</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Network/">Network</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pointer/">Pointer</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TempNotese/">TempNotese</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/apps/">apps</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/programming/">programming</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/wsl/">wsl</a><span class="tag-list-count">1</span></li></ul>
         </canvas>
     </div>
 </div>
@@ -778,7 +795,7 @@ show_date_time();
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">100.6k</span>
+    <span title="Site words total count">102.3k</span>
   
 </div>
 
