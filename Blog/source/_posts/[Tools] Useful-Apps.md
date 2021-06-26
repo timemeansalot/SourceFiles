@@ -14,7 +14,7 @@ The important apps that I will need for develop.
 
 1. Typora && picgo: for text writing
 2. chrome
-3. vscode
+3. **vscode**
 4. eudic
 5. v2ray
 
@@ -27,7 +27,8 @@ The important apps that I will need for develop.
 3. wechat and qq
 4. thunder download
 5. mobaxterm: for shell connect
-6. ModelSim: For FPGA, follow [this guide](https://blog.csdn.net/sinat_42483341/article/details/88962327) to install
+6. **ModelSim**: For hardware simulation, follow [this guide](https://blog.csdn.net/sinat_42483341/article/details/88962327) to install
+7. **Quartus Ⅱ**：IC development
 
 
 
