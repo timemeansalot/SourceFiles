@@ -94,7 +94,14 @@
 <meta property="og:image" content="https://i.loli.net/2021/06/27/4VYWyMHgG79pZz2.png">
 <meta property="og:image" content="https://i.loli.net/2021/06/27/ORhSC9Tz4Wkmt1I.png">
 <meta property="og:image" content="https://i.loli.net/2021/06/27/K9nmWfAiREC7S4U.png">
-<meta property="og:updated_time" content="2021-06-27T03:34:05.151Z">
+<meta property="og:image" content="https://i.loli.net/2021/07/06/YpszqWE2NbUkJaX.jpg">
+<meta property="og:image" content="https://i.loli.net/2021/07/06/zy3XvKinIoh1rOL.jpg">
+<meta property="og:image" content="https://i.loli.net/2021/07/06/spve9QnxUCj7XAV.png">
+<meta property="og:image" content="https://i.loli.net/2021/07/06/g1TXS4ZNjJEzPKH.png">
+<meta property="og:image" content="https://i.loli.net/2021/07/06/ITckeJf9xWCUXAa.png">
+<meta property="og:image" content="https://i.loli.net/2021/07/06/w8jroAZUnIMReq6.png">
+<meta property="og:image" content="https://i.loli.net/2021/07/06/fY72LsjKeGMA3U9.png">
+<meta property="og:updated_time" content="2021-07-06T15:29:05.077Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="VSCode开发环境搭建">
 <meta name="twitter:description" content="VSCode搭建C++和Verilog的开发环境   安装VSCode和插件 配置C++、C开发环境 配置Verilog开发环境">
@@ -380,7 +387,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  571
+                  1.1k
                 </span>
               
 
@@ -396,7 +403,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  2
+                  4
                 </span>
               
             </div>
@@ -459,11 +466,30 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 安装编译器</span></span><br><span class="line">sudo apt install gcc g++</span><br><span class="line"><span class="comment"># 安装gdb</span></span><br><span class="line">sudo apt install gdb</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>Windows环境下，需要下载mingw64，并且配置环境变量</p>
-<p>/todo finish mingw64 install guide</p>
+<p>百度mingw可以进入到mingw官网，可以下载安装包或者离线包进行安装（使用安装包的方式安装mingw64可能会由于网络问题，导致安装失败，所以推荐下载离线包进行安装）</p>
+<p>点击此链接：<a href="https://sourceforge.net/projects/mingw-w64/files/，进入下图1后将页面往下滑到图2区域，点击所需离线包名称（参照方法一第三步标注），然后就会弹出图3所示对话框，保存下载即可（下载x64-32_win32-sjlj版本的）。离线包大约50MB（解压后500MB左右）" target="_blank" rel="noopener">https://sourceforge.net/projects/mingw-w64/files/，进入下图1后将页面往下滑到图2区域，点击所需离线包名称（参照方法一第三步标注），然后就会弹出图3所示对话框，保存下载即可（下载x64-32_win32-sjlj版本的）。离线包大约50MB（解压后500MB左右）</a></p>
+<p><img src="https://i.loli.net/2021/07/06/YpszqWE2NbUkJaX.jpg" alt="mingw64_01"></p>
+<p><img src="https://i.loli.net/2021/07/06/zy3XvKinIoh1rOL.jpg" alt="mingw64_02"></p>
+<p>下载完成后，解压到本地，将其bin文件夹所在的路径，配置到计算机环境变量Path中：</p>
+<p><img src="https://i.loli.net/2021/07/06/spve9QnxUCj7XAV.png" alt="image-20210706225545998"></p>
+<p><strong>验证是否安装成功</strong>：打开CMD命令行，输入<code>g++ -v</code>，如果能出现相应的g++版本信息，即说明安装成功</p>
 </li>
 </ol>
-<h2 id="（2）在VSCode中配置luanch和tasks文件"><a href="#（2）在VSCode中配置luanch和tasks文件" class="headerlink" title="（2）在VSCode中配置luanch和tasks文件"></a>（2）在VSCode中配置luanch和tasks文件</h2><p>/todo finish vscode config tasks and launch guide</p>
-<h1 id="三：配置Verilog开发环境"><a href="#三：配置Verilog开发环境" class="headerlink" title="三：配置Verilog开发环境"></a>三：配置Verilog开发环境</h1><p>/todo finish verilog guide</p>
+<h2 id="（2）在VSCode中配置luanch和tasks文件"><a href="#（2）在VSCode中配置luanch和tasks文件" class="headerlink" title="（2）在VSCode中配置luanch和tasks文件"></a>（2）在VSCode中配置luanch和tasks文件</h2><p>经过上述的步骤之后，我们已经在电脑上配置好了C/C++的编译和调试环境了。接下来就可以配置VSCode，在VScode中实现代码的<strong>编译</strong>和<strong>调试</strong>。</p>
+<ol>
+<li><p>在VScode中添加一个C++文件，输入一段简单的C++代码：</p>
+<p><img src="https://i.loli.net/2021/07/06/g1TXS4ZNjJEzPKH.png" alt="image-20210706230133059"></p>
+<p>此时VSCode会识别到这是一个C++文件，会提示我们安装C++相应的拓展插件，我们点击安装即可，安装完成之后，会在插件列表里看到对应的插件信息。</p>
+</li>
+<li><p>调试程序：</p>
+<p>点击左边的调试图标，选择<code>create a launch.json file</code>，此时vscode会创建一个.vscode文件夹，并且在改文件夹下创建一个launch.json文件。这个文件就会告诉VSCode去哪里找可以行程序，并且如何进行调试。</p>
+<p><img src="https://i.loli.net/2021/07/06/ITckeJf9xWCUXAa.png" alt="image-20210706230609215"></p>
+<p>点击<code>C++(GDB/LLDB)</code>之后，会让我们选择如何生成tasks.json文件(这个文件告诉VSCode如何将.cpp文件，编译成可执行文件，供launch.json文件调试时使用)。此时我们选择第一个：<code>g++.exe生成和调试活动文件</code>，指通过g++来编译我们的.cpp源文件。</p>
+<p><img src="https://i.loli.net/2021/07/06/w8jroAZUnIMReq6.png" alt="image-20210706231015796"></p>
+<p>此时我们已经拥有了tasks.json文件来编译程序和launch.json文件来执行、调试程序了。点击调试栏的绿色开始符号，就可以开始运行，并且打断点调试程序了。</p>
+<p><img src="https://i.loli.net/2021/07/06/fY72LsjKeGMA3U9.png" alt="image-20210706231315557"></p>
+</li>
+</ol>
 
       
     </div>
@@ -744,7 +770,7 @@ show_date_time();
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一：安装VSCode"><span class="nav-number">1.</span> <span class="nav-text">一：安装VSCode</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#（1）安装VSCode"><span class="nav-number">1.1.</span> <span class="nav-text">（1）安装VSCode</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#（2）安装VSCode扩展"><span class="nav-number">1.2.</span> <span class="nav-text">（2）安装VSCode扩展</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二：配置C开发环境"><span class="nav-number">2.</span> <span class="nav-text">二：配置C开发环境</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#（1）安装Compiler和Debuger"><span class="nav-number">2.1.</span> <span class="nav-text">（1）安装Compiler和Debuger</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#（2）在VSCode中配置luanch和tasks文件"><span class="nav-number">2.2.</span> <span class="nav-text">（2）在VSCode中配置luanch和tasks文件</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三：配置Verilog开发环境"><span class="nav-number">3.</span> <span class="nav-text">三：配置Verilog开发环境</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一：安装VSCode"><span class="nav-number">1.</span> <span class="nav-text">一：安装VSCode</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#（1）安装VSCode"><span class="nav-number">1.1.</span> <span class="nav-text">（1）安装VSCode</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#（2）安装VSCode扩展"><span class="nav-number">1.2.</span> <span class="nav-text">（2）安装VSCode扩展</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二：配置C开发环境"><span class="nav-number">2.</span> <span class="nav-text">二：配置C开发环境</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#（1）安装Compiler和Debuger"><span class="nav-number">2.1.</span> <span class="nav-text">（1）安装Compiler和Debuger</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#（2）在VSCode中配置luanch和tasks文件"><span class="nav-number">2.2.</span> <span class="nav-text">（2）在VSCode中配置luanch和tasks文件</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -792,7 +818,7 @@ show_date_time();
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">108.1k</span>
+    <span title="Site words total count">108.6k</span>
   
 </div>
 
