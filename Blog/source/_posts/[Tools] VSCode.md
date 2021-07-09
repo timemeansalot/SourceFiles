@@ -9,13 +9,15 @@ tags:
 
 > VSCode搭建C++和Verilog的开发环境
 
+![image-20210709081056366](https://i.loli.net/2021/07/09/Z9WaOU5gAiV3jIE.png)
 
+<!--more-->
 
 1. 安装VSCode和插件
 2. 配置C++、C开发环境
 3. 配置Verilog开发环境
 
-<!--more-->
+
 
 # 一：安装VSCode
 
