@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://timemeansalot.gitee.io/"/>
-  <updated>2021-07-06T15:29:05.077Z</updated>
+  <updated>2021-07-09T00:05:04.822Z</updated>
   <id>http://timemeansalot.gitee.io/</id>
   
   <author>
@@ -15,6 +15,29 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>从0开始，手把手教你学会MySQL 5.7安装</title>
+    <link href="http://timemeansalot.gitee.io/2021/07/09/%5BTools%5D%20MySql-install/"/>
+    <id>http://timemeansalot.gitee.io/2021/07/09/[Tools] MySql-install/</id>
+    <published>2021-07-08T23:47:10.000Z</published>
+    <updated>2021-07-09T00:05:04.822Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><blockquote><p>新手从0开始，手把手教你学会安装MySQL 5.7 到Windows10，只要能看懂中文，就能安装成功。</p></blockquote><p><img src="https://i.loli.net/2021/07/09/GvQxoNTuRBLIyez.png" alt="image-20210709080219153"></p><a id="more"></a><h1 id="1-下载MySQL-5-7解压文件，并且解压到电脑"><a href="#1-下载MySQL-5-7解压文件，并且解压到电脑" class="headerlink" title="1 下载MySQL 5.7解压文件，并且解压到电脑"></a>1 下载MySQL 5.7解压文件，并且解压到电脑</h1><p>MySQL可以下载在线安装程序，也可以下载离线安装包进行安装，相比之下，我认为直接下载离线安装包到本地会更加的方便，对于不能科学上网的人来说，速度也会更快一点（因为采用在线安装的方式，如果不能科学上网，下载MySQL对应的文件会十分的慢，甚至不能下载）。</p><h2 id="1-1-获取MySQL5-7安装包"><a href="#1-1-获取MySQL5-7安装包" class="headerlink" title="1.1 获取MySQL5.7安装包"></a>1.1 获取MySQL5.7安装包</h2><p>可以选择百度MySQL，进入到MySQL官网进行下载，也可以访问这个<a href="https://pan.baidu.com/s/1w89e1j4P0jN0bBsJa1kggg" target="_blank" rel="noopener">百度网盘链接</a>(提取码是：x8v4)进行下载。下载到本地之后，会获得一个MySQL的压缩包，选择将其解压到本机任意目录即可。</p><p><img src="https://i.loli.net/2021/07/09/7NvwJC8eA6Fcz9m.png" alt="image-20210709071747083"></p><h2 id="1-2-配置环境变量"><a href="#1-2-配置环境变量" class="headerlink" title="1.2 配置环境变量"></a>1.2 配置环境变量</h2><p>本步需要将MySQL的bin文件的绝对路径，配置到Windows10的Path中去：</p><p><img src="https://i.loli.net/2021/07/09/mY8eMPS27DX64Hv.png" alt="image-20210709072440047"></p><p><img src="https://i.loli.net/2021/07/09/Aa8kI9CQdUPbqVz.png" alt="image-20210709072638230"></p><h1 id="2-配置mysql"><a href="#2-配置mysql" class="headerlink" title="2 配置mysql"></a>2 配置mysql</h1><ol><li><p>使用管理员身份打开CMD</p><p><img src="https://i.loli.net/2021/07/09/BzoWdGjHQ24VPhp.png" alt="image-20210709072814764"></p></li><li><p>编辑<code>my.ini</code>配置文件</p><p>如果在MySQL的安装目录下，没有此文件，需要自己手动创建。<strong>注意：后缀名需要是ini而不是txt</strong></p><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[mysqld]</span></span><br><span class="line"><span class="attr">basedir</span>=D:\Programming\mysql_5.<span class="number">7</span></span><br><span class="line"><span class="attr">datadir</span>=D:\Programming\mysql_5.<span class="number">7</span>\data\</span><br><span class="line"><span class="attr">port</span>=<span class="number">3306</span></span><br><span class="line">skip-grant-tables</span><br></pre></td></tr></table></figure><p><img src="https://i.loli.net/2021/07/09/NsgoDekaqt7zRVK.png" alt="image-20210709073545221"></p></li><li><p>进入到MySQL bin目录所在文件夹下：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /d D:\Programming\mysql_5.7\bin</span><br></pre></td></tr></table></figure><p><img src="https://i.loli.net/2021/07/09/8B3IkMhPzlVjs12.png" alt="image-20210709073005532"></p></li><li><p>注册MySQL service</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqld -install</span><br></pre></td></tr></table></figure><p><img src="https://i.loli.net/2021/07/09/ly4cMfWP5hrB2XJ.png" alt="image-20210708234552361"></p></li><li><p>初始化数据文件</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqld --initialize-insecure --user=mysql</span><br></pre></td></tr></table></figure><p><img src="https://i.loli.net/2021/07/09/uyQLIiMe85Y36qb.png" alt="image-20210708234612431"></p></li><li><p>启动MySQL数据库</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">net start mysql</span><br></pre></td></tr></table></figure><p><img src="https://i.loli.net/2021/07/09/cf6PdJ3Cb7lMD5N.png" alt="image-20210708234640646"></p></li><li><p>进入MySQL</p><p>第一次进入到MySQL，由于我们在配置文件中，最后一行配置了<code>skip-grant-tables</code>.所以此时进入MySQL可以无密码进入。</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql –u root –p</span><br></pre></td></tr></table></figure><p><img src="https://i.loli.net/2021/07/09/aAkL1GOf4ejSMwy.png" alt="image-20210708234756231"></p></li><li><p>更改root密码</p><p>其中<strong>password(‘123456’)</strong>可以设置成自己的密码。</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">update mysql.user <span class="built_in">set</span> authentication_string=password(<span class="string">'123456'</span>) <span class="built_in">where</span> user=<span class="string">'root'</span> and Host = <span class="string">'localhost'</span>;</span><br></pre></td></tr></table></figure><p><img src="https://i.loli.net/2021/07/09/QiSEnsfcp7hD3dM.png" alt="image-20210708234814899"></p></li><li><p>刷新权限</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flush privileges;</span><br></pre></td></tr></table></figure><p><img src="https://i.loli.net/2021/07/09/lWQX27hTAG39CNa.png" alt="image-20210708234840671"></p></li><li><p>退出MySQL</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">exit;</span><br></pre></td></tr></table></figure><p><img src="https://i.loli.net/2021/07/09/HlOPhMTNFSGoZLq.png" alt="image-20210708234856950"></p></li><li><p>注释掉MySQL配置文件my.ini最后一行的<code>skip-grant-tables</code></p><p><img src="https://i.loli.net/2021/07/09/SDrz4yst8LWkboJ.png" alt="image-20210708234930160"></p></li><li><p>重启MySQL服务，输入配置好的密码进入到MySQL</p><p>需要强调的是，-p后面直接输入自己的密码，不要加空格（因为空格也算一个字符，如果加了空格，肯定就和自己设置的真正的密码不能匹配了）</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">net stop mysql</span><br><span class="line">net start mysql</span><br><span class="line">mysql -u root -p123456</span><br></pre></td></tr></table></figure><p><img src="https://i.loli.net/2021/07/09/GvaESJ4xspTziIh.png" alt="image-20210708235006013"></p></li></ol><p>到此，MySQL 5.7所有的安装步骤就结束了，感谢大家的阅读。</p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;新手从0开始，手把手教你学会安装MySQL 5.7 到Windows10，只要能看懂中文，就能安装成功。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.loli.net/2021/07/09/GvQxoNTuRBLIyez.png&quot; alt=&quot;image-20210709080219153&quot;&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="MySQL" scheme="http://timemeansalot.gitee.io/tags/MySQL/"/>
+    
+  </entry>
   
   <entry>
     <title>VSCode开发环境搭建</title>
