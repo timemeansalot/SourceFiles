@@ -175,7 +175,19 @@ tags:
      conda update <packet_name> # 或者conda upgrade <packet_name>
      ```
 
-     
+   - conda批量导出包含环境中所有组件的requirements.txt文件
+
+     ```bash
+     conda list -e > requirements.txt
+     ```
+
+   -  conda批量安装requirements.txt文件中包含的组件依赖
+
+     ```bash
+     conda install --yes --file requirements.txt
+     ```
+
+   
 
 # 3  下载一些当前channel不存在的包
 
@@ -197,3 +209,24 @@ tags:
 
    ![image-20210710093528391](https://i.loli.net/2021/07/10/Q3Hbpa2hrTqkY1i.png)
 
+
+
+# 4 PIP使用
+
+通过conda创建虚拟环境之后，会自动为该环境安装pip(pip也是Python的一个包，它的作用是管理Python所有的包)
+
+> 如果有一些包在conda库中没有找到，可以去pip库中查找，如mdutils就只在pip库里存在
+
+1. PIP安装包
+
+   ```bash
+   pip install <packet_name>
+   ```
+
+2. PIP根据依赖文件导入所有的包
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. conda激活某个环境后，pip会自动将所有的包安装到激活的环境中去
