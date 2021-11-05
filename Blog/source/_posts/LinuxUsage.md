@@ -6,6 +6,7 @@ tags:
 - Tools
 ---
 
+![](https://i.loli.net/2021/11/05/jH8LPZJcR5eBntI.png)
 > 介绍我如何在Linux系统中，搭建编程开发环境
 
 <!--more-->
@@ -70,3 +71,7 @@ sudo apt update && sudo apt upgrade -y
    ```
    可以看到npm从淘宝镜像下载了hexo包，速度十分快
 
+# 配置PicGo
+> PicGo是一个图片上传工具，它可以快速地将本地图片上传到图床，并且返回对应的URL。
+1. 获取PicGo：`npm install picgo -g`
+2. 设置上传图床：`picgo set uploader`
