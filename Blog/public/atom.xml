@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://timemeansalot.github.io/"/>
-  <updated>2021-11-05T06:19:03.269Z</updated>
+  <updated>2021-11-09T08:00:04.111Z</updated>
   <id>http://timemeansalot.github.io/</id>
   
   <author>
@@ -15,6 +15,27 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>learn_python</title>
+    <link href="http://timemeansalot.github.io/2021/11/09/learn-python/"/>
+    <id>http://timemeansalot.github.io/2021/11/09/learn-python/</id>
+    <published>2021-11-09T07:54:07.000Z</published>
+    <updated>2021-11-09T08:00:04.111Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="/assets/css/APlayer.min.css"><script src="/assets/js/APlayer.min.js" class="aplayer-secondary-script-marker"></script><p><img src="https://i.loli.net/2021/11/09/6DP9LpUqlsOxIGe.png" alt="learn-python20211109155931"></p><p>学习Python的一些笔记<br><a id="more"></a></p><ol><li><a href="https://timemeansalot.github.io/2021/07/09/AnacondaNotes/">配置conda环境</a></li></ol>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;https://i.loli.net/2021/11/09/6DP9LpUqlsOxIGe.png&quot; alt=&quot;learn-python20211109155931&quot;&gt;&lt;/p&gt;
+&lt;p&gt;学习Python的一些笔记&lt;br&gt;
+    
+    </summary>
+    
+    
+      <category term="Python" scheme="http://timemeansalot.github.io/tags/Python/"/>
+    
+  </entry>
   
   <entry>
     <title>LinuxUsage</title>
