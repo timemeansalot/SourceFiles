@@ -1946,7 +1946,11 @@ img:hover {
   width: 4px;
   height: 4px;
   border-radius: 50%;
+<<<<<<< HEAD
   background: #ffffde;
+=======
+  background: #9a8e77;
+>>>>>>> 75af30859cf3ac6354ed41ccd48db05cb81b7d2c
 }
 .links-of-blogroll {
   font-size: 13px;
