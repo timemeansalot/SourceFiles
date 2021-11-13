@@ -230,3 +230,17 @@ tags:
    ```
 
 3. conda激活某个环境后，pip会自动将所有的包安装到激活的环境中去
+
+# 5 Jupyter使用
+1. 安装jupyter
+   ```
+   conda install jupyter
+   ```
+2. 配置jupyter不要使用token：默认情况下，在wsl中打开jupyter，在浏览器中登录的时候，会需要输入token（这个token可以在wsl中查到，但是每次都输入这个token，很麻烦，我们可以直接设置token为空字符串即可取消token）
+   ```
+   jupyter notebook --generate-config
+   ```
+  定位到`c.NotebookApp.token`,将等号后面的\'\<generated\>\'改为''即可
+  ![20211112120300](https://i.loli.net/2021/11/12/ETArGjUogSMCvQp.png)
+3. 此时打开jupyter(`jupyter notebook .`)据可以直接在浏览器访问8888端口(`localhost:8888`)，不用输入token啦
+   ![20211112120522](https://i.loli.net/2021/11/12/PzFkQvxZbUd5j28.png)

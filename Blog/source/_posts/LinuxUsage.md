@@ -75,3 +75,48 @@ sudo apt update && sudo apt upgrade -y
 > PicGo是一个图片上传工具，它可以快速地将本地图片上传到图床，并且返回对应的URL。
 1. 获取PicGo：`npm install picgo -g`
 2. 设置上传图床：`picgo set uploader`
+
+# 配置代理
+在Windows下使用代理软件实现科学上网之后，想要在WSL2下使用代理。按照如下方式配置：
+```
+export https_proxy='http://172.19.48.1:7890'
+export http_proxy='http://172.19.48.1:7890'
+```
+其中`172.19.48.1`是主机的ip，`7890`是运行在Windows上的代理软件的*代理端口*。
+切记，不要使用socks5进行代理，貌似在WSL中，使用socks5代理不起作用，至少我在配置的时候就是这样的。
+
+测试代理是否成功：`curl ip.sb`如果可以正常返回代理服务器的IP地址，则说明代理已经成功；如果是没有任何响应，则代表代理失败。
+
+# 美化WSL终端
+在Windows下调用WSL，默认的终端很难看，所以需要我们自己美化一下，美化后的结果如图：
+![](https://i.loli.net/2021/11/13/X1oLZnqbSdcTz5y.png)
+需要用的的东西如下：
+- Hyper：一个跨平台的终端
+- oh-my-zsh：一个可以高度定制化的shell用于替代Linux里自带的bash
+
+安装步骤[参考链接](https://sspai.com/post/56081)
+
+# 默认打开ssh-agent和ssh-add
+在`.bashrc`或者`.zshrc`末尾添加如下配置文件：
+```
+# >>> ssh initialize >>>
+source ~/.ssh/auto_start_ssh.sh
+# <<< ssh initialize >>> 
+```
+其中auto_start_ssh.sh文件放在.ssh目录下，它的内容如下：
+```
+#!/bin/bash
+
+ps -aux | grep ssh-agent | grep -v grep > /dev/null
+if [ $? != 0 ]; then
+#       echo "ssh-agent is not running, so start it!"
+        ssh-agent > ~/.ssh/ssh_agent_var.sh
+        source ~/.ssh/ssh_agent_var.sh > /dev/null
+        ssh-add ~/.ssh/pc_wsl > /dev/null 2>&1
+else
+#       echo "ssh-agent is already running!"
+        source ~/.ssh/ssh_agent_var.sh > /dev/null
+        ssh-add ~/.ssh/pc_wsl > /dev/null 2>&1
+fi
+```
+> 这样每次打开WSL的时候，会自动打开ssh-agent并且添加ssh-key了，然后就可以直接访问GitHub了。

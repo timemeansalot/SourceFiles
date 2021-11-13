@@ -90,7 +90,8 @@
 <meta property="og:description" content="介绍我如何在Linux系统中，搭建编程开发环境">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://i.loli.net/2021/11/05/jH8LPZJcR5eBntI.png">
-<meta property="og:updated_time" content="2021-11-05T06:19:03.269Z">
+<meta property="og:image" content="https://i.loli.net/2021/11/13/X1oLZnqbSdcTz5y.png">
+<meta property="og:updated_time" content="2021-11-13T13:00:07.545Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="LinuxUsage">
 <meta name="twitter:description" content="介绍我如何在Linux系统中，搭建编程开发环境">
@@ -376,7 +377,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  549
+                  981
                 </span>
               
 
@@ -392,7 +393,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  2
+                  4
                 </span>
               
             </div>
@@ -449,6 +450,20 @@
 <li>获取PicGo：<code>npm install picgo -g</code></li>
 <li>设置上传图床：<code>picgo set uploader</code></li>
 </ol>
+</blockquote>
+<h1 id="配置代理"><a href="#配置代理" class="headerlink" title="配置代理"></a>配置代理</h1><p>在Windows下使用代理软件实现科学上网之后，想要在WSL2下使用代理。按照如下方式配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">export https_proxy=&apos;http://172.19.48.1:7890&apos;</span><br><span class="line">export http_proxy=&apos;http://172.19.48.1:7890&apos;</span><br></pre></td></tr></table></figure></p>
+<p>其中<code>172.19.48.1</code>是主机的ip，<code>7890</code>是运行在Windows上的代理软件的<em>代理端口</em>。<br>切记，不要使用socks5进行代理，貌似在WSL中，使用socks5代理不起作用，至少我在配置的时候就是这样的。</p>
+<p>测试代理是否成功：<code>curl ip.sb</code>如果可以正常返回代理服务器的IP地址，则说明代理已经成功；如果是没有任何响应，则代表代理失败。</p>
+<h1 id="美化WSL终端"><a href="#美化WSL终端" class="headerlink" title="美化WSL终端"></a>美化WSL终端</h1><p>在Windows下调用WSL，默认的终端很难看，所以需要我们自己美化一下，美化后的结果如图：<br><img src="https://i.loli.net/2021/11/13/X1oLZnqbSdcTz5y.png" alt><br>需要用的的东西如下：</p>
+<ul>
+<li>Hyper：一个跨平台的终端</li>
+<li>oh-my-zsh：一个可以高度定制化的shell用于替代Linux里自带的bash</li>
+</ul>
+<p>安装步骤<a href="https://sspai.com/post/56081" target="_blank" rel="noopener">参考链接</a></p>
+<h1 id="默认打开ssh-agent和ssh-add"><a href="#默认打开ssh-agent和ssh-add" class="headerlink" title="默认打开ssh-agent和ssh-add"></a>默认打开ssh-agent和ssh-add</h1><p>在<code>.bashrc</code>或者<code>.zshrc</code>末尾添加如下配置文件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># &gt;&gt;&gt; ssh initialize &gt;&gt;&gt;</span><br><span class="line">source ~/.ssh/auto_start_ssh.sh</span><br><span class="line"># &lt;&lt;&lt; ssh initialize &gt;&gt;&gt;</span><br></pre></td></tr></table></figure></p>
+<p>其中auto_start_ssh.sh文件放在.ssh目录下，它的内容如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line"></span><br><span class="line">ps -aux | grep ssh-agent | grep -v grep &gt; /dev/null</span><br><span class="line">if [ $? != 0 ]; then</span><br><span class="line">#       echo &quot;ssh-agent is not running, so start it!&quot;</span><br><span class="line">        ssh-agent &gt; ~/.ssh/ssh_agent_var.sh</span><br><span class="line">        source ~/.ssh/ssh_agent_var.sh &gt; /dev/null</span><br><span class="line">        ssh-add ~/.ssh/pc_wsl &gt; /dev/null 2&gt;&amp;1</span><br><span class="line">else</span><br><span class="line">#       echo &quot;ssh-agent is already running!&quot;</span><br><span class="line">        source ~/.ssh/ssh_agent_var.sh &gt; /dev/null</span><br><span class="line">        ssh-add ~/.ssh/pc_wsl &gt; /dev/null 2&gt;&amp;1</span><br><span class="line">fi</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>这样每次打开WSL的时候，会自动打开ssh-agent并且添加ssh-key了，然后就可以直接访问GitHub了。</p>
 </blockquote>
 
       
@@ -730,7 +745,7 @@ show_date_time();
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#更换Ubuntu-20-04-apt的源"><span class="nav-number">1.</span> <span class="nav-text">更换Ubuntu-20.04 apt的源</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装NVM和NodeJS"><span class="nav-number">2.</span> <span class="nav-text">安装NVM和NodeJS</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#配置PicGo"><span class="nav-number">3.</span> <span class="nav-text">配置PicGo</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#更换Ubuntu-20-04-apt的源"><span class="nav-number">1.</span> <span class="nav-text">更换Ubuntu-20.04 apt的源</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装NVM和NodeJS"><span class="nav-number">2.</span> <span class="nav-text">安装NVM和NodeJS</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#配置PicGo"><span class="nav-number">3.</span> <span class="nav-text">配置PicGo</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#配置代理"><span class="nav-number">4.</span> <span class="nav-text">配置代理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#美化WSL终端"><span class="nav-number">5.</span> <span class="nav-text">美化WSL终端</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#默认打开ssh-agent和ssh-add"><span class="nav-number">6.</span> <span class="nav-text">默认打开ssh-agent和ssh-add</span></a></li></ol></div>
             
 
           </div>
@@ -778,7 +793,7 @@ show_date_time();
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">106.1k</span>
+    <span title="Site words total count">106.6k</span>
   
 </div>
 
