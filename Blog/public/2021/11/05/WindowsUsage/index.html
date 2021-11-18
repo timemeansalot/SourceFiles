@@ -89,7 +89,7 @@
 <meta property="og:site_name" content="timemeansalot">
 <meta property="og:description" content="展示一些Windows系统下，常用的一些软件的安装、使用发放和一些常见问题的解决方式。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2021-11-05T05:56:34.039Z">
+<meta property="og:updated_time" content="2021-11-14T08:02:07.057Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Windows下必要软件，安装及使用笔记">
 <meta name="twitter:description" content="展示一些Windows系统下，常用的一些软件的安装、使用发放和一些常见问题的解决方式。">
@@ -374,7 +374,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  47
+                  354
                 </span>
               
 
@@ -418,6 +418,34 @@
 <ol>
 <li><a href="https://timemeansalot.github.io/2021/06/26/WSL_Config/">WSL安装及使用</a></li>
 <li><a href="https://timemeansalot.github.io/2021/06/26/VSCode/">Vs Code安装及使用</a></li>
+</ol>
+<h1 id="Power-Shell代理"><a href="#Power-Shell代理" class="headerlink" title="Power Shell代理"></a>Power Shell代理</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$Env:http_proxy=&quot;http://172.19.48.1:7890&quot;;$Env:https_proxy=&quot;http://172.19.48.1:7890&quot;</span><br></pre></td></tr></table></figure>
+<h1 id="安装scoop"><a href="#安装scoop" class="headerlink" title="安装scoop"></a>安装scoop</h1><p>scoop是Windows 10下的包管理软件，类似于macOS的brew以及Linux下的apt。</p>
+<ol>
+<li><p>更改hosts，否则不能访问scoop服务器<br>更改目录为<code>C:\WINDOWS\system32\drivers\etc</code>下的hosts文件，添加如下内容</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># &gt;&gt;&gt; change hosts &gt;&gt;&gt;</span><br><span class="line">127.0.0.1 localhosts #loopback</span><br><span class="line">199.232.4.133 raw.githubusercontent.com</span><br><span class="line"># &lt;&lt;&lt; change hosts &lt;&lt;&lt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>更改scoop安装到D盘<br>管理员身份打开power shell，输入命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$env:SCOOP=&apos;D:\SystemSoftwares\scoop&apos;</span><br><span class="line">[Environment]::SetEnvironmentVariable(&apos;SCOOP&apos;, $env:SCOOP, &apos;User&apos;)</span><br></pre></td></tr></table></figure>
+<p>如果安装成功之后，可以执行<code>scoop help</code>查看scoop大致用法</p>
+</li>
+<li><p><em>更改scoop下载的软件的安装位置</em>. (PS:这个指令好像没有用，貌似第二部的制定的安装位置，会决定后续scoop下载的软件的安装位置为scoop安装目录下的apps文件夹)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$env:SCOOP_GLOBAL=&apos;D:\SystemSoftwares\scoopApps&apos;</span><br><span class="line">[Environment]::SetEnvironmentVariable(&apos;SCOOP_GLOBAL&apos;, $env:SCOOP_GLOBAL, &apos;Machine&apos;)</span><br><span class="line"># run the installer</span><br><span class="line">iex (new-object net.webclient).downloadstring(&apos;https://get.scoop.sh&apos;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>配置scoop源为gitee，提升软件下载速度</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scoop config SCOOP_REPO https://gitee.com/squallliu/scoop</span><br><span class="line">scoop update</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>常见是scoop语法</p>
+<ul>
+<li>search</li>
+<li>install</li>
+<li>update</li>
+<li>status</li>
+<li>uninstall</li>
+<li>info</li>
+<li>home<br>比如，下面展示通过scoop安装hyper terminal的过程</li>
+</ul>
+</li>
 </ol>
 
       
@@ -525,8 +553,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -685,6 +722,22 @@ show_date_time();
       </section>
 
       
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Power-Shell代理"><span class="nav-number">1.</span> <span class="nav-text">Power Shell代理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装scoop"><span class="nav-number">2.</span> <span class="nav-text">安装scoop</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
 
       
 
@@ -726,7 +779,7 @@ show_date_time();
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">111.4k</span>
+    <span title="Site words total count">111.8k</span>
   
 </div>
 

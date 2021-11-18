@@ -20,7 +20,7 @@
   <entry>
     <title><![CDATA[Windows下必要软件，安装及使用笔记]]></title>
     <url>%2F2021%2F11%2F05%2FWindowsUsage%2F</url>
-    <content type="text"><![CDATA[展示一些Windows系统下，常用的一些软件的安装、使用发放和一些常见问题的解决方式。 WSL安装及使用 Vs Code安装及使用]]></content>
+    <content type="text"><![CDATA[展示一些Windows系统下，常用的一些软件的安装、使用发放和一些常见问题的解决方式。 WSL安装及使用 Vs Code安装及使用 Power Shell代理1$Env:http_proxy=&quot;http://172.19.48.1:7890&quot;;$Env:https_proxy=&quot;http://172.19.48.1:7890&quot; 安装scoopscoop是Windows 10下的包管理软件，类似于macOS的brew以及Linux下的apt。 更改hosts，否则不能访问scoop服务器更改目录为C:\WINDOWS\system32\drivers\etc下的hosts文件，添加如下内容 1234# &gt;&gt;&gt; change hosts &gt;&gt;&gt;127.0.0.1 localhosts #loopback199.232.4.133 raw.githubusercontent.com# &lt;&lt;&lt; change hosts &lt;&lt;&lt; 更改scoop安装到D盘管理员身份打开power shell，输入命令： 12$env:SCOOP=&apos;D:\SystemSoftwares\scoop&apos;[Environment]::SetEnvironmentVariable(&apos;SCOOP&apos;, $env:SCOOP, &apos;User&apos;) 如果安装成功之后，可以执行scoop help查看scoop大致用法 更改scoop下载的软件的安装位置. (PS:这个指令好像没有用，貌似第二部的制定的安装位置，会决定后续scoop下载的软件的安装位置为scoop安装目录下的apps文件夹) 1234$env:SCOOP_GLOBAL=&apos;D:\SystemSoftwares\scoopApps&apos;[Environment]::SetEnvironmentVariable(&apos;SCOOP_GLOBAL&apos;, $env:SCOOP_GLOBAL, &apos;Machine&apos;)# run the installeriex (new-object net.webclient).downloadstring(&apos;https://get.scoop.sh&apos;) 配置scoop源为gitee，提升软件下载速度 12scoop config SCOOP_REPO https://gitee.com/squallliu/scoopscoop update 常见是scoop语法 search install update status uninstall info home比如，下面展示通过scoop安装hyper terminal的过程]]></content>
       <tags>
         <tag>Tools</tag>
         <tag>Windows</tag>
