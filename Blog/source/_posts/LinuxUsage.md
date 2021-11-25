@@ -77,15 +77,26 @@ sudo apt update && sudo apt upgrade -y
 2. 设置上传图床：`picgo set uploader`
 
 # 配置代理
+## 手动配置代理
 在Windows下使用代理软件实现科学上网之后，想要在WSL2下使用代理。按照如下方式配置：
 ```
-export https_proxy='http://172.19.48.1:7890'
-export http_proxy='http://172.19.48.1:7890'
+export https_proxy='http://$host_ip:7890'
+export http_proxy='http://$host_ip:7890'
 ```
 其中`172.19.48.1`是主机的ip，`7890`是运行在Windows上的代理软件的*代理端口*。
 切记，不要使用socks5进行代理，貌似在WSL中，使用socks5代理不起作用，至少我在配置的时候就是这样的。
 
 测试代理是否成功：`curl ip.sb`如果可以正常返回代理服务器的IP地址，则说明代理已经成功；如果是没有任何响应，则代表代理失败。
+
+## 将代理配置到zshrc中
+编辑~/.zshrc文件，在文件末尾添加如下内容：
+```
+# >>> set proxy >>>
+host_ip=$(cat /etc/resolv.conf |grep "nameserver" |cut -f 2 -d " ")    
+alias proxy="export http_proxy=http://$host_ip:7890 && export https_proxy=http://$host_ip:7890"
+alias unproxy="unset http_proxy && unset https_proxy"
+# <<< set proxy <<<
+```
 
 # 美化WSL终端
 在Windows下调用WSL，默认的终端很难看，所以需要我们自己美化一下，美化后的结果如图：

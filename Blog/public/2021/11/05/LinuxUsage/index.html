@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Linux,Tools,">
+  <meta name="keywords" content="Tools,Linux,">
 
 
 
@@ -82,7 +82,7 @@
 
 
 <meta name="description" content="介绍我如何在Linux系统中，搭建编程开发环境">
-<meta name="keywords" content="Linux,Tools">
+<meta name="keywords" content="Tools,Linux">
 <meta property="og:type" content="article">
 <meta property="og:title" content="LinuxUsage">
 <meta property="og:url" content="http://timemeansalot.github.io/2021/11/05/LinuxUsage/index.html">
@@ -91,7 +91,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://i.loli.net/2021/11/05/jH8LPZJcR5eBntI.png">
 <meta property="og:image" content="https://i.loli.net/2021/11/13/X1oLZnqbSdcTz5y.png">
-<meta property="og:updated_time" content="2021-11-14T13:25:21.176Z">
+<meta property="og:updated_time" content="2021-11-25T08:15:04.278Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="LinuxUsage">
 <meta name="twitter:description" content="介绍我如何在Linux系统中，搭建编程开发环境">
@@ -377,7 +377,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  981
+                  1.1k
                 </span>
               
 
@@ -451,9 +451,10 @@
 <li>设置上传图床：<code>picgo set uploader</code></li>
 </ol>
 </blockquote>
-<h1 id="配置代理"><a href="#配置代理" class="headerlink" title="配置代理"></a>配置代理</h1><p>在Windows下使用代理软件实现科学上网之后，想要在WSL2下使用代理。按照如下方式配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">export https_proxy=&apos;http://172.19.48.1:7890&apos;</span><br><span class="line">export http_proxy=&apos;http://172.19.48.1:7890&apos;</span><br></pre></td></tr></table></figure></p>
+<h1 id="配置代理"><a href="#配置代理" class="headerlink" title="配置代理"></a>配置代理</h1><h2 id="手动配置代理"><a href="#手动配置代理" class="headerlink" title="手动配置代理"></a>手动配置代理</h2><p>在Windows下使用代理软件实现科学上网之后，想要在WSL2下使用代理。按照如下方式配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">export https_proxy=&apos;http://$host_ip:7890&apos;</span><br><span class="line">export http_proxy=&apos;http://$host_ip:7890&apos;</span><br></pre></td></tr></table></figure></p>
 <p>其中<code>172.19.48.1</code>是主机的ip，<code>7890</code>是运行在Windows上的代理软件的<em>代理端口</em>。<br>切记，不要使用socks5进行代理，貌似在WSL中，使用socks5代理不起作用，至少我在配置的时候就是这样的。</p>
 <p>测试代理是否成功：<code>curl ip.sb</code>如果可以正常返回代理服务器的IP地址，则说明代理已经成功；如果是没有任何响应，则代表代理失败。</p>
+<h2 id="将代理配置到zshrc中"><a href="#将代理配置到zshrc中" class="headerlink" title="将代理配置到zshrc中"></a>将代理配置到zshrc中</h2><p>编辑~/.zshrc文件，在文件末尾添加如下内容：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># &gt;&gt;&gt; set proxy &gt;&gt;&gt;</span><br><span class="line">host_ip=$(cat /etc/resolv.conf |grep &quot;nameserver&quot; |cut -f 2 -d &quot; &quot;)    </span><br><span class="line">alias proxy=&quot;export http_proxy=http://$host_ip:7890 &amp;&amp; export https_proxy=http://$host_ip:7890&quot;</span><br><span class="line">alias unproxy=&quot;unset http_proxy &amp;&amp; unset https_proxy&quot;</span><br><span class="line"># &lt;&lt;&lt; set proxy &lt;&lt;&lt;</span><br></pre></td></tr></table></figure></p>
 <h1 id="美化WSL终端"><a href="#美化WSL终端" class="headerlink" title="美化WSL终端"></a>美化WSL终端</h1><p>在Windows下调用WSL，默认的终端很难看，所以需要我们自己美化一下，美化后的结果如图：<br><img src="https://i.loli.net/2021/11/13/X1oLZnqbSdcTz5y.png" alt><br>需要用的的东西如下：</p>
 <ul>
 <li>Hyper：一个跨平台的终端</li>
@@ -492,9 +493,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Linux/" rel="tag"><i class="fa fa-tag"></i> Linux</a>
-          
             <a href="/tags/Tools/" rel="tag"><i class="fa fa-tag"></i> Tools</a>
+          
+            <a href="/tags/Linux/" rel="tag"><i class="fa fa-tag"></i> Linux</a>
           
         </div>
       
@@ -749,7 +750,7 @@ show_date_time();
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#更换Ubuntu-20-04-apt的源"><span class="nav-number">1.</span> <span class="nav-text">更换Ubuntu-20.04 apt的源</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装NVM和NodeJS"><span class="nav-number">2.</span> <span class="nav-text">安装NVM和NodeJS</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#配置PicGo"><span class="nav-number">3.</span> <span class="nav-text">配置PicGo</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#配置代理"><span class="nav-number">4.</span> <span class="nav-text">配置代理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#美化WSL终端"><span class="nav-number">5.</span> <span class="nav-text">美化WSL终端</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#默认打开ssh-agent和ssh-add"><span class="nav-number">6.</span> <span class="nav-text">默认打开ssh-agent和ssh-add</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#更换Ubuntu-20-04-apt的源"><span class="nav-number">1.</span> <span class="nav-text">更换Ubuntu-20.04 apt的源</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装NVM和NodeJS"><span class="nav-number">2.</span> <span class="nav-text">安装NVM和NodeJS</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#配置PicGo"><span class="nav-number">3.</span> <span class="nav-text">配置PicGo</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#配置代理"><span class="nav-number">4.</span> <span class="nav-text">配置代理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#手动配置代理"><span class="nav-number">4.1.</span> <span class="nav-text">手动配置代理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#将代理配置到zshrc中"><span class="nav-number">4.2.</span> <span class="nav-text">将代理配置到zshrc中</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#美化WSL终端"><span class="nav-number">5.</span> <span class="nav-text">美化WSL终端</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#默认打开ssh-agent和ssh-add"><span class="nav-number">6.</span> <span class="nav-text">默认打开ssh-agent和ssh-add</span></a></li></ol></div>
             
 
           </div>
@@ -797,7 +798,7 @@ show_date_time();
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">113.5k</span>
+    <span title="Site words total count">114.6k</span>
   
 </div>
 
