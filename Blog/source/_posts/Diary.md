@@ -11,6 +11,8 @@ top: true
 
 # <center> <font color=#02F78E size=7> 付大爷的欢乐日常开始啦</font></center>
 
+# <center> <font color=#A52A2A size=7> 开始寒假生活 </font></center>
+
 
 # <center> <font color=#A52A2A size=7> 空巢男友 </font></center>
 > 二零二二年一月十七号上午七点四十三分你和我在一起，因为你我会记住这一分钟
