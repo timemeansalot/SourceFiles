@@ -244,3 +244,9 @@ tags:
   ![20211112120300](https://i.loli.net/2021/11/12/ETArGjUogSMCvQp.png)
 3. 此时打开jupyter(`jupyter notebook .`)据可以直接在浏览器访问8888端口(`localhost:8888`)，不用输入token啦
    ![20211112120522](https://i.loli.net/2021/11/12/PzFkQvxZbUd5j28.png)
+4. 设置jupyter的默认打开目录
+   ```
+    vim ~/.jupyter/jupyter_notebook_config.py
+  ```
+  找到`c.NotebookApp.notebook_dir`，将其后面的值改成目标目录即可，以后打开jupyter的时候，就不会在主目录打开，而是在指定的目录下打开。
+  ![AnacondaNotes20220220084338](https://s2.loli.net/2022/02/20/U5qO2BakpQXs7vW.png)
