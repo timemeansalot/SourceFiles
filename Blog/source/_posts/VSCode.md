@@ -1,20 +1,16 @@
-***
-
-layout: '\[toosl]'
+---
 title: VSCode开发环境搭建
 date: 2021-06-26 23:38:57
 tags:
-
-*   Tools
-
-*   VSCode
-
-***
+    - Tools
+    - VSCode
+---
 
 > VSCode搭建C++和Verilog的开发环境
 
 ![image-20210709081056366](https://i.loli.net/2021/07/09/Z9WaOU5gAiV3jIE.png)
 
+<!--more-->
 VS Code中需要安装的插件有:
 
 1.  theme & icon
