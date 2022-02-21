@@ -115,6 +115,7 @@ Windows利用WSL配置Linux开发环境的详细教程
     ```
 
 ### 2.3 安装oh-my-zsh
+[参考链接: 打造高颜值终端——Hyper](https://sspai.com/post/56081)
 
 > zsh是跟bash差不多的Linux下的命令行shell，oh-my-zsh在zsh上进行了封装，从而可以打造更加精美的终端
 
