@@ -13,9 +13,17 @@ tags:
 
 <!--more-->
 
-1. 安装VSCode和插件
-2. 配置C++、C开发环境
-3. 配置Verilog开发环境
+VS Code中需要安装的插件有:
+
+1.  theme & icon
+
+2.  matlab
+
+3.  code runner
+
+4.  Latex Workshop
+
+5.  Milkdown: Markdown plugin
 
 
 

@@ -6,8 +6,6 @@ tags: hexo
 
 
 
-[[_TOC_]]
-
 
 
 利用hexo和gitee搭建自己的博客
