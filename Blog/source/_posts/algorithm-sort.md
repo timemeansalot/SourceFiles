@@ -10,7 +10,7 @@ tags: algorithm
 
 参考链接：[十大排序算法](https://zhuanlan.zhihu.com/p/42586566)
 
-![img](E:/Pictures/TyporaPictures/v2-f718f6b01ad35a60b9d4f02330f81439_720w.jpg)
+![img](https://s2.loli.net/2022/03/24/pc19dRIAkuJDU32.jpg)
 
 <!--more-->
 
