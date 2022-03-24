@@ -81,18 +81,22 @@
 
 
 
-<meta name="description" content="关于排序算法的总结">
+<meta name="description" content="关于排序算法的总结： 参考链接：十大排序算法">
 <meta name="keywords" content="algorithm">
 <meta property="og:type" content="article">
 <meta property="og:title" content="algorithm_sort">
 <meta property="og:url" content="http://timemeansalot.github.io/2022/03/24/algorithm-sort/index.html">
 <meta property="og:site_name" content="timemeansalot">
-<meta property="og:description" content="关于排序算法的总结">
+<meta property="og:description" content="关于排序算法的总结： 参考链接：十大排序算法">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2022-03-24T08:22:02.745Z">
+<meta property="og:image" content="e:/Pictures/TyporaPictures/v2-f718f6b01ad35a60b9d4f02330f81439_720w.jpg">
+<meta property="og:image" content="https://pic4.zhimg.com/v2-33a947c71ad62b254cab62e5364d2813_b.webp">
+<meta property="og:image" content="https://pic1.zhimg.com/v2-1c7e20f306ddc02eb4e3a50fa7817ff4_b.webp">
+<meta property="og:updated_time" content="2022-03-24T10:41:54.618Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="algorithm_sort">
-<meta name="twitter:description" content="关于排序算法的总结">
+<meta name="twitter:description" content="关于排序算法的总结： 参考链接：十大排序算法">
+<meta name="twitter:image" content="e:/Pictures/TyporaPictures/v2-f718f6b01ad35a60b9d4f02330f81439_720w.jpg">
 
 
 
@@ -374,7 +378,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  9
+                  539
                 </span>
               
 
@@ -411,9 +415,45 @@
       
 
       
-        <p>关于排序算法的总结</p>
+        <p>关于排序算法的总结：</p>
+<p>参考链接：<a href="https://zhuanlan.zhihu.com/p/42586566" target="_blank" rel="noopener">十大排序算法</a></p>
+<p><img src="E:/Pictures/TyporaPictures/v2-f718f6b01ad35a60b9d4f02330f81439_720w.jpg" alt="img"></p>
 <a id="more"></a>
-
+<h1 id="1-冒泡排序"><a href="#1-冒泡排序" class="headerlink" title="1 冒泡排序"></a>1 冒泡排序</h1><p><img src="https://pic4.zhimg.com/v2-33a947c71ad62b254cab62e5364d2813_b.webp" alt="img"></p>
+<h2 id="1-1-算法思想"><a href="#1-1-算法思想" class="headerlink" title="1.1 算法思想"></a>1.1 算法思想</h2><p>以升序排序为例子，算法思想如下：</p>
+<ol>
+<li>从[0,n]遍历数组，如果发现左边的元素比右边的元素大，则将两个元素交换位置。通过第一轮遍历，可以将数组中最大的元素移到最右边的位置</li>
+<li>从[0,n-1]遍历数组，然后从[0,n-2]遍历数组，直到只剩下最后一个元素未知</li>
+</ol>
+<p>PS：遍历的时候，可以设置一个flag用于判断数组是否发生了<em>元素调换</em>，如果没有发生元素调换，则说明数组已经有序了，则可以提前停止排序</p>
+<h2 id="1-2-算法分析"><a href="#1-2-算法分析" class="headerlink" title="1.2 算法分析"></a>1.2 算法分析</h2><ol>
+<li>算法是稳定的</li>
+<li>事件负责度：$T=O(n^2)$</li>
+</ol>
+<h2 id="1-3-代码实现"><a href="#1-3-代码实现" class="headerlink" title="1.3 代码实现"></a>1.3 代码实现</h2><ol>
+<li><a href="https://github.com/timemeansalot/algorithm/blob/master/sort/bubble_sort.cpp" target="_blank" rel="noopener">C代码链接</a></li>
+<li><a href>Python代码链接</a></li>
+</ol>
+<h1 id="2-选择排序"><a href="#2-选择排序" class="headerlink" title="2 选择排序"></a>2 选择排序</h1><p><img src="https://pic1.zhimg.com/v2-1c7e20f306ddc02eb4e3a50fa7817ff4_b.webp" alt="img"></p>
+<h2 id="1-1-算法思想-1"><a href="#1-1-算法思想-1" class="headerlink" title="1.1 算法思想"></a>1.1 算法思想</h2><blockquote>
+<p>一趟一趟地找到第一小元素、第二小元素…分别放到0号位置、1号位置…</p>
+</blockquote>
+<ol>
+<li>从[0,n]遍历所有元素，遍历的过程中，标记最小元素的下标。遍历结束之后，将最小的元素和0号元素交换，这样整个数组中最小的元素，就会在最前面</li>
+<li>从[1,n]遍历所有元素，找到其中最小的元素，将其与[1]号元素交换，这样第二小的元素就会在第二个位置</li>
+</ol>
+<h2 id="1-2-算法分析-1"><a href="#1-2-算法分析-1" class="headerlink" title="1.2 算法分析"></a>1.2 算法分析</h2><ol>
+<li><p>在选择最小的元素的时候，如果采用交换的方式，则是<strong>不稳定</strong>的；如果采用插入的方式，则是稳定的：</p>
+<p>eg: 对4,2,3,4,1进行排序</p>
+<ul>
+<li>第一趟选择了1最为最小元素，如果将其与第1个元素4进行交换，则两个4的相对位置会发生变化，算法是不稳定的</li>
+<li>如果将1插入到第一个4的前面，所有元素后移1位，则第一个4和第二个4的相对位置没有发生变化，算法是稳定的</li>
+</ul>
+</li>
+<li><p>时间复杂度: $T=O(n^2)$</p>
+</li>
+</ol>
+<h2 id="1-3-代码实现-1"><a href="#1-3-代码实现-1" class="headerlink" title="1.3 代码实现"></a>1.3 代码实现</h2>
       
     </div>
     
@@ -513,8 +553,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -673,6 +722,22 @@ show_date_time();
       </section>
 
       
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-冒泡排序"><span class="nav-number">1.</span> <span class="nav-text">1 冒泡排序</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-算法思想"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 算法思想</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-算法分析"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 算法分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-代码实现"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 代码实现</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-选择排序"><span class="nav-number">2.</span> <span class="nav-text">2 选择排序</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-算法思想-1"><span class="nav-number">2.1.</span> <span class="nav-text">1.1 算法思想</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-算法分析-1"><span class="nav-number">2.2.</span> <span class="nav-text">1.2 算法分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-代码实现-1"><span class="nav-number">2.3.</span> <span class="nav-text">1.3 代码实现</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
 
       
 
@@ -714,7 +779,7 @@ show_date_time();
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">127.5k</span>
+    <span title="Site words total count">128k</span>
   
 </div>
 
