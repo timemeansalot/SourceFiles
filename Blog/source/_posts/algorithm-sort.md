@@ -88,4 +88,23 @@ PS：遍历的时候，可以设置一个flag用于判断数组是否发生了*�
 
 ## 3.3 代码实现
 
-1. [C代码链接]()
+1. [C代码链接](https://github.com/timemeansalot/algorithm/blob/master/sort/insert_sort.cpp)
+2. [Python代码链接]()
+
+# 4 快速排序
+
+## 4.1 算法思想
+
+1. 选择一个**基准**，将数组中小于基准的元素移动到基准左边，将大于基准的元素移动到基准右边
+2. 数组分成两个部分，小于基准元素的左边和大于基准元素的右边，对这两个部分递归地调用快速排序算法
+
+## 4.2 算法分析
+
+1. 算法是不稳定的：无法保证元素的扫描顺序
+2. 最坏情况下复杂度是$T=O(n^2)$,一般情况下时间复杂度是$T=O(nlogn)$
+
+## 4.3 代码实现
+
+1. [C代码链接](https://github.com/timemeansalot/algorithm/blob/master/sort/quick_sort.cpp)
+2. [Python代码链接]()
+
