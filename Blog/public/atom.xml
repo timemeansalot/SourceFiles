@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://timemeansalot.github.io/"/>
-  <updated>2022-03-25T09:00:10.629Z</updated>
+  <updated>2022-03-28T08:03:22.004Z</updated>
   <id>http://timemeansalot.github.io/</id>
   
   <author>
@@ -15,6 +15,26 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>effective_cpp</title>
+    <link href="http://timemeansalot.github.io/2022/03/28/effective-cpp/"/>
+    <id>http://timemeansalot.github.io/2022/03/28/effective-cpp/</id>
+    <published>2022-03-28T06:26:03.000Z</published>
+    <updated>2022-03-28T08:03:22.004Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="/assets/css/APlayer.min.css"><script src="/assets/js/APlayer.min.js" class="aplayer-secondary-script-marker"></script><p>学习《Effective C++》的读书笔记</p><a id="more"></a><h2 id="Item-4-always-initialize-object-before-using-it"><a href="#Item-4-always-initialize-object-before-using-it" class="headerlink" title="Item 4: always initialize object before using it"></a>Item 4: always initialize object before using it</h2><ol><li>manually initialize all built-in type</li><li>use <strong>initialization list</strong> to initialize data members in class when writing constructors for class.</li><li>use a function which returns the reference of (this can make the <strong>non-local static variable</strong> become local static variable), instead of directly use non-local static variable itself. So the initialization of the local static variable will happen when the corresponding function is called. However the <u>initialization order of two non-local static variable declared in two translation unit is unknow,</u> which could be disastrous.</li></ol><h1 id="Chapter-2-Constructors-Destructors-and-Assignment-Operations"><a href="#Chapter-2-Constructors-Destructors-and-Assignment-Operations" class="headerlink" title="Chapter 2. Constructors, Destructors and Assignment Operations"></a>Chapter 2. Constructors, Destructors and Assignment Operations</h1><h2 id="Item-5-Know-what-functions-C-silently-writes-and-calls"><a href="#Item-5-Know-what-functions-C-silently-writes-and-calls" class="headerlink" title="Item 5: Know what functions C++ silently writes and calls"></a>Item 5: Know what functions C++ silently writes and calls</h2><blockquote><p>If we don’t create, C++ compiler will declares <strong>constructor, copy constructor, destructor and copy assignment operator</strong> for us. If we would use these functions in our code, the compiler will write these functions for us.</p></blockquote><h2 id="Item-6-Explicitly-disallow-the-use-of-compiler-generated-functions"><a href="#Item-6-Explicitly-disallow-the-use-of-compiler-generated-functions" class="headerlink" title="Item 6: Explicitly disallow the use of compiler generated functions"></a>Item 6: Explicitly disallow the use of compiler generated functions</h2><p>Just as mentions in Item5, the compiler would automatically create functions for us, what can we do if <strong>we don’t want the compiler to create</strong> some of such classes? </p><p>For example, we want to make the copy of two objects illegal, but the compiler will always make a copy constructor and copy assignment operator for our class.</p><ul><li>The way to make copy of objects illegal is that <strong>we can manually define copy constructor and copy assignment operation, but we defined them as private.</strong> So the copy function cannot be called</li><li>Moreover, if you <strong>don’t provide function definition</strong> for your manually defined copy function, then you can’t even call them using class member function, you will get a link error.</li><li>You can create a base class who declared the copy function as private and doesn’t provide function body. Then every <strong>class inherits from this base class is not allow to copy.</strong></li></ul><h2 id="Item-7-Declare-destructors-virtual-in-polymorphic-base-classes"><a href="#Item-7-Declare-destructors-virtual-in-polymorphic-base-classes" class="headerlink" title="Item 7: Declare destructors virtual in polymorphic base classes"></a>Item 7: Declare destructors virtual in polymorphic base classes</h2><p>If you want to use pointer of parent class to access child objects, you must declare the parent destructor as virtual. If you don’t do that, when you try to free the child object using the parent pointer, you can only delete the members inherited from parent class, you can’t delete the members of the child class.</p><ul><li>If you want to delete all members in child object using parent pointer, you must declare parent’s destructor as virtual.</li><li>It’s bad to inherit from a parent class who doesn’t provide virtual destructor.</li><li>You can make an <strong>abstract class</strong> by declare it’s destructor as a <strong>pure virtual destructor</strong>. But you have to provide the definition of that destructor outside the class.</li></ul>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;学习《Effective C++》的读书笔记&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Programming" scheme="http://timemeansalot.github.io/tags/Programming/"/>
+    
+  </entry>
   
   <entry>
     <title>algorithm_sort</title>
