@@ -53,3 +53,15 @@ If you want to use pointer of parent class to access child objects, you must dec
 - If you want to delete all members in child object using parent pointer, you must declare parent's destructor as virtual.
 - It's bad to inherit from a parent class who doesn't provide virtual destructor.
 - You can make an **abstract class** by declare it's destructor as a **pure virtual destructor**. But you have to provide the definition of that destructor outside the class.
+
+## Item 8: Prevent exceptions from leaving destructors
+
+1. Can't emit exceptions in destructor: If an error is thrown in destructor, It will probably make the process of free resources fail
+2. Make a client class to deal with the exceptions, you can make a **non-destruct function** to handle with exceptions and you can handle exceptions in the destructor of client class.
+
+## Item 9: Never call virtual functions during construction or destruction
+
+1. Don't call virtual function in a constructor or destructor. Because if you make a constructor of parent class call a virtual function, and you think it's going to call the function of derived class. However, it can only call the virtual function in parent class itself. Because when we call the constructor of parent class, the derived class has not been defined yet, how could we call the function defined in derived class?
+2. We can pass back information to parent class from child class for different derived class, so they can have different behavior.
+3. **Static** functions can only modify static members of the class; it's shared by all objects of that class; it's called by class_name::function_name
+

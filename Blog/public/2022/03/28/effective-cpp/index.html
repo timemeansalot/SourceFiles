@@ -89,7 +89,7 @@
 <meta property="og:site_name" content="timemeansalot">
 <meta property="og:description" content="学习《Effective C++》的读书笔记">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2022-03-28T08:03:22.004Z">
+<meta property="og:updated_time" content="2022-03-30T12:33:29.418Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="effective_cpp">
 <meta name="twitter:description" content="学习《Effective C++》的读书笔记">
@@ -374,7 +374,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  450
+                  511
                 </span>
               
 
@@ -390,7 +390,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  2
+                  3
                 </span>
               
             </div>
@@ -434,6 +434,10 @@
 <li>It’s bad to inherit from a parent class who doesn’t provide virtual destructor.</li>
 <li>You can make an <strong>abstract class</strong> by declare it’s destructor as a <strong>pure virtual destructor</strong>. But you have to provide the definition of that destructor outside the class.</li>
 </ul>
+<h2 id="Item-8-Prevent-exceptions-from-leaving-destructors"><a href="#Item-8-Prevent-exceptions-from-leaving-destructors" class="headerlink" title="Item 8: Prevent exceptions from leaving destructors"></a>Item 8: Prevent exceptions from leaving destructors</h2><ol>
+<li>Can’t emit exceptions in destructor: If an error is thrown in destructor, It will probably make the process of free resources fail</li>
+<li>Make a client class to deal with the exceptions, you can make a <strong>non-destruct function</strong> to handle with exceptions and you can handle exceptions in the destructor of client class.</li>
+</ol>
 
       
     </div>
@@ -712,7 +716,7 @@ show_date_time();
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Item-4-always-initialize-object-before-using-it"><span class="nav-number">1.</span> <span class="nav-text">Item 4: always initialize object before using it</span></a></li></ol><li class="nav-item nav-level-1"><a class="nav-link" href="#Chapter-2-Constructors-Destructors-and-Assignment-Operations"><span class="nav-number"></span> <span class="nav-text">Chapter 2. Constructors, Destructors and Assignment Operations</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Item-5-Know-what-functions-C-silently-writes-and-calls"><span class="nav-number">1.</span> <span class="nav-text">Item 5: Know what functions C++ silently writes and calls</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Item-6-Explicitly-disallow-the-use-of-compiler-generated-functions"><span class="nav-number">2.</span> <span class="nav-text">Item 6: Explicitly disallow the use of compiler generated functions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Item-7-Declare-destructors-virtual-in-polymorphic-base-classes"><span class="nav-number">3.</span> <span class="nav-text">Item 7: Declare destructors virtual in polymorphic base classes</span></a></li></ol></li></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Item-4-always-initialize-object-before-using-it"><span class="nav-number">1.</span> <span class="nav-text">Item 4: always initialize object before using it</span></a></li></ol><li class="nav-item nav-level-1"><a class="nav-link" href="#Chapter-2-Constructors-Destructors-and-Assignment-Operations"><span class="nav-number"></span> <span class="nav-text">Chapter 2. Constructors, Destructors and Assignment Operations</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Item-5-Know-what-functions-C-silently-writes-and-calls"><span class="nav-number">1.</span> <span class="nav-text">Item 5: Know what functions C++ silently writes and calls</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Item-6-Explicitly-disallow-the-use-of-compiler-generated-functions"><span class="nav-number">2.</span> <span class="nav-text">Item 6: Explicitly disallow the use of compiler generated functions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Item-7-Declare-destructors-virtual-in-polymorphic-base-classes"><span class="nav-number">3.</span> <span class="nav-text">Item 7: Declare destructors virtual in polymorphic base classes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Item-8-Prevent-exceptions-from-leaving-destructors"><span class="nav-number">4.</span> <span class="nav-text">Item 8: Prevent exceptions from leaving destructors</span></a></li></ol></li></div>
             
 
           </div>
@@ -760,7 +764,7 @@ show_date_time();
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">128.8k</span>
+    <span title="Site words total count">128.9k</span>
   
 </div>
 
