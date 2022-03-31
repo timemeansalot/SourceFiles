@@ -56,7 +56,7 @@ If you want to use pointer of parent class to access child objects, you must dec
 
 ## Item 8: Prevent exceptions from leaving destructors
 
-1. Can't emit exceptions in destructor: If an error is thrown in destructor, It will probably make the process of free resources fail
+1. Can't emit exceptions in destructor: If an error is thrown in destructor, It will probably make the process to free resources fail.
 2. Make a client class to deal with the exceptions, you can make a **non-destruct function** to handle with exceptions and you can handle exceptions in the destructor of client class.
 
 ## Item 9: Never call virtual functions during construction or destruction
@@ -89,5 +89,26 @@ food f1;
 food f2=f1;
 ```
 
-In the code above, if we pass by value in copy assignment function: the object created in the copy function must be copied to f2 by copy constructor, and the delete of the object inside copy assignment must be freed by calling destructor. However, if we pass by reference in copy assignment, the call of *copy constructor and destructor* can be reduced.
+In the code above, if we pass by value in copy assignment function: the object created in the copy function must be copied to f2 by copy constructor, and the object inside copy assignment must be freed by calling destructor. However, if we pass by reference in copy assignment, the call of *copy constructor and destructor* can be reduced.
+
+1. copy all members in class. If you have add new members, you have to modify your copy constructor and copy assignment operator.
+2. call copy functions of parent class when writing copy functions for child class.
+3. *never* call copy constructor in copy assignment operation, vise versa. Even they are very similar with each other. You can put the common parts of the two functions into a third function name *Init*, then both the copy constructor and copy assignment operator can call the Init function.
+
+
+
+# Chapter 3. Resource Management
+
+Resources are something you must free after finishing using them.
+
+## Item 13: Using objects to manage resources
+
+Because we have to delete the resource after using it. However, we can't make sure our code can reach the *delete sentence*. We have to use objects to manager resources in order to use the destructor to release the resource(C++ make sure the destructor can always be executed.) **This is called RAII(resource acquisition is initialization).**
+
+1. auto_pointer is a pointer who will automatic call the delete function of the object which it points to. There can be only one auto_pointer pointed to the same object--> When copy one auto_pointer to another, the original copy_pointer will be destroyed--> Auto_pointers can't be stored in C++ containers, because C++ containers require the contents exhibit "normal copy behavior".
+2. reference-counting smart pointers(RCSP) will count how much copy of the pointer. If there is zero copy of the RCSP pointer, it will call the delete function of the object which it points to to release resource.
+
+## Item 14: Think carefully about copying behavior in resource-managing classes
+
+1. Coping an RAII object entails copying the resource it manages.
 

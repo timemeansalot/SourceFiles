@@ -89,7 +89,7 @@
 <meta property="og:site_name" content="timemeansalot">
 <meta property="og:description" content="学习《Effective C++》的读书笔记">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2022-03-31T06:50:50.620Z">
+<meta property="og:updated_time" content="2022-03-31T11:34:39.958Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="effective_cpp">
 <meta name="twitter:description" content="学习《Effective C++》的读书笔记">
@@ -374,7 +374,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  875
+                  1.2k
                 </span>
               
 
@@ -390,7 +390,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  5
+                  7
                 </span>
               
             </div>
@@ -435,7 +435,7 @@
 <li>You can make an <strong>abstract class</strong> by declare it’s destructor as a <strong>pure virtual destructor</strong>. But you have to provide the definition of that destructor outside the class.</li>
 </ul>
 <h2 id="Item-8-Prevent-exceptions-from-leaving-destructors"><a href="#Item-8-Prevent-exceptions-from-leaving-destructors" class="headerlink" title="Item 8: Prevent exceptions from leaving destructors"></a>Item 8: Prevent exceptions from leaving destructors</h2><ol>
-<li>Can’t emit exceptions in destructor: If an error is thrown in destructor, It will probably make the process of free resources fail</li>
+<li>Can’t emit exceptions in destructor: If an error is thrown in destructor, It will probably make the process to free resources fail.</li>
 <li>Make a client class to deal with the exceptions, you can make a <strong>non-destruct function</strong> to handle with exceptions and you can handle exceptions in the destructor of client class.</li>
 </ol>
 <h2 id="Item-9-Never-call-virtual-functions-during-construction-or-destruction"><a href="#Item-9-Never-call-virtual-functions-during-construction-or-destruction" class="headerlink" title="Item 9: Never call virtual functions during construction or destruction"></a>Item 9: Never call virtual functions during construction or destruction</h2><ol>
@@ -455,7 +455,21 @@
 <p>Return reference in copy assignment operation can reduce of “copy constructor and destructor”. Because if we return value in copy assignment operation, we have use copy constructor to copy the object in copy assignment function to the left value of =. For example</p>
 </blockquote>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// define class food</span></span><br><span class="line">food f1;</span><br><span class="line">food f2=f1;</span><br></pre></td></tr></table></figure>
-<p>In the code above, if we pass by value in copy assignment function: the object created in the copy function must be copied to f2 by copy constructor, and the delete of the object inside copy assignment must be freed by calling destructor. However, if we pass by reference in copy assignment, the call of <em>copy constructor and destructor</em> can be reduced.</p>
+<p>In the code above, if we pass by value in copy assignment function: the object created in the copy function must be copied to f2 by copy constructor, and the object inside copy assignment must be freed by calling destructor. However, if we pass by reference in copy assignment, the call of <em>copy constructor and destructor</em> can be reduced.</p>
+<ol>
+<li>copy all members in class. If you have add new members, you have to modify your copy constructor and copy assignment operator.</li>
+<li>call copy functions of parent class when writing copy functions for child class.</li>
+<li><em>never</em> call copy constructor in copy assignment operation, vise versa. Even they are very similar with each other. You can put the common parts of the two functions into a third function name <em>Init</em>, then both the copy constructor and copy assignment operator can call the Init function.</li>
+</ol>
+<h1 id="Chapter-3-Resource-Management"><a href="#Chapter-3-Resource-Management" class="headerlink" title="Chapter 3. Resource Management"></a>Chapter 3. Resource Management</h1><p>Resources are something you must free after finishing using them.</p>
+<h2 id="Item-13-Using-objects-to-manage-resources"><a href="#Item-13-Using-objects-to-manage-resources" class="headerlink" title="Item 13: Using objects to manage resources"></a>Item 13: Using objects to manage resources</h2><p>Because we have to delete the resource after using it. However, we can’t make sure our code can reach the <em>delete sentence</em>. We have to use objects to manager resources in order to use the destructor to release the resource(C++ make sure the destructor can always be executed.) <strong>This is called RAII(resource acquisition is initialization).</strong></p>
+<ol>
+<li>auto_pointer is a pointer who will automatic call the delete function of the object which it points to. There can be only one auto_pointer pointed to the same object–&gt; When copy one auto_pointer to another, the original copy_pointer will be destroyed–&gt; Auto_pointers can’t be stored in C++ containers, because C++ containers require the contents exhibit “normal copy behavior”.</li>
+<li>reference-counting smart pointers(RCSP) will count how much copy of the pointer. If there is zero copy of the RCSP pointer, it will call the delete function of the object which it points to to release resource.</li>
+</ol>
+<h2 id="Item-14-Think-carefully-about-copying-behavior-in-resource-managing-classes"><a href="#Item-14-Think-carefully-about-copying-behavior-in-resource-managing-classes" class="headerlink" title="Item 14: Think carefully about copying behavior in resource-managing classes"></a>Item 14: Think carefully about copying behavior in resource-managing classes</h2><ol>
+<li>Coping an RAII object entails copying the resource it manages.</li>
+</ol>
 
       
     </div>
@@ -734,7 +748,7 @@ show_date_time();
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Item-4-always-initialize-object-before-using-it"><span class="nav-number">1.</span> <span class="nav-text">Item 4: always initialize object before using it</span></a></li></ol><li class="nav-item nav-level-1"><a class="nav-link" href="#Chapter-2-Constructors-Destructors-and-Assignment-Operations"><span class="nav-number"></span> <span class="nav-text">Chapter 2. Constructors, Destructors and Assignment Operations</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Item-5-Know-what-functions-C-silently-writes-and-calls"><span class="nav-number">1.</span> <span class="nav-text">Item 5: Know what functions C++ silently writes and calls</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Item-6-Explicitly-disallow-the-use-of-compiler-generated-functions"><span class="nav-number">2.</span> <span class="nav-text">Item 6: Explicitly disallow the use of compiler generated functions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Item-7-Declare-destructors-virtual-in-polymorphic-base-classes"><span class="nav-number">3.</span> <span class="nav-text">Item 7: Declare destructors virtual in polymorphic base classes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Item-8-Prevent-exceptions-from-leaving-destructors"><span class="nav-number">4.</span> <span class="nav-text">Item 8: Prevent exceptions from leaving destructors</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Item-9-Never-call-virtual-functions-during-construction-or-destruction"><span class="nav-number">5.</span> <span class="nav-text">Item 9: Never call virtual functions during construction or destruction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Item-10-Have-assignment-operation-return-a-reference-to-this"><span class="nav-number">6.</span> <span class="nav-text">Item 10: Have assignment operation return a reference to *this</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Item-11-Handle-assignment-to-self-in-operator"><span class="nav-number">7.</span> <span class="nav-text">Item 11: Handle assignment to self in operator=</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Item-12-Copy-all-parts-of-an-object"><span class="nav-number">8.</span> <span class="nav-text">Item 12: Copy all parts of an object</span></a></li></ol></li></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Item-4-always-initialize-object-before-using-it"><span class="nav-number">1.</span> <span class="nav-text">Item 4: always initialize object before using it</span></a></li></ol><li class="nav-item nav-level-1"><a class="nav-link" href="#Chapter-2-Constructors-Destructors-and-Assignment-Operations"><span class="nav-number"></span> <span class="nav-text">Chapter 2. Constructors, Destructors and Assignment Operations</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Item-5-Know-what-functions-C-silently-writes-and-calls"><span class="nav-number">1.</span> <span class="nav-text">Item 5: Know what functions C++ silently writes and calls</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Item-6-Explicitly-disallow-the-use-of-compiler-generated-functions"><span class="nav-number">2.</span> <span class="nav-text">Item 6: Explicitly disallow the use of compiler generated functions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Item-7-Declare-destructors-virtual-in-polymorphic-base-classes"><span class="nav-number">3.</span> <span class="nav-text">Item 7: Declare destructors virtual in polymorphic base classes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Item-8-Prevent-exceptions-from-leaving-destructors"><span class="nav-number">4.</span> <span class="nav-text">Item 8: Prevent exceptions from leaving destructors</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Item-9-Never-call-virtual-functions-during-construction-or-destruction"><span class="nav-number">5.</span> <span class="nav-text">Item 9: Never call virtual functions during construction or destruction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Item-10-Have-assignment-operation-return-a-reference-to-this"><span class="nav-number">6.</span> <span class="nav-text">Item 10: Have assignment operation return a reference to *this</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Item-11-Handle-assignment-to-self-in-operator"><span class="nav-number">7.</span> <span class="nav-text">Item 11: Handle assignment to self in operator=</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Item-12-Copy-all-parts-of-an-object"><span class="nav-number">8.</span> <span class="nav-text">Item 12: Copy all parts of an object</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Chapter-3-Resource-Management"><span class="nav-number"></span> <span class="nav-text">Chapter 3. Resource Management</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Item-13-Using-objects-to-manage-resources"><span class="nav-number">1.</span> <span class="nav-text">Item 13: Using objects to manage resources</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Item-14-Think-carefully-about-copying-behavior-in-resource-managing-classes"><span class="nav-number">2.</span> <span class="nav-text">Item 14: Think carefully about copying behavior in resource-managing classes</span></a></li></ol></li></div>
             
 
           </div>
@@ -782,7 +796,7 @@ show_date_time();
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">129.3k</span>
+    <span title="Site words total count">129.5k</span>
   
 </div>
 
