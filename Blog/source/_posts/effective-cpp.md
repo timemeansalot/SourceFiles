@@ -65,3 +65,29 @@ If you want to use pointer of parent class to access child objects, you must dec
 2. We can pass back information to parent class from child class for different derived class, so they can have different behavior.
 3. **Static** functions can only modify static members of the class; it's shared by all objects of that class; it's called by class_name::function_name
 
+## Item 10: Have assignment operation return a reference to *this
+
+The assign operation in C++ to the right first, for example a=b=c=15, C++ first make c=15, them assign b=c, then assign a=b.
+
+When we do operator override, the assignment operation must return \*this.
+
+## Item 11: Handle assignment to self in operator=
+
+When we write operator= for a class, we have to make sure the function forms well when we do **a=a**, which a is an instance of the class. There are 3 ways to assignment error and exception error:
+
+1. compare resource address and target address
+2. allocate new resource before delete old resource
+3. use *copy and swap* technical
+
+## Item 12: Copy all parts of an object
+
+> Return reference in copy assignment operation can reduce of "copy constructor and destructor". Because if we return value in copy assignment operation, we have use copy constructor to copy the object in copy assignment function to the left value of =. For example
+
+```c++
+// define class food
+food f1;
+food f2=f1;
+```
+
+In the code above, if we pass by value in copy assignment function: the object created in the copy function must be copied to f2 by copy constructor, and the delete of the object inside copy assignment must be freed by calling destructor. However, if we pass by reference in copy assignment, the call of *copy constructor and destructor* can be reduced.
+
