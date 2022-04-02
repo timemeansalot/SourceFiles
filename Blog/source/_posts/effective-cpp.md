@@ -131,3 +131,18 @@ Because we have to delete the resource after using it. However, we can't make su
 
 ## Item 18: make interfaces easy to use correctly and hard to use incorrectly
 
+1. Good interfaces are easy to use correctly and hard to use incorrectlly.
+2. Prevent error include consistency in interfaces and behave compatibility with build-in types.
+
+## Item 19: Treat class design as type design
+
+Class design is type design. Before defining a new type, be sure to consider all the issues discussed in this item.
+
+
+
+## Item 20: Prefer pass-by-reference-to-const to pass-by-value
+
+1. For user defined type, it's more efficient to pass-by-reference-const than pass-by-value. Because pass by reference will not create new object, so no copy constructor or destructor are used.
+2. *Slicing problem:* If you pass by value and set parameter as parent class type, when you put a child child object to that function, only the parent class part can be copied while the child class part will be drop. 
+3. For build-in type, STL iterator and function object type, it's more convenient to pass-by-value, they are easy to copy.
+4. Pass-by-value are indeed pass **pointers**.
