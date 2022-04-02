@@ -112,3 +112,22 @@ Because we have to delete the resource after using it. However, we can't make su
 
 1. Coping an RAII object entails copying the resource it manages.
 
+## Item 15: Provide access to raw resources in resource-managing classes
+
+1. APIs often require access to raw resources, so each RAII class should offer a way to get at the resource it manages.
+2. Access may be via explicit or implicit conversion, explicit conversion is more safe while implicit conversion is more convenient for clients.
+
+## Item 16: Use the same form in corresponding uses of new and delete
+
+1. if use \[ \] in *new* expression, use \[ \] in *delete expression*, if don't use \[ \] in *new* expression, don't use \[ \] in *delete expression*.
+
+## Item 17: Store new_ed objects in smart pointers in standard statements
+
+1. Failure to do this can lead to subtle resource leaks when exceptions are thrown.
+
+
+
+# Chapter 4. Designs and Declarations
+
+## Item 18: make interfaces easy to use correctly and hard to use incorrectly
+
