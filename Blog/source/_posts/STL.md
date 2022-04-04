@@ -104,3 +104,20 @@ Compared to Vector, List:
    - emplace_back(value)
    - merge
 
+# Deque
+
+> Deque is short for *double ended queue*. The functions for deque are same as vector, with an addition of push and pop operations for both front and back. 
+
+It has the following features:
+
+- It can insert and delete at both front and end.
+- It's a sequence container
+- It's more efficient than vector when insert and delete data
+- It's may not store data contiguously in memory
+
+
+
+
+
+
+
