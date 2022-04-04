@@ -90,7 +90,7 @@
 <meta property="og:description" content="Notes about learning C++  STL">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="e:/Pictures/TyporaPictures/image-20220404145224507.png">
-<meta property="og:updated_time" content="2022-04-04T06:52:36.459Z">
+<meta property="og:updated_time" content="2022-04-04T08:08:17.589Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="STL Notes">
 <meta name="twitter:description" content="Notes about learning C++  STL">
@@ -376,7 +376,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  5
+                  152
                 </span>
               
 
@@ -418,6 +418,77 @@
 </blockquote>
 <p><img src="E:/Pictures/TyporaPictures/image-20220404145224507.png" alt="image-20220404145224507"></p>
 <a id="more"></a>
+<h1 id="Containers"><a href="#Containers" class="headerlink" title="Containers"></a>Containers</h1><ol>
+<li>Sequence Containers: implement data structures which can be accessed in a sequential manner:<ul>
+<li>vector</li>
+<li>list</li>
+<li>deque</li>
+<li>arrays</li>
+<li>forward list(introduced in C++ 11)</li>
+</ul>
+</li>
+<li>Container Adaptors : provide a different interface for sequential containers.<ul>
+<li>queue</li>
+<li>priority queue</li>
+<li>stack</li>
+</ul>
+</li>
+<li>Associative Containers : implement sorted data structures that can be quickly searched (O(log n) complexity.<ul>
+<li>set</li>
+<li>multiset</li>
+<li>map</li>
+<li>multimap</li>
+</ul>
+</li>
+<li>Unordered Associative Containers : implement unordered data structures that can be quickly searched<ul>
+<li>unordered set</li>
+<li>unordered multiset</li>
+<li>unordered map</li>
+<li>unordered multimap</li>
+</ul>
+</li>
+</ol>
+<h2 id="Vectors"><a href="#Vectors" class="headerlink" title="Vectors"></a>Vectors</h2><blockquote>
+<p>Vectors are like dynamic arrays with the ability to resize automatically .</p>
+</blockquote>
+<p><a href="https://github.com/timemeansalot/algorithm/blob/master/STL/stl_vector.cpp" target="_blank" rel="noopener">Demo code link</a></p>
+<ol>
+<li>traverse:<ul>
+<li>begin()</li>
+<li>end()</li>
+<li>rbegin()</li>
+<li>rend()</li>
+</ul>
+</li>
+<li>capacity<ul>
+<li>size()</li>
+<li>resize(int n)</li>
+<li>capacity()</li>
+<li>max_size()</li>
+<li>empty()</li>
+<li>shrink_to_fit(): make capacity=size</li>
+</ul>
+</li>
+<li>access element<ul>
+<li>operator override [ ]</li>
+<li>at(int index)</li>
+<li>front()</li>
+<li>back()</li>
+<li>data(): return a pointer pointing to the first item in vector</li>
+</ul>
+</li>
+<li>Modify elements<ul>
+<li>push_back(value)</li>
+<li>pop_back()</li>
+<li>insert(iterator,value)</li>
+<li>erase(iterator,value)</li>
+<li>emplacy(iterator,value)</li>
+<li>emplacy_back(value)</li>
+<li>clear()</li>
+<li>swap(another_vector)</li>
+</ul>
+</li>
+</ol>
 
       
     </div>
@@ -520,8 +591,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -680,6 +760,22 @@ show_date_time();
       </section>
 
       
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Containers"><span class="nav-number">1.</span> <span class="nav-text">Containers</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Vectors"><span class="nav-number">1.1.</span> <span class="nav-text">Vectors</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
 
       
 
@@ -721,7 +817,7 @@ show_date_time();
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">130.3k</span>
+    <span title="Site words total count">130.5k</span>
   
 </div>
 

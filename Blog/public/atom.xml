@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://timemeansalot.github.io/"/>
-  <updated>2022-04-04T06:52:36.459Z</updated>
+  <updated>2022-04-04T08:08:17.589Z</updated>
   <id>http://timemeansalot.github.io/</id>
   
   <author>
@@ -21,9 +21,9 @@
     <link href="http://timemeansalot.github.io/2022/04/04/STL/"/>
     <id>http://timemeansalot.github.io/2022/04/04/STL/</id>
     <published>2022-04-04T06:50:23.000Z</published>
-    <updated>2022-04-04T06:52:36.459Z</updated>
+    <updated>2022-04-04T08:08:17.589Z</updated>
     
-    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="/assets/css/APlayer.min.css"><script src="/assets/js/APlayer.min.js" class="aplayer-secondary-script-marker"></script><blockquote><p>Notes about learning C++  STL</p></blockquote><p><img src="E:/Pictures/TyporaPictures/image-20220404145224507.png" alt="image-20220404145224507"></p><a id="more"></a>]]></content>
+    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="/assets/css/APlayer.min.css"><script src="/assets/js/APlayer.min.js" class="aplayer-secondary-script-marker"></script><blockquote><p>Notes about learning C++  STL</p></blockquote><p><img src="E:/Pictures/TyporaPictures/image-20220404145224507.png" alt="image-20220404145224507"></p><a id="more"></a><h1 id="Containers"><a href="#Containers" class="headerlink" title="Containers"></a>Containers</h1><ol><li>Sequence Containers: implement data structures which can be accessed in a sequential manner:<ul><li>vector</li><li>list</li><li>deque</li><li>arrays</li><li>forward list(introduced in C++ 11)</li></ul></li><li>Container Adaptors : provide a different interface for sequential containers.<ul><li>queue</li><li>priority queue</li><li>stack</li></ul></li><li>Associative Containers : implement sorted data structures that can be quickly searched (O(log n) complexity.<ul><li>set</li><li>multiset</li><li>map</li><li>multimap</li></ul></li><li>Unordered Associative Containers : implement unordered data structures that can be quickly searched<ul><li>unordered set</li><li>unordered multiset</li><li>unordered map</li><li>unordered multimap</li></ul></li></ol><h2 id="Vectors"><a href="#Vectors" class="headerlink" title="Vectors"></a>Vectors</h2><blockquote><p>Vectors are like dynamic arrays with the ability to resize automatically .</p></blockquote><p><a href="https://github.com/timemeansalot/algorithm/blob/master/STL/stl_vector.cpp" target="_blank" rel="noopener">Demo code link</a></p><ol><li>traverse:<ul><li>begin()</li><li>end()</li><li>rbegin()</li><li>rend()</li></ul></li><li>capacity<ul><li>size()</li><li>resize(int n)</li><li>capacity()</li><li>max_size()</li><li>empty()</li><li>shrink_to_fit(): make capacity=size</li></ul></li><li>access element<ul><li>operator override [ ]</li><li>at(int index)</li><li>front()</li><li>back()</li><li>data(): return a pointer pointing to the first item in vector</li></ul></li><li>Modify elements<ul><li>push_back(value)</li><li>pop_back()</li><li>insert(iterator,value)</li><li>erase(iterator,value)</li><li>emplacy(iterator,value)</li><li>emplacy_back(value)</li><li>clear()</li><li>swap(another_vector)</li></ul></li></ol>]]></content>
     
     <summary type="html">
     
@@ -147,9 +147,9 @@
     </summary>
     
     
-      <category term="Anaconda" scheme="http://timemeansalot.github.io/tags/Anaconda/"/>
-    
       <category term="Tools" scheme="http://timemeansalot.github.io/tags/Tools/"/>
+    
+      <category term="Anaconda" scheme="http://timemeansalot.github.io/tags/Anaconda/"/>
     
   </entry>
   
