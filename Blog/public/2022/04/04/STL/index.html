@@ -90,7 +90,7 @@
 <meta property="og:description" content="Notes about learning C++  STL">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="e:/Pictures/TyporaPictures/image-20220404145224507.png">
-<meta property="og:updated_time" content="2022-04-04T08:08:17.589Z">
+<meta property="og:updated_time" content="2022-04-04T11:48:32.533Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="STL Notes">
 <meta name="twitter:description" content="Notes about learning C++  STL">
@@ -376,7 +376,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  152
+                  230
                 </span>
               
 
@@ -486,6 +486,42 @@
 <li>emplacy_back(value)</li>
 <li>clear()</li>
 <li>swap(another_vector)</li>
+<li>assign(size,value)</li>
+</ul>
+</li>
+</ol>
+<h2 id="List"><a href="#List" class="headerlink" title="List"></a>List</h2><blockquote>
+<p>Lists are sequency containers that allow <em>non-contiguous</em> memory allocation. When talking about List, we mean doubly linked list while <em>forward list</em> refers to singly linked list.</p>
+</blockquote>
+<p><a href="https://github.com/timemeansalot/algorithm/blob/master/STL/stl_list.cpp" target="_blank" rel="noopener">Demo code link</a></p>
+<p>Compared to Vector, List:</p>
+<ul>
+<li>Has slow traversal</li>
+<li>Fast insert once index is chosen</li>
+</ul>
+<ol>
+<li>access data<ul>
+<li>push_back(value)</li>
+<li>push_front(value)</li>
+<li>front()</li>
+<li>back()</li>
+<li>pop_front()</li>
+<li>pop_back()</li>
+</ul>
+</li>
+<li>size<ul>
+<li>size()</li>
+<li>resize(new_size)</li>
+<li>empty</li>
+</ul>
+</li>
+<li>modify list()<ul>
+<li>assign(size,value)</li>
+<li>insert(iterator, value)</li>
+<li>emplace(iterator,value)</li>
+<li>emplace_front(value)</li>
+<li>emplace_back(value)</li>
+<li>merge</li>
 </ul>
 </li>
 </ol>
@@ -769,7 +805,7 @@ show_date_time();
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Containers"><span class="nav-number">1.</span> <span class="nav-text">Containers</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Vectors"><span class="nav-number">1.1.</span> <span class="nav-text">Vectors</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Containers"><span class="nav-number">1.</span> <span class="nav-text">Containers</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Vectors"><span class="nav-number">1.1.</span> <span class="nav-text">Vectors</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#List"><span class="nav-number">1.2.</span> <span class="nav-text">List</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -817,7 +853,7 @@ show_date_time();
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">130.5k</span>
+    <span title="Site words total count">130.6k</span>
   
 </div>
 

@@ -70,4 +70,37 @@ tags:
    - emplacy_back(value)
    - clear()
    - swap(another_vector)
+   - assign(size,value)
+
+## List
+
+> Lists are sequency containers that allow *non-contiguous* memory allocation. When talking about List, we mean doubly linked list while *forward list* refers to singly linked list.
+
+[Demo code link](https://github.com/timemeansalot/algorithm/blob/master/STL/stl_list.cpp)
+
+Compared to Vector, List:
+
+- Has slow traversal
+- Fast insert once index is chosen
+
+
+
+1. access data
+   - push_back(value)
+   - push_front(value)
+   - front()
+   - back()
+   - pop_front()
+   - pop_back()
+2. size
+   - size()
+   - resize(new_size)
+   - empty
+3. modify list()
+   - assign(size,value)
+   - insert(iterator, value)
+   - emplace(iterator,value)
+   - emplace_front(value)
+   - emplace_back(value)
+   - merge
 
