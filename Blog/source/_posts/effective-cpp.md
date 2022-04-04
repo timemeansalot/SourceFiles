@@ -146,3 +146,16 @@ Class design is type design. Before defining a new type, be sure to consider all
 2. *Slicing problem:* If you pass by value and set parameter as parent class type, when you put a child child object to that function, only the parent class part can be copied while the child class part will be drop. 
 3. For build-in type, STL iterator and function object type, it's more convenient to pass-by-value, they are easy to copy.
 4. Pass-by-value are indeed pass **pointers**.
+
+## Item 21: Don't try to return a reference when you must return an object
+
+Don't pass reference to objects that not exists.
+
+1. Any function return a pointer or reference to a local object is not allowed, because local object will be destroyed when the function exits.
+2. Don't return reference of pointer to static local object, though they will not be destroyed, but there could be an issue if more than one of that object is needed.
+
+## Item 22: Declared data members private
+
+1. Hiding data members behind function can easily control the read and write access of data member
+2. If you make clients access data members directly, your ability to change anything public is extremely restricted. Because to much clients code will broken if you make a change to your class.
+3. In fact, protected data members are no more encapsulated than public data members.
