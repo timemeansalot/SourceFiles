@@ -10,7 +10,7 @@ tags:
 
 > Notes about learning C++  STL
 
-![image-20220404145224507](E:/Pictures/TyporaPictures/image-20220404145224507.png)
+![image-20220404145224507](https://s2.loli.net/2022/04/04/PeAV7pDZ2oUnxTu.png)
 
 <!--more-->
 
@@ -106,7 +106,7 @@ Compared to Vector, List:
 
 # Deque
 
-> Deque is short for *double ended queue*. The functions for deque are same as vector, with an addition of push and pop operations for both front and back. 
+> Deque is short for *double ended queue*. The functions for deque are same as vector, but deque can push, pop, emplace at front while vector can only at end
 
 It has the following features:
 
@@ -117,7 +117,13 @@ It has the following features:
 
 
 
+# Arrays
 
+Compared to C arrays, the Array class in C++ has the following advantages:
+
+- It has size function to return size of array, while C array doesn't
+- Array class doesn't decay into pointers
+- It's more efficient, light-weighted and reliable than C array.
 
 
 
