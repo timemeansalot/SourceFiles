@@ -159,3 +159,12 @@ Don't pass reference to objects that not exists.
 1. Hiding data members behind function can easily control the read and write access of data member
 2. If you make clients access data members directly, your ability to change anything public is extremely restricted. Because to much clients code will broken if you make a change to your class.
 3. In fact, protected data members are no more encapsulated than public data members.
+
+## Item 23: Prefer non-member function to member function
+
+Although encapsulation is very import in C++, if will define to much member function, it's an harm to encapsulation.
+
+**The more client can see inside a class, the better encapsulation the class has.** non-member functions can increase encapsulation, flexibility, and extensibility.
+
+
+
