@@ -168,3 +168,7 @@ Although encapsulation is very import in C++, if will define to much member func
 
 
 
+## Item 24: Declare non-member functions when type conversions should apply to all parameters
+
+1. Do not use explicit keyword when you want to perform implicit conversion
+2. If you need type conversions on all parameters to a function, the function must be a non-member.
