@@ -50,11 +50,15 @@ tags: Algorithm
 
    - ```c++
      diff[0]=nums[0];
-     for(int i=1;i<nums.size();i++)
-         diff[i]=nums[i]-nums[i-1];
+     // [i,j,val]对nums[i]到nums[j]加val
+     diff[i]+=val;
+     if(j<nums.size()) // 如果j>=数组长度,则表示从[i,end]都加val
+         diff[j+1]-=val; 
      ```
 
    - `diff`数组跟`nums`数组长度一样，`diff`数组首元素跟`nums`数组首元素相同
+
+   - *注意`diff[j+1]-=val;`时，必须先判断数组长度跟j的大小*
 
 2. 由差分数组计算变化后的数组
 
@@ -64,7 +68,10 @@ tags: Algorithm
        nums[i]=nums[i-1]+diff[i];
    ```
 
+**例题：**
 
+- [1109]()：简单的差分数组
+- [1094]()：
 
 
 

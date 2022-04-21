@@ -379,7 +379,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  124.2k
+                  124.4k
                 </span>
               
 
@@ -395,7 +395,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  417
+                  418
                 </span>
               
             </div>
@@ -553,7 +553,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  322
+                  377
                 </span>
               
 
@@ -622,9 +622,11 @@
 <ol>
 <li><p>计算差分数组</p>
 <ul>
-<li><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">diff[<span class="number">0</span>]=nums[<span class="number">0</span>];</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;nums.size();i++)</span><br><span class="line">    diff[i]=nums[i]-nums[i<span class="number">-1</span>];</span><br></pre></td></tr></table></figure>
+<li><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">diff[<span class="number">0</span>]=nums[<span class="number">0</span>];</span><br><span class="line"><span class="comment">// [i,j,val]对nums[i]到nums[j]加val</span></span><br><span class="line">diff[i]+=val;</span><br><span class="line"><span class="keyword">if</span>(j&lt;nums.size()) <span class="comment">// 如果j&gt;=数组长度,则表示从[i,end]都加val</span></span><br><span class="line">    diff[j+<span class="number">1</span>]-=val;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><code>diff</code>数组跟<code>nums</code>数组长度一样，<code>diff</code>数组首元素跟<code>nums</code>数组首元素相同</p>
+</li>
+<li><p><em>注意<code>diff[j+1]-=val;</code>时，必须先判断数组长度跟j的大小</em></p>
 </li>
 </ul>
 </li>
@@ -632,6 +634,11 @@
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">nums[<span class="number">0</span>]=diff[<span class="number">0</span>];</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;nums.size();i++)</span><br><span class="line">    nums[i]=nums[i<span class="number">-1</span>]+diff[i];</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
+<p><strong>例题：</strong></p>
+<ul>
+<li><a href>1109</a>：简单的差分数组</li>
+<li><a href>1094</a>：</li>
+</ul>
 
           
         
@@ -2294,7 +2301,7 @@ show_date_time();
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">132k</span>
+    <span title="Site words total count">132.3k</span>
   
 </div>
 
