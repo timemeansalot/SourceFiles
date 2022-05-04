@@ -11,8 +11,9 @@ top: true
 
 # <center> <font color=#02F78E size=7> 付大爷的欢乐日常开始啦</font></center>
 
-# <center> <font color=#A52A2A size=7> no bilibili </font></center>
+# <center> <font color=#A52A2A size=7> no bilibili, no LOL  </font></center>
 bilibili wastes my life, I will not watch videos on bilibili. I will only watch study materials on Bilibili. This is my goal.
+今天是54青年节，今天还好没有跟航哥一起打游戏。今天中午吃了饭睡了觉，起来做了水果和芒果冰冰了吃，还看了书。要是打游戏的话，现在可能还没有打尽兴呢！
 # <center> <font color=#A52A2A size=7> 卸载了游戏 </font></center>
 今天航哥晚上9点的时候，叫我打游戏。但是我两天之前已经把游戏卸载了。我觉得打游戏会消耗我很多的时间；而且打游戏这个东西就是打的多就打得好，打的少就打得不好。这一点跟生活中其它的方面也是很像的，要是不去好好学习，就会学的不好，需要用到知识的时候，就会很难受。还好我几天之前毅然地把游戏卸载了，现在不打游戏，就不会觉得自己浪费了时间。虽然这样会比较累，还看不到什么时候可以出结果，但是习惯了这样的生活状态也就好了。难怪赵老师她们每天都可以从早上工作到晚上10点。
 虽然不知道赵老师跟航哥谁是对的，不知道哪种生活方式才是明智的。但是趁现在我还可以看得进去书，好好学习总是没有错的。
