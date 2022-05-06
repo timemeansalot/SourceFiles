@@ -12,6 +12,7 @@ top: true
 # <center> <font color=#02F78E size=7> 付大爷的欢乐日常开始啦</font></center>
 
 # <center> <font color=#A52A2A size=7> no bilibili, no LOL  </font></center>
+xx
 bilibili wastes my life, I will not watch videos on bilibili. I will only watch study materials on Bilibili. This is my goal.
 今天是54青年节，今天还好没有跟航哥一起打游戏。今天中午吃了饭睡了觉，起来做了水果和芒果冰冰了吃，还看了书。要是打游戏的话，现在可能还没有打尽兴呢！
 # <center> <font color=#A52A2A size=7> 卸载了游戏 </font></center>
