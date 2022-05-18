@@ -11,7 +11,8 @@ top: true
 
 # <center> <font color=#02F78E size=7> 付大爷的欢乐日常开始啦</font></center>
 
-# <center> <font color=#A52A2A size=7>   </font></center>
+# <center> <font color=#A52A2A size=7> 挑战一周不开哔哩哔哩   </font></center>
+今天是周三，到下周三之前，我要开始挑战一周都不花事件看短视频了。看看自己能够用节约下来的事件，学到多少知识
 
 # <center> <font color=#A52A2A size=7> 修电  </font></center>
 今天上午起来的时候，家里就断电了。我出去把电闸拉了起来，回到家里，电脑是能开机了，但是WiFi却没有。我又出去看了看，原来是我家的电表一直没有显示。我以为是我家的空气开关不能连接上WiFi导致的，但是我重启了WiFi之后，别人家的空气开关都可以正确连接上，唯独我家的不行。我心里有个糟糕的猜想冒了出来，“我家的空气开关不会是坏了把？”
