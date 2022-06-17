@@ -14,6 +14,7 @@ top: true
 # <center> <font color=#A52A2A size=7> Rick All </font></center>
 Risk all to try to make one thing work.
 读书的时候，不要争取得100%的分，付出1000%的努力去争取那1%的成绩，简直是脑残极了
+明天开始整理书单，重新制定自己需要掌握的知识&技能，明确每天的目标
 # <center> <font color=#A52A2A size=7> Make Money by Coding</font></center>
 今天在YouTube上看到了一个有着五年前端经验的工程师分享了在网上兼职来赚钱的可能性，看完了他的视频之后，我觉得在网上靠编程序赚钱还是挺难的，原因如下：
 1. 客户不好找，靠自己去找客源实在是太难了，要么从周围人下手，要么去兼职网站（兼职网站上有超级多的像我们一样希望在通过兼职网站找到兼职的人，竞争巨大）
