@@ -18,6 +18,8 @@ top: true
 4. 草率计划，立即行动
 5. 赚钱的事儿不难，但**坚持**很难
 6. 沉湎与过去的失败和辉煌，只会让当下的生活变得更糟糕
+
+
 # <center> <font color=#A52A2A size=7> Risk All </font></center>
 Risk all to try to make one thing work.
 读书的时候，不要争取得100%的分，付出1000%的努力去争取那1%的成绩，简直是脑残极了
