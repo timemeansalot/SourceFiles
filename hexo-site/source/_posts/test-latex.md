@@ -4,7 +4,8 @@ date: 2022-08-29 10:00:42
 tags: LinearAlgebra
 ---
 
-
+测试LaTex在HEXO下的表现
+<!--more-->
 # Part 1
 $$\begin{equation} \label{eq1}
 e=mc^2
