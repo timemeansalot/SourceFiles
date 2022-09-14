@@ -97,3 +97,16 @@ tags: LaTex
 ```
 
 # LaTex中插入表格
+```
+\begin{table}[h!] % h! means the table mast be here
+    \centering
+    \begin{tabular}{ |p{2cm}||p{2.5cm}|p{2.5cm}|p{2.5cm}|}
+        \hline
+        a & b & c & d\\
+        a & b & c & d\\
+        \hline
+    \end{tabular}
+    \caption{AXI, AHB和APB总线对比}
+    \label{tab_compare}
+\end{table}
+```
