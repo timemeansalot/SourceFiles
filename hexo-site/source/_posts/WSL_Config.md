@@ -227,3 +227,10 @@ Windows利用WSL配置Linux开发环境的详细教程
     ```
 
     这样每次打开WSL的时候，会自动打开ssh-agent并且添加ssh-key了，然后就可以直接访问GitHub了。
+
+
+
+# wsl for scala
+1. [scala install](https://blog.csdn.net/Nozidoali/article/details/119910487)
+2. [use scala in jupyter](https://blog.csdn.net/harrytsz/article/details/120032919)
+3. [remove scala in jupyter](https://blog.csdn.net/wuicer/article/details/126130987)
