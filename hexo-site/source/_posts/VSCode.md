@@ -164,11 +164,21 @@ tags:
 
 9. docker
 
-10. wechat, wsp, typora, netease music, chrome, vscode, chrome, Artha: 直接在app store下载
+   1. sogou input, wechat, wsp, typora, netease music, chrome, vscode, chrome, Artha: 直接在app store下载
 
-11. [clash](https://www.jianshu.com/p/02e3e8ccfe80)
+10. [clash](https://www.jianshu.com/p/02e3e8ccfe80)
 
-12. davinci
+11. ~~davinci~~：安装了，用不了。好像是AMD GPU驱动的问题。
+
+    1. ~~官网下载安装Davinci，按照安装PDF里面的说明，安装即可~~
+    2. ~~[安装AMD驱动](https://bbs.deepin.org/post/233022).~~
+       1. 使用flowblade替代：`sudo apt-get install flowblade`
+
+12. GIMP
+
+    1. 应用商店安装GIMP（类似Photoshop）
+    2. 安装darktable（类似Lightroom）用作编辑raw文件: `sudo apt install darktables`
+
 
 
 
