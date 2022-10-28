@@ -220,6 +220,15 @@ sogou input, wechat, wsp, typora, netease music, chrome, vscode, chrome, Artha
 1. 在官网下载安装包进行安装
 2. 字体在Linux下太小, TBD
 
+## Mail
+
+系统自带的Mail，连接上科大时的配置如下：
+
+1. incoming使用pop3
+2. outcoming使用imap
+
+<img src="/home/fujie/.config/Typora/typora-user-images/image-20221028122824248.png" alt="image-20221028122824248" style="zoom:50%;" />
+
 
 
 # VSCode的配置
