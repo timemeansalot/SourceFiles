@@ -91,7 +91,7 @@ tags:
    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
    # 配置nvm源
    echo "export NVM_NODEJS_ORG_MIRROR=http://npm.taobao.org/mirrors/node" >> ~/.bashrc
-   echo "NVM_IOJS_ORG_MIRROR=http://npm.taobao.org/mirrors/iojs" >> ~/.bashrc
+   echo "export NVM_IOJS_ORG_MIRROR=http://npm.taobao.org/mirrors/iojs" >> ~/.bashrc
    source ~/.bashrc
    # 安装nodejs
    nvm install node
@@ -158,6 +158,8 @@ tags:
    ```bash
    # 安装texlive-full
    sudo apt install texlive-full -y
+   # 安装中文字体
+   sudo apt install latex-cjk-all
    ```
 
    接下来要安装LaTex的编辑器，可以去[官网下载Tex Studio](http://texstudio.sourceforge.net/)，s但是我更喜欢使用VSCode，只需要在VSCode中添加LaTex扩展即可。
