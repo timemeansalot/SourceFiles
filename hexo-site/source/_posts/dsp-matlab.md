@@ -7,6 +7,11 @@ tags:
 ---
 
 # Matlab 笔记
+
+学习DSP时记录的笔记
+
+<!--more-->
+
 ## Matlab中的常用信号
 1. **sin, cos, sinc, exp**
 2. **heaviside(unit step function), diract(delta function)**
