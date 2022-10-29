@@ -162,7 +162,24 @@ picgo u picture_path
     sbt test
     ```
     
-    
+4. 在Jupyter Notebook中配置Scala Kernel
+
+   ```bash
+   # 卸载之前的kernel
+   rm -rf ~/.local/share/jupyter/kernels/scala/
+   
+   # 安装Scala Kernel
+   curl -L -o coursier https://git.io/coursier-cli && chmod +x coursier
+   SCALA_VERSION=2.12.10 ALMOND_VERSION=0.9.1
+   ./coursier bootstrap -r jitpack \
+       -i user -I user:sh.almond:scala-kernel-api_$SCALA_VERSION:$ALMOND_VERSION \
+       sh.almond:scala-kernel_$SCALA_VERSION:$ALMOND_VERSION \
+       --sources --default=true \
+       -o almond
+   ./almond --install
+   ```
+
+   
 
 ## gtkwave, verilator
 
@@ -187,6 +204,30 @@ sudo apt-get install verilator gtkwave
 
    ```matlab
    s.matlab.desktop.DisplayScaleFactor.PersonalValue = 2
+   ```
+   
+3. 设置MATLAB图标，下载对应的[matlab_logo.png](https://drive.google.com/file/d/1EH_f9wa-mP1RMdM1yPNXPH9WzRPm5zzo/view)
+
+   ```bash
+   # 添加desktop文件
+   sudo vim /usr/share/applications/matlab.desktop
+   
+   # 添加如下信息
+   [Desktop Entry]
+   Name=MATLAB R2022b
+   Comment=MATLAB R2022b software
+   Exec=/opt/MATLAB/R2022b/bin/matlab -desktop
+   Icon=/opt/MATLAB/R2022b/matlab_logo.png
+   Terminal=false
+   Type=Application
+   Category=Development;Simulation;Education;Science;
+   StartupNotify=true
+   Keywords=Run;
+   
+   # 从matlab_logo.png移到对应目录
+   ```
+
+   
 
 ## [Latex](https://kz16.top/deepin/#latex%E7%9A%84%E5%AE%89%E8%A3%85)
 
@@ -227,7 +268,7 @@ sogou input, wechat, wsp, typora, netease music, chrome, vscode, chrome, Artha
 1. incoming使用pop3
 2. outcoming使用imap
 
-<img src="/home/fujie/.config/Typora/typora-user-images/image-20221028122824248.png" alt="image-20221028122824248" style="zoom:50%;" />
+<img src="https://s2.loli.net/2022/10/28/ZNca3bR2UnWLSCv.png" alt="image-20221028122824248" style="zoom:50%;" />
 
 
 
