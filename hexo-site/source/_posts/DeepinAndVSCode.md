@@ -240,6 +240,8 @@ sudo apt install latex-cjk-all
 
 接下来要安装LaTex的编辑器，可以去[官网下载Tex Studio](http://texstudio.sourceforge.net/)，s但是我更喜欢使用VSCode，只需要在VSCode中添加LaTex扩展即可。
 
+在Deepin的终端中打开文件的命令是`dde-file-manager`，后面跟需要打开的文件的路径即可。
+
 ## docker
 
 ## app store下载的应用
