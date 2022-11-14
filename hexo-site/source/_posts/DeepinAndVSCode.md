@@ -250,11 +250,27 @@ sogou input, wechat, wsp, typora, netease music, chrome, vscode, chrome, Artha
 
 ## 添加微软字体
 
-如果安装了双系统，去C盘下面的Windows目录下，把fonts文件夹复制过来。
+1. 如果安装了双系统，去C盘下面的Windows目录下，把fonts文件夹复制过来。
 
-打开deepin的字体管理器（font manager），选择添加字体，将fonts文件夹里面的内容全选添加即可，重启WPS就可以使用宋体等字体了。
+   打开deepin的字体管理器（font manager），选择添加字体，将fonts文件夹里面的内容全选添加即可，重启WPS就可以使用宋体等字体了。
 
-![image-20221114183921285](https://s2.loli.net/2022/11/14/ztldqOh12c8QVLC.png)
+   <img src="https://s2.loli.net/2022/11/14/ztldqOh12c8QVLC.png" alt="image-20221114183921285" style="zoom:50%;" />
+
+
+
+2. 手动添加字体到WPS字体库，**这一步可能是不需要的**，因为上一步安装了字体到系统之后，WSP应该是可以搜索到系统字体的，此步只做记录。
+
+   ```bash
+   mv Fonts/ /usr/share/fonts/wps-office/
+   ```
+
+3. 更改WPS为中文界面：在deepin中，如果你选择的系统语言是英文，那么你的WPS也会是英文界面，此时看不到字号“五号“这样的类型，也看不到“黑体”。需要将WPS的显示界面改正中文。
+
+   ![image-20221114210116459](https://s2.loli.net/2022/11/14/ZNWgMnYvOzPkhCs.png)
+
+​			如果看不到上面的显示中文选项，需要安装WPS中文包: `sudo pacman -S wps-office-mui-zh-cn`。或者从百度进入官网下载WPS中文版也可以。
+
+
 
 ## clash
 
