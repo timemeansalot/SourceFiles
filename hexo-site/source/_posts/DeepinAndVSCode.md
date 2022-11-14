@@ -248,6 +248,14 @@ sudo apt install latex-cjk-all
 
 sogou input, wechat, wsp, typora, netease music, chrome, vscode, chrome, Artha
 
+## 添加微软字体
+
+如果安装了双系统，去C盘下面的Windows目录下，把fonts文件夹复制过来。
+
+打开deepin的字体管理器（font manager），选择添加字体，将fonts文件夹里面的内容全选添加即可，重启WPS就可以使用宋体等字体了。
+
+![image-20221114183921285](https://s2.loli.net/2022/11/14/ztldqOh12c8QVLC.png)
+
 ## clash
 
 到Github下载[windows-Linux](https://github.com/Fndroid/clash_for_windows_pkg/releases)版本，安装到opt即可
