@@ -7,6 +7,31 @@ tags: Integrated Circuit
 数字集成电路、芯片设计相关的笔记
 <!--more-->
 
+[TOC]
+
+
+
+# ARM低功耗设计
+
+## 参考链接
+
+1. [ARM Cortex M4文档](https://developer.arm.com/documentation/100166/0001/Functional-Description/About-the-functions?lang=en)
+1. [ARM Cortex Wikipedia](https://en.wikipedia.org/wiki/ARM_Cortex-M)
+
+> 无论嵌入式系统是使用电池运行还是连接到电网，设计一个绿色且能耗最低的系统是大多数系统的共同要求。现代嵌入式系统中最大的能源消耗者之一是微控制器，了解如何将其能源消耗降至最低至关重要。
+
+<img src="https://s2.loli.net/2022/11/21/dYOahWAfEuNZnm5.png" alt="image-20221121193836134" style="zoom:50%;" /> 
+
+基于Arm Cortex-M处理器的每个微控制器将至少具有三种电源模式；跑步，睡觉，深度睡眠。
+
+1. 运行模式是处理器完全通电并执行嵌入式系统设计的所有操作。
+2. 睡眠模式将停止CPU时钟，但将使系统时钟、闪存和外围时钟保持工作状态。
+3. 深度睡眠模式不仅会停止CPU时钟，还会关闭系统时钟、闪存和PLL
+
+微控制器进入睡眠状态越深，就越接近完全关闭。实现这一点很重要，因为嵌入式开发人员使用越来越深的睡眠模式时，**微控制器启动和开始执行指令所需的时间可能会急剧增加**。一些提供深度电源模式的处理器需要与处理器引导序列相同的时间才能再次运行。根据你的应用程序，这**可能会对系统的<u>实时性能</u>产生重大影响**。
+
+嵌入式开发人员可以使用WFI指令将其系统置于低功耗模式，一旦触发先前配置的唤醒事件或中断，系统将立即唤醒。
+
 
 
 # Introduction
@@ -99,3 +124,8 @@ tags: Integrated Circuit
 1. memory-mapped IO：使用特定的地址空间当做IO设备的地址空间、使用load\store当做IO操作指令
 2. explicit input/output command：IO设备使用自己的地址空间，使用input/output当做io操作的命令
 3. 响应IO设备可以通过“中断”、“timer 触发”等方式
+
+
+
+
+
