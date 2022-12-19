@@ -25,6 +25,10 @@ unrar e finename
 # 解压文件到指定文件夹
 unrar x filename path
 ```
+2. tar
+```bash
+tar -xzvf filename -C path
+```
 
 
 
@@ -62,6 +66,7 @@ nnoremap <space> @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR> " 用空格�
 
 # zshrc配置
 ```bash
+
 
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
@@ -179,6 +184,7 @@ else
     fi
 fi
 unset __conda_setup
+conda activate learn
 # <<< conda initialize <<<
 
 
@@ -189,4 +195,9 @@ export NVM_DIR="$HOME/.nvm"
 export NVM_NODEJS_ORG_MIRROR=http://npm.taobao.org/mirrors/node
 export NVM_IOJS_ORG_MIRROR=http://npm.taobao.org/mirrors/iojs
 # nvm using china repo
+
+
+# Java
+export JAVA_HOME=/opt/Java/jdk-19.0.1.jdk/Contents/Home
+export PATH=$JAVA_HOME/bin:$PATH:.
 ```
