@@ -181,3 +181,40 @@ PERL_MM_OPT="INSTALL_BASE=/Users/fujie/perl5"; export PERL_MM_OPT;
 alias gktwave="/Applications/gtkwave.app/Contents/Resources/bin/gtkwave"
 
 ```
+
+# Makefile笔记
+```bash
+
+# search path, the alternative way is to use `-I` option when using `make` command
+VPATH = src:headers
+# 
+# vpath %.h headers
+# vpath %.c src
+
+CC := gcc
+CFLAGS :=
+
+# source files and object files
+cFilesPath=$(wildcard *.c src/*.c)
+cFiles=$(notdir $(cFilesPath))
+cObjects=$(patsubst %.c,%.o,$(cFiles))
+
+
+all: $(cObjects) # default make target
+	gcc $(cObjects) -o main
+
+
+# compile .o file for each .c file
+$(cObjects): %.o: %.c # static pattern->targets: target-pattern: dependency-pattern
+	$(CC) -c $(CFLAGS) $< -o $@  # `$<` means dependency, `$@` means target
+
+.PHONY: clean all
+
+clean:
+	@# echo "clean all temp files" # with @, the command will not appear when using `make`
+	@echo "all file paths: " $(cFilesPath)
+	@echo "all c files: " $(cFiles)
+	@echo "all object files: " $(cObjects)
+	@$(MAKE) -C src # equal to `cd src && $(MAKE)
+	@# -rm *.o main
+```
