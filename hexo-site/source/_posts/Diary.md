@@ -10,6 +10,12 @@ top: true
 <!--more-->
 # <center> <font color=#02F78E size=7> 付大爷的欢乐日常开始啦</font></center>
 
+# 锻炼计划
+
+- [ ] 深蹲
+- [ ] 跑步
+- [ ] 俯卧撑
+
 # no bilibili
 尝试3天不看哔哩哔哩
 - [ ] 第1天
