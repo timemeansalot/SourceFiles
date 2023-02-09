@@ -95,6 +95,14 @@ tags: LaTex
 \lipsum
 
 
+\section{Section 2 Conditional Compile}
+	\newcounter{CHINAESE_ENA}
+    \setcounter{CHINAESE_ENA}{1}
+	\newcounter{ENGLISH_ENA}
+    \setcounter{ENGLISH_ENA}{1}
+
+	\ifnum \value{CHINAESE_ENA}>0 {中文部分}{}
+	\ifnum \value{ENGLISH_ENA}>0 {English Part}{}
 
 Hello \XeLaTeX and \XeTeX
 \[
