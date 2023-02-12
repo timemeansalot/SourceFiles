@@ -4,48 +4,87 @@ date: 2022-12-09 10:35:05
 tags: Linux
 ---
 
-本文档记录一些Linux相关的工具、命令的使用
+本文档记录一些 Linux 相关的工具、命令的使用
+
 <!--more-->
 
-# neovim笔记
+# neovim 笔记
 
-## LSP
-1. `i` install
-2. `u` updage
-3. `X` uninstall
-4. `gl` show info about ERROR in codes
-5. `K` when select a variable, show the variable info
+## neovim shortcut
+
+> `Space` is set to be the **header key**, we can just press Space to see the information table of our Neovim config.
+
+| shortcut  | usage                                                |
+| --------- | ---------------------------------------------------- |
+| gl        | show error description                               |
+| gd        | go to function definition                            |
+| gr        | find all the referrences                             |
+| Space+f   | search document by name                              |
+| Space+F   | search text by name                                  |
+| Space+lf  | format document                                      |
+| Space+e   | open explore                                         |
+| Shift+l   | choose file on the right                             |
+| Shift+h   | choose file on the left                              |
+| Ctrl+\    | popup terminal                                       |
+| jk        | press jk fast to back to normal mode from enter mode |
+| < or >    | in visual mode, move code segment left or right      |
+| Shift+j,k | in visual mode, move code segment up or down         |
+
+## vim shortcut
+
+| shortcut          | usage                                                |
+| ----------------- | ---------------------------------------------------- |
+| vsp               | vertical spite window                                |
+| sp                | horizontal splite window                             |
+| Ctrl+w, <h,j,k,l> | change between the windows                           |
+| Ctrl, <h,j,k,l>   | change between the windows <- using keymap in neovim |
+| `f,F` target      | find the target, use `;` to find next target         |
+
+1. set colorscheme in vim:
+    - add the colorscheme in `plugin.lua` file
+    - type `colorscheme darkblue` in vim command windows to use that colorscheme.
+    - add `vim.cmd "colorscheme darkblue` in init.lua  to use that colorscheme.
+
+## install plugin in neovim
+
+1. plugin config file is `plugin.lua`
+2. all installed plugins is under `~/.local/share/nvim/`
 
 # tmux
-> tmux是一个终端复用工具，使用tmux可以方便的在一个终端窗口里显示多个**session, window, panel**
 
-1. `tmux new -s session_name` will create a session, inside this *session* there is a *window* and a *panel*. We first define **C-b** as **ctrl+b**. The **C-b** is *prefix-key* in tmux, it's followed by *command key*.
-	`tmux ls` can list all sessions, `tmux attach -t session_name` can connect to one session. `tmux rename_session -t old_name new_name` can rename a session.
-2. `C-b c` will create a new window inside a session, `C-b w` will list all sessions, windows and panels, you can use arrow-key or *h,j,k ,l* to choose a pannel you want. `C-b ,` can rename a window.
-	`tmux rename-window -t old_name new_name` can rename a window.
-3. `C-b %` can create a new *panel*, `C-b arrow` can choose between the left and right panel. You can type `exit` or `C-d` to close a panel.
-	`C-b z` can make a panel to full screen, `C-b z` again can make a panel shrink to its previews size.
+> tmux 是一个终端复用工具，使用 tmux 可以方便的在一个终端窗口里显示多个**session, window, pane**
+
+| shortcut          | usage                  |
+| ----------------- | ---------------------- |
+| Ctrl+b, %         | vertical splite pane   |
+| Ctrl+b, "         | horizontal splite pane |
+| Ctrl+b, n         | change between windows |
+| Ctrl+b, arrow_key | resize pane            |
 
 # 文件解压缩
+
 1. unrar
+
 ```bash
 # 解压文件到当前位置
 unrar e finename
 # 解压文件到指定文件夹
 unrar x filename path
 ```
+
 2. tar
+
 ```bash
 tar -xzvf filename -C path
 ```
 
+# Makefile 笔记
 
-# Makefile笔记
 ```bash
 
 # search path, the alternative way is to use `-I` option when using `make` command
 VPATH = src:headers
-# 
+#
 # vpath %.h headers
 # vpath %.c src
 
