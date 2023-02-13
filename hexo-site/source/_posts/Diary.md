@@ -24,7 +24,7 @@ They have subject subsidy but we don't have!!!😭
 > future plan of this year 
 
 4000-900-1500=1600 -> -1500
-   - suppose I remain 1500 after house rent and food, I must save <u>at least 500</u> so that I can save enough money for YaoyYao's new phone.
+   - suppose I remain 1500 after house rent and food, I must save <u>at least 500</u> so that I can save enough money for YaoyYao's new phone. I decided to save 500 RMB at the beginning of every month.
 
 By the way, I am not hardworking enough to earn <u>scholarship</u> which is a pity too, so I have to do some part time job after finishing my graduation essay.
 
