@@ -29,8 +29,10 @@ tags: Linux
 | jk        | press jk fast to back to normal mode from enter mode |
 | < or >    | in visual mode, move code segment left or right      |
 | Shift+j,k | in visual mode, move code segment up or down         |
+| gc        | in visual mode, comment all codes                    |
 
 ## vim shortcut
+
 
 | shortcut          | usage                                                |
 | ----------------- | ---------------------------------------------------- |
@@ -41,9 +43,9 @@ tags: Linux
 | `f,F` target      | find the target, use `;` to find next target         |
 
 1. set colorscheme in vim:
-    - add the colorscheme in `plugin.lua` file
-    - type `colorscheme darkblue` in vim command windows to use that colorscheme.
-    - add `vim.cmd "colorscheme darkblue` in init.lua  to use that colorscheme.
+   - add the colorscheme in `plugin.lua` file
+   - type `colorscheme darkblue` in vim command windows to use that colorscheme.
+   - add `vim.cmd "colorscheme darkblue` in init.lua to use that colorscheme.
 
 ## install plugin in neovim
 
