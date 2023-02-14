@@ -17,11 +17,19 @@ tags: Linux
 | shortcut  | usage                                                |
 | --------- | ---------------------------------------------------- |
 | gl        | show error description                               |
+| gD        | go to function declaration                           |
 | gd        | go to function definition                            |
+| gI        | go to implementation                                 |
 | gr        | find all the referrences                             |
+| K         | show info in popup window                            |
 | Space+f   | search document by name                              |
 | Space+F   | search text by name                                  |
+| Space+lj  | go next                                              |
+| Space+lk  | go prev                                              |
 | Space+lf  | format document                                      |
+| Space+li  | LspInfo                                              |
+| Space+lI  | LspInstallInfo                                       |
+| Space+la  | code action                                          |
 | Space+e   | open explore                                         |
 | Shift+l   | choose file on the right                             |
 | Shift+h   | choose file on the left                              |
@@ -33,7 +41,6 @@ tags: Linux
 
 ## vim shortcut
 
-
 | shortcut          | usage                                                |
 | ----------------- | ---------------------------------------------------- |
 | vsp               | vertical spite window                                |
@@ -41,6 +48,8 @@ tags: Linux
 | Ctrl+w, <h,j,k,l> | change between the windows                           |
 | Ctrl, <h,j,k,l>   | change between the windows <- using keymap in neovim |
 | `f,F` target      | find the target, use `;` to find next target         |
+| Ctrl+o            | go to the previous location                          |
+| Ctrl+i            | go to the next location                              |
 
 1. set colorscheme in vim:
    - add the colorscheme in `plugin.lua` file
@@ -51,6 +60,18 @@ tags: Linux
 
 1. plugin config file is `plugin.lua`
 2. all installed plugins is under `~/.local/share/nvim/`
+
+## add new LSP server in neovim
+
+1. use `LspInstall` to install the corresponding server for your target file. The server will be installed by Packer to path `.local/share/nvim/site/pack/packer/start/`
+2. add a config file under `lua/user/lsp/settings` for the language server. This [website](https://github.com/neovim/nvim-lspconfig/tree/master/lua/lspconfig/server_configurations) contains all the template config file for almost all languages.
+3. turn on that language server in file `mason.lua`
+
+For example, if I want to install LSP server for LaTex, I do the following things:
+
+1. install language for LaTex, it's `texlab`.
+2. create a config file `texlab.lua` under `lua/user/lsp/settings`, and type in the corresponding config codes.
+3. I add `texlab` in the _local_servers_ field in `mason.lua`.
 
 # tmux
 
