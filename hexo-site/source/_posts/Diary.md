@@ -10,6 +10,9 @@ top: true
 <!--more-->
 # <center> <font color=#02F78E size=7> 付大爷的欢乐日常开始啦</font></center>
 
+# 异地的情人节
+今天是亲人节哦，今天跟猪猪买了小蛋糕🍰和奶茶🥤，她吃了之后可开心了。虽然是不能一起过节了，但是我们在一起还是超级开心呀。希望可以早日生活在一起，每天能见面就最好了.
+
 # 2023年，已经要加油！
 Below is the school subsidy standard:
 
