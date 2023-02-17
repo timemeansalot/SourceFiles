@@ -10,6 +10,52 @@ tags: Linux
 
 # neovim 笔记
 
+text1 text1
+
+## new neovim shortcut
+
+| shortcut         | mode | usage                                                                             |
+| ---------------- | ---- | --------------------------------------------------------------------------------- |
+| jk               | n    | esc                                                                               |
+| <Space>nh        | n    | cleaer search result                                                              |
+| <Space>+         | n    | increase number                                                                   |
+| <Space>-         | n    | decrease number                                                                   |
+| <Space>sv, sh    | n    | Create splite window vertical or horizontal                                       |
+| <Space>se, sx    | n    | Equal windows size, close window                                                  |
+| <Space>sm        | n    | maximize split window, require plugin: vim-maximizer                              |
+| <Space>to, tx    | n    | open newt tab, close tab                                                          |
+| <Space>tn, tp    | n    | Go to next tab, previous tab                                                      |
+| <Ctrl>h,j,k,l    | n    | go to different window, require plugin: tmux-navigator                            |
+| ys+w+quote       | n    | add quote to a word, require plugin: vim-surround                                 |
+| ds+quote         | n    | delete quote of a word, require plugin: vim-surround                              |
+| cs+quote1 quote2 | n    | change quote1 to quote 2 of a word, require plugin: vim-surround                  |
+| y w              | n    | copy a word, require plugin: replace-with register                                |
+| g rw             | n    | paste and change a word: replace-with register                                    |
+| gcc, gc9j        | n    | comment a line or comment 9 lines, require plugin: Comment                        |
+| <Space>e         | n    | open explore, requrie plugin: nvim-tree                                           |
+| a                | n    | in expoore, type a to add a file                                                  |
+| <Space>ff        | n    | find file in current director, require plugin: telescope                          |
+| <Space>fs        | n    | find text in current director, require plugin: telescope                          |
+| <Space>fc        | n    | find current text under the cursor in current director, require plugin: telescope |
+| <Space>fh        | n    | show help information                                                             |
+| <Ctrl>k,j        | n    | in telescope output, go to up and down results                                    |
+
+> 3 steps to add a plugin in neovim
+
+1. add a plugin in the plugin-setup.lua
+2. if the plugin need config, create a corresponding config file in plugin folder. **import the config file in the init.lua file.**
+3. if need any shortcut for that plugin, add the corresponding keybinds in the keymaps.lua file
+
+> For LSP, you can go to [mason website](https://github.com/williamboman/mason-lspconfig.nvim) to check all the available lsp server.
+
+LSP shortcuts:
+
+| shortcut | function  |
+| -------- | --------- |
+| i        | install   |
+| X        | uninstall |
+| u        | upgrade   |
+
 ## neovim shortcut
 
 > `Space` is set to be the **header key**, we can just press Space to see the information table of our Neovim config.
