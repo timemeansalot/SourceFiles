@@ -130,6 +130,10 @@ For example, if I want to install LSP server for LaTex, I do the following thing
 | Ctrl+b, n         | change between windows |
 | Ctrl+b, arrow_key | resize pane            |
 
+Tmux插件安装：
+1. 在~/.tmux.conf文件中添加对应的插件
+2. 进入tmux之后使用：Ctrl+d, Shift+i安装对应的插件即可
+
 # 文件解压缩
 
 1. unrar
