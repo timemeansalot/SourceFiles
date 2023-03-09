@@ -101,6 +101,13 @@ LSP shortcuts:
    - add the colorscheme in `plugin.lua` file
    - type `colorscheme darkblue` in vim command windows to use that colorscheme.
    - add `vim.cmd "colorscheme darkblue` in init.lua to use that colorscheme.
+2. `"ap`: paste content in register a  
+   `"ayaw`: copy current word into register a
+3. 搜索替换
+  - 全文替换：`%s/source/goal/g`
+  - 替换一行所有匹配项：`s/source/goal/g`, the difference is that we change `%s` into `s`
+  - 替换某几行所有匹配项：`shift+v` choose some lines, `s/source/goal/g`
+  - 替换当前行及下面n行所有匹配项：`,+ns/source/goal/g`
 
 ## install plugin in neovim
 
@@ -158,6 +165,14 @@ tar -xzvf filename -C path
 # 在当前目录下的所有文件里查找target字符串
 grep -r "target" .
 ```
+
+4. 删除所有可执行文件
+```bash
+ls  -F | grep \* | cut -d \* -f 1 | xargs rm
+```
+
+# Git命令
+1. unstage all files in the stage erea: `git reset HEAD -- .`
 
 # Makefile 笔记
 
