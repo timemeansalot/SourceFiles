@@ -130,8 +130,18 @@ Spike <-> openOCD <-> GDB
 3. 此外：使用 Chisel Test 来验证 Chisel 编写的硬件模块，则更加的高级，还可以配合 difftest 使用。
 4. Spike 模拟器可以配合 RISCV 汇编代码使用，当我们不了解 RISCV 指令细节的时候，可以通过 Spike 运行对应的指令，然后查看结果。
 
+# ELF
+
+## 常见的工具
+
+1. objcopy: `objcopy -O binary main.elf main.bin`, copy codes from main.elf to main.bin, in binary format.
+2. objdump: disassemble code, eg: `objdump -S main.elf`, generate assemble code from main.elf
+3. readelf: show elf file info, eg: `readelf -S xx.elf`
+4. hexdump: binary to hex
+
 # Referrences
 
 1. [RISCV Tutorial on Youtube by Derry Pratama](https://www.youtube.com/watch?v=zZUtTplVHwE&list=PLgzAvj2cYr3qGvecT_PSnKzl5SxECZmI3)
 2. [Veriloator Guide by Norbert](https://www.itsembedded.com/), Norbert also gives guide on [how to use vivado](https://itsembedded.com/dhd/vivado_sim_1/)
 3. [Icarus Verilog Tutorial](https://gist.github.com/donn/d9ecf0cf6e7ae3d99c7c4395e7e10afa)
+4. [循序渐进，学习开发一个 RISC-V 上的操作系统 - 汪辰](https://www.bilibili.com/video/BV1Q5411w7z5?p=5&vd_source=2eb89fc06210190d19c0a6c277925270)
