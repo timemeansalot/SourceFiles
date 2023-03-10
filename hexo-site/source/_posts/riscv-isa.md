@@ -84,9 +84,20 @@ RISCV 中涉及到溢出的指令有: `ANDI`, `ADD`, `SUB`
 
 # RISCV 指令介绍
 
-![RV-32IM Instructions](/Users/fujie/Pictures/typora/riscv-micro-arch/addi.jpg)
-![RV-32IM Instructions](/Users/fujie/Pictures/typora/riscv-micro-arch/shiftISA.jpg)
-![RV-32IM Instructions](/Users/fujie/Pictures/typora/riscv-micro-arch/R-typeISA.jpg)
+## RISCV ISA 模拟器
+
+模拟 RISCV 指令在 RISCV 处理器上的运行，可以查看某个寄存器的状态
+
+```bash
+# cross compile to get ELF File
+riscv64-unknown-elf-gcc -nostdlib -fno-builtin -march=rv32ima -mabi=ilp32 -g -Wall test.s -Ttext=0x80000000 -o test.elf
+
+# simulate: running elf on qeum simulator
+qemu-system-riscv32 -nographic -smp 1 -machine virt -bios none -kernel ${EXEC}.elf -s -S &
+
+# use gdb to debug
+riscv64-unknown-elf-gdb test.elf
+```
 
 > PS: $(xx)_{[31:0]}$表示取 xx 的低 32bits
 
@@ -606,6 +617,56 @@ RV-32IM 需要实现的移位操作不包括循环移位，只包括：<u>逻辑
 - 对每一个 4 选 1 选择器，其 00 和 10 输入选择未移位后的数据；01 选择右移的数据、11 选择左移的数据。
 
 # 成法器&除法器总结
+
+一、加减法单元
+
+通过结合 CLA（Carry Lookahead Adder）和 CBA（Carry Bypass Adder, or Carry Skip Adder）在器件增长有限的情况下提高加法的运算速度。加法直接输入两个加数，减法则将减数取反后 c0 置 1
+
+![](https://s2.loli.net/2023/03/11/TyN2zUmwd3ngS4a.png)
+其中 4-bit CLA 的结构如下
+
+![](https://s2.loli.net/2023/03/11/OGevaiwC8AMhdfx.png)
+ci 的表达式如下
+
+![](https://s2.loli.net/2023/03/11/SFCL7nNHizKarhf.png)
+
+其中
+
+$$
+g_i=1 \iff a_i+b_i=2\\
+p_i=1 \iff a_i+b_i=1
+$$
+
+二、乘法单元
+
+乘法需要 4 个 Cycle 完成，每个 Cycle 完成一次 16\*16 乘法，采用 booth 编码，该方案可以减少加法树的层数及器件的数量。
+
+乘法器的整体架构如下：
+
+![](https://s2.loli.net/2023/03/11/Z9xzBtiTKNyWagU.png)
+
+加法树使用 4-2 压缩器构建，4-2 压缩器的结构如图
+![](https://s2.loli.net/2023/03/11/15jlGqNFQaVeiTA.png)
+
+其中 CGEN 为
+
+![](https://s2.loli.net/2023/03/11/hqNxBUWLuvafoIT.png)
+
+三、除法单元
+
+除法单元采用一次获得 2bit 商的方案，采用 SRT 算法，每次商位选择的范围为{-2，-1，0，1，2}。若部分余数 p 与除数 b 满足
+
+$$
+\beta-\frac{2}{3}\le p \le \beta+\frac{2}{3}
+$$
+
+则可以将商定为 β，如此一来，不同商的选择范围会有重叠部分，因此商位选择的分界线为在该重叠部分的一条折线。
+
+除法器整体架构如图所示：
+
+![](https://s2.loli.net/2023/03/11/zO81yMsQNj3mFpK.png)
+
+其中 QDS 为商位选择器，on the fly 为实时商数转换器
 
 ## 香山
 
