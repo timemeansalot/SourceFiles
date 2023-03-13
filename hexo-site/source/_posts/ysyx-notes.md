@@ -6,8 +6,9 @@ tags:
   - YSYX
 ---
 
+![ysyx home](https://s2.loli.net/2023/03/13/UyC3hr8zgHu4jLS.png)
+一生一芯学习过程中的记录，参考: [一生一芯学习讲义](https://ysyx.oscc.cc/docs/)
 
-一生一芯学习过程中的记录，参考[一生一芯学习讲义](https://ysyx.oscc.cc/docs/)
 <!--more-->
 
 # To Do Lists
