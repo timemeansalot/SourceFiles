@@ -4,7 +4,7 @@ date: 2023-03-07 14:58:41
 tags: RISCV
 ---
 
-RV-32IM 每条指令的特性和功能
+RV-32IM 每条指令的特性和功能, 寄存器的通用功能(register mapping)
 
 <!--more-->
 
