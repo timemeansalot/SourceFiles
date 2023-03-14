@@ -9,6 +9,14 @@ RISCV 5 级流水线设计，支持 RV-32IM 指令集
 
 <!--more-->
 
+
+# 5级流水线上的功能部件
+## IF(Instruction Fetch)
+## ID(Instruction Decode)
+## EXE(Execution)
+## MEM(Memory Access)
+## WB(Write Back)
+
 RV-32I 中设计到的 load/store 指令有如下 8 条:
 
 - LB
