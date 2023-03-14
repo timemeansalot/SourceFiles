@@ -55,17 +55,10 @@ load 指令的 opcode 都是`0000011`, 5 条 load 指令的区别在于 funct3 �
 load 指令有 5 条, load 指令都是 I-Type 的指令，其功能是：从 memory 中取出 data 放到 RF(register file)中，具体每个 Stage 执行的操作如下：
 
 - ID(Instruction Decode):
-  1. 将 rs1 送到 RF 的 ad1(address port 1), 从 RF 中读出 base address 放到 rd1(read data1)
-  2. 将指令中的 imm(imm=inst[31:20]) 做立即数拓展为 32bits, extImm
 - EXE(Execution)
-  1. 将 rd1 连接到 ALU 的 src1, 将 extImm 连接到 ALU 的 src2
-  2. aluOP=add，做加法，aluResult 的结果是用于访问 Data Memory 的地址 mAddress
 - MEM(Memory Access)
-  1. 将 mAddress 连接到 data memory 的 ad
-  2. 从 data memory 中读出 8, 16, 32bits 的数据 mData
-  3. 按照指令的 funct3 对 mData 做对应的扩展，拓展为 32bits 的 extMData
-- WB(Write Back)
-- IF(Instruction Fetch)
+- WB(Write Back): 在 clk 上升沿将 memory 中读到的数据存入到 x[rd]
+- IF(Instruction Fetch): 取下一条 PC 的地址
 
 # Store 指令
 
@@ -84,5 +77,23 @@ Store 指令有 3 条, store 指令的 opcode 都是`0100011`, 3 条 store 指�
 | SH  | 010    |
 | SW  | 011    |
 
+- ID(Instruction Decode):
 
-<em>Hello</em> World
+  1. 将 rs1 送到 RF 的 ad1(address port 1), 从 RF 中读出 base address 放到 rd1(read data1)
+  2. 将 rs2 送到 RF 的 ad2(address port 2), 从 RF 中读出 source data 放到 rd2(read data 2)
+  3. 将指令中的 imm(imm=inst[31:25, 11:7]) 做立即数拓展为 32bits,得到 extImm.  
+     修改 Extend Unit，不能跟 load 通用
+
+- EXE(Execution)
+  1. 将 rd1 连接到 ALU 的 src1, 将 extImm 连接到 ALU 的 src2
+  2. aluOP=add，做加法，aluResult 的结果是用于访问 Data Memory 的地址 mAddress
+- MEM(Memory Access): 在 clk 上升沿的时候将 ad2 写入到 data memory
+  1. 将 mAddress 连接到 data memory 的 ad
+  2. 将 rd2 连接到 data memory 的 WD
+  3. 将 MeMWrite 连接到 Data Memory 的 WE
+- WB(Write Back): 在 clk 上升沿将 memory 中读到的数据存入到 x[rd]
+  1. 将 extMData 连接到 RF 的 WD(write data)
+  2. 将 rAddress 连接到 RF 的 AD3(address 3)
+  3. 将 RegWrite 连接到 RF 的 WE(write enable)
+- IF(Instruction Fetch): 取下一条 PC 的地址
+  1. 在 clk 上升沿将 PC+4 写入到 PC register
