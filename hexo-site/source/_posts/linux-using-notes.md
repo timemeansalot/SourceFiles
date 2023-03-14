@@ -10,8 +10,6 @@ tags: Linux
 
 # neovim 笔记
 
-text1 text1
-
 ## new neovim shortcut
 
 | shortcut         | mode | usage                                                                             |
@@ -39,6 +37,12 @@ text1 text1
 | <Space>fc        | n    | find current text under the cursor in current director, require plugin: telescope |
 | <Space>fh        | n    | show help information                                                             |
 | <Ctrl>k,j        | n    | in telescope output, go to up and down results                                    |
+| <Space>ll        | n    | VimTex compile                                                                    |
+| <Space>lk        | n    | VimTex compile stop                                                               |
+| <Space>lv        | n    | VimTex forward search                                                             |
+| <Space>lt        | n    | VimTex toc                                                                        |
+| <Space>le        | n    | VimTex find error                                                                 |
+| <Space>lc        | n    | VimTex clear aux file                                                             |
 
 > 3 steps to add a plugin in neovim
 
@@ -104,10 +108,11 @@ LSP shortcuts:
 2. `"ap`: paste content in register a  
    `"ayaw`: copy current word into register a
 3. 搜索替换
-  - 全文替换：`%s/source/goal/g`
-  - 替换一行所有匹配项：`s/source/goal/g`, the difference is that we change `%s` into `s`
-  - 替换某几行所有匹配项：`shift+v` choose some lines, `s/source/goal/g`
-  - 替换当前行及下面n行所有匹配项：`,+ns/source/goal/g`
+
+- 全文替换：`%s/source/goal/g`
+- 替换一行所有匹配项：`s/source/goal/g`, the difference is that we change `%s` into `s`
+- 替换某几行所有匹配项：`shift+v` choose some lines, `s/source/goal/g`
+- 替换当前行及下面 n 行所有匹配项：`,+ns/source/goal/g`
 
 ## install plugin in neovim
 
@@ -125,6 +130,45 @@ For example, if I want to install LSP server for LaTex, I do the following thing
 1. install language for LaTex, it's `texlab`.
 2. create a config file `texlab.lua` under `lua/user/lsp/settings`, and type in the corresponding config codes.
 3. I add `texlab` in the _local_servers_ field in `mason.lua`.
+
+## convert init.vim to init.lua
+
+### basic vim config
+
+```vimscript
+-- vimscript
+set number
+set tabstop=4
+set shiftwidth=4
+set softtabstop=0
+set expandtab
+set noswapfile
+```
+
+```lua
+--lua
+vim.opt.number = true
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.softtabstop = 0
+vim.opt.expandtab = true
+vim.opt.swapfile = false
+```
+
+```lua
+local set = vim.opt
+
+set.number = true
+set.tabstop = 4
+set.shiftwidth = 4
+set.softtabstop = 0
+set.expandtab = true
+set.swapfile = false
+```
+
+### keymaps
+
+Use `vim.keymap.set` or `vim.api.nvim_set_keymap` to set keymaps in lua.
 
 # tmux
 
@@ -167,12 +211,15 @@ grep -r "target" .
 ```
 
 4. 删除所有可执行文件
+
 ```bash
 ls  -F | grep \* | cut -d \* -f 1 | xargs rm
 ```
 
-# Git命令
+# Git 命令
+
 1. unstage all files in the stage erea: `git reset HEAD -- .`
+2. Github Clone: Connection closed by remote host, [Solution Link](https://idreamshen.github.io/posts/github-connection-closed/)
 
 # Makefile 笔记
 

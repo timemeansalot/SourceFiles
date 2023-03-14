@@ -235,3 +235,9 @@ Hello \LaTeX\cite{ad2}
     \label{tab_compare}
 \end{table}
 ```
+
+
+# Neovim配置LaTex开发环境
+1. 在Mac上按照LaTeX
+2. 下载skim PDF reader: `brew install --cask skim`
+3. 参考[MacOS使用Nvim+LaTeX+Skim配置高效的论文写作环境](https://blog.51cto.com/u_15366127/5786454)
