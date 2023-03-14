@@ -84,6 +84,40 @@ RISCV 中涉及到溢出的指令有: `ANDI`, `ADD`, `SUB`
 
 # RISCV 指令介绍
 
+## opcode 总结
+
+> opcode 一共 7bits，其中低 2bits 恒为 11，只有高 5bits 不同
+
+| $opcode_{[6:2]}$ | Instruction Type | Instruction Amount | Relative Instructions                                |
+| ---------------- | ---------------- | ------------------ | ---------------------------------------------------- |
+| 01101            | U-Type           | 1                  | LUI                                                  |
+| 00101            | U-Type           | 1                  | AUIPC                                                |
+| 01000            | S-Type           | 3                  | SB, SH, SW                                           |
+| 00000            | I-Type           | 5                  | LB, BH, LW, LBU, LHU                                 |
+| 00100            | I-Type           | 9                  | ADDI, SLTI, SLTIU, XORI, ORI, ANDI, SLLI, SRLI, SRAI |
+| 01100            | R-Type           | 10                 | ADD, SUB, SLL, SLTU, XOR, OR, AND, SLL, SRL, SRA     |
+| 11001            | R-Type           | 1                  | JALR                                                 |
+| 11011            | J-Type           | 1                  | JAL                                                  |
+| 11000            | B-Type           | 6                  | BEQ, BNE, BLT, BGE, BLTU, BGEU                       |
+| 00011            | TBD              | 1                  | FENCE                                                |
+| 11100            | TBD              | 2                  | ECALL, EBREAK                                        |
+
+**Total Instructions Amount = 40, Total opcode type = 11**
+
+| $opcode_{[6:2]}$ | Instruction Type | Instruction Amount | Relative Instructions                                |
+| ---------------- | ---------------- | ------------------ | ---------------------------------------------------- |
+| 00000            | I-Type           | 5                  | LB, BH, LW, LBU, LHU                                 |
+| 00011            | TBD              | 1                  | FENCE                                                |
+| 00100            | I-Type           | 9                  | ADDI, SLTI, SLTIU, XORI, ORI, ANDI, SLLI, SRLI, SRAI |
+| 00101            | U-Type           | 1                  | AUIPC                                                |
+| 01000            | S-Type           | 3                  | SB, SH, SW                                           |
+| 01100            | R-Type           | 10                 | ADD, SUB, SLL, SLTU, XOR, OR, AND, SLL, SRL, SRA     |
+| 01101            | U-Type           | 1                  | LUI                                                  |
+| 11000            | B-Type           | 6                  | BEQ, BNE, BLT, BGE, BLTU, BGEU                       |
+| 11001            | R-Type           | 1                  | JALR                                                 |
+| 11011            | J-Type           | 1                  | JAL                                                  |
+| 11100            | TBD              | 2                  | ECALL, EBREAK                                        |
+
 ## RISCV ISA 模拟器
 
 模拟 RISCV 指令在 RISCV 处理器上的运行，可以查看某个寄存器的状态
@@ -472,6 +506,7 @@ Imm 一共是 12bits 的有符号数，合法的取值范围是[-2048, 2047)，�
 > S-Type 里没有 rd 寄存器
 
 # Branch
+
 
 ## BEQ
 
