@@ -84,6 +84,8 @@ RISCV 中涉及到溢出的指令有: `ANDI`, `ADD`, `SUB`
 
 # RISCV 指令介绍
 
+![RV32I Base Instruction Set](https://s2.loli.net/2023/03/14/xhcAnqPwzyH9aSD.png)
+
 ## opcode 总结
 
 > opcode 一共 7bits，其中低 2bits 恒为 11，只有高 5bits 不同
@@ -102,7 +104,7 @@ RISCV 中涉及到溢出的指令有: `ANDI`, `ADD`, `SUB`
 | 00011            | TBD              | 1                  | FENCE                                                |
 | 11100            | TBD              | 2                  | ECALL, EBREAK                                        |
 
-**Total Instructions Amount = 40, Total opcode type = 11**
+**Total Instructions Amount = 37+3 = 40, Total opcode type = 11**
 
 | $opcode_{[6:2]}$ | Instruction Type | Instruction Amount | Relative Instructions                                |
 | ---------------- | ---------------- | ------------------ | ---------------------------------------------------- |
