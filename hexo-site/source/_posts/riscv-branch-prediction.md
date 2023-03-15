@@ -5,9 +5,10 @@ tags: RISCV
 ---
 
 TBD
+
 <!--more-->
-<!-- toc -->
-**Table of Contents**
+
+**目录**
 [TOC]
 
 # To Do Lists
@@ -18,30 +19,28 @@ TBD
 - [ ] 数学公式: 分之指令的频率和预测失败的概率以及整体的预测水平; 不同预测准确度的分支预测器的效果： 不同的分支预测准确率从 50%到 95%，预测的效果差距是否很大
 - [ ] performance analysis: <<digital design and computer architecture: riscv edition>> page 476, 7.5.4; lecture 14 page 45, Pipelined performance Example
 
-# Branch Method
+# 分支预测
 
-## Always not taken
+## 预测不跳转(always not taken)
 
 1. PC+=4
-2. detect branch result as soon as possible -> **reduce misprediction penalty**
+2. 尽快检测分⽀结果 -> 减少错误预测惩罚
+   - 如果在 EXE 阶段已知分⽀结果，则必须刷新 2 条后续指令
+   - 如果在 ID 阶段已知分⽀结果，则必须刷新 1 条后续指令
 
-   - if branch result is known at EXE stage, 2 following instructions must by flushed
-   - if branch result is known at ID stage, 1 following instructions must by flushed
-   - we can even add a mux in front of instruction memory to choose the branch target PC from ID stage, then the misprediction penalty is 0
+### 在译码级判断分之结果
 
-### Resolve branch at ID stage
+1. 优点：减少误预测惩罚(misprediction penalty) -> 减少 CPI(clock per instruction)
+2. 缺点：
 
-1. advantages: reduce misprediction penalty -> reduce CPI(clock per instruction)
-2. disadvantages:
+   - <u>可能</u>增加时钟周期$T_c$
+   - 译码阶段的额外硬件成本
+     - 判断分之结果：需要比较器、bypass to ID stage
+     - 计算目的 PC: 额外的加法器
 
-   - <u>maybe</u> increase clock period
-   - Additional hardware cost in the ID stage
-     - branch taken or not <- maybe need data forwarding to compare
-     - branch target PC <- need a adder to calculate target PC
+# Pipelined 性能分析
 
-# Pipelined performance analysis
-
-An important program consists of:
+程序中各种类型的指令概率如下:
 
 - 25% loads
 - 10% stores
@@ -49,29 +48,31 @@ An important program consists of:
 - 2% jumps
 - 52% R-type or I-type
 
-Suppose:
+假设:
 
-- 40% of loads used by next instruction
-- 25% of branches mispredicted
-- All jumps flush the next instruction fetched -> $CPI_{jump}=2$
+- 40%的`lw`指令的结果会被下一条指令用到
+- 25%的 branch 指令预测错误
+- 所有的 JAL, JALR 会导致其下一条指令刷新-> $CPI_{jump}=2$
 
-## CPI Calculation
+## CPI 计算
 
-> Ideal pipeline processor has a CPI of <u>**1**</u>.
+> 理想的流水线处理器的 CPI= <u>**1**</u>.
 
 1. Load/Branch CPI = 1 when no stall/flush, 2 when stall/flush.
    $$
    CPI_{lw}=1*0.6+2*0.4 = 1.4\\
    CPI_{branch}=1*0.75+2*0.25=1.25
    $$
-2. average CPI is the weighted sum over each instruction
+2. 平均 CPI 是所有类型指令 CPI 的加权平均
    $$
    CPI_{average}=0.25*1.4+0.1*1+0.11*1.25+0.02*2+0.52*1 = 1.15
    $$
 
-## Cycle Time
+## 流水线周期$T_c$
 
 ![Includes always-taken br prediction, early branch resolution, forwarding, stall logic](https://s2.loli.net/2023/03/15/2FCHaxsKAmQfO6X.png)
+
+![Time delay for each component](https://s2.loli.net/2023/03/15/F4uTR8pC5cMwDWg.png)
 
 $$
 \begin{align*}
@@ -82,64 +83,62 @@ T_c = max\{&T_{IF}, T_{ID}, T_{EXE}, T_{MEM}, T_{WB}\}\\
 &t_{pcq}+t_{mux}+t_{mux}+t_{ALU}+t_{setup}\\
 &t_{pcq}+t_{mem}+t_{setup}\\
 &2(t_{pcq}+t_{mux}+t_{RFwrite})\}\\
-\mathbf{T_c=T_{ID}}
+\mathbf{T_c}=\mathbf{T_{ID}}&=550ps
 \end{align*}
 $$
 
-![Time delay for each component](https://s2.loli.net/2023/03/15/F4uTR8pC5cMwDWg.png)
-Check the table above, we can calculate $T_c=550ps$.
+**重要提示：<u>ID</u> 不应该是关键路径，通常<u>IF</u> 或<u>MEM</u> 可能是关键路径。可以轻松地将 ID 分解为多个 cycle，但很难将 MEM 分解为多个 cycle。**
 
-**Important Notes: <u>ID</u> should not be the critical path, usually <u>IF</u> or <u>MEM</u> could be the critical path. You can easily break ID into many cycle while you can hardly brewk MEM into multiple cycle.  
-In this design, we make 2 mistakes which result the ID to be the critical path:**
+在此设计中，我们犯了 2 个错误，导致 ID 成为关键路径：
 
-1. we do branch decision in ID
+1.我们在 ID 中做分支决策
 
-- **Nutshell** do branch decision in EXE, its BRU can be a single unit or reuse the ALU to calculate branch decision and target PC.
-- **Nutshell** pass the branch decision from EXE to WB(WB also collect other redirect info from CSR and MOU), then WB send the target PC to IF -> misprediction penalty is 3 cycle.
+- **Nutshell** 在 EXE 中做分支决策，它的 BRU 可以是一个单独的单元，也可以复用 ALU 来计算分支决策和目标 PC。
+- **Nutshell** 将分支决策从 EXE 传递给 WB（WB 还从 CSR 和 MOU 收集其他重定向信息），然后 WB 将目标 PC 发送到 IF -> 错误预测惩罚为 3 个周期。
 
-2. we read the RF at the second cycle, write the RF at the first cycle -> the ID has only half of the clock cycle to do its job
+2. RF 在前半个周期写入、后半个周期读出 -> ID 只有一半的时钟周期来完成它的工作，所以它的 CPI 需要乘 2
 
-- [Toast-RV32i](https://github.com/georgeyhere/Toast-RV32i) write to RF on the posedge of clk, read RF using combinational logic, bypass input to output when i_addr == o_addr
+- [Toast-RV32i](https://github.com/georgeyhere/Toast-RV32i) 在 clk 的 posedge 上写入 RF，使用组合逻辑读取 RF，当 i_addr == o_addr 通过一个 2 选 1 选择器直接选择 write_data 作为 read_data
 
-## Compare Instruction Time: branch in ID vs branch in EXE
+## 在何时做分之判断，ID or EXE？
 
-# Different branch predictor and the result CPI
+# 主流的分支预测器: 预测准确率和其对 CPI 的影响
 
-> accurate branch predictor -> reduce misprediction -> reduce flush -> reduce CPI
+> 准确的分支预测器 -> 减少错误预测 -> 减少 pipeline flush -> 减少 CPI
 
-## Static predictor
+## 静态预测器
 
-### always not token
+### 始终不跳转(always not token)
 
 PC+=4
 
-### backward branch taken, forward branch not taken
+### 后向分支跳转，前向分支不跳转(backward taken, forward not taken)
 
-For B-Type instructions, if offset[31] is 1, offset is negative -> backward branch, else forward  
-For JAL, JALR -> 100% jump
+对于 B-Type 指令，如果 offset[31] 为 1，则 offset 为负, 代表其是向后分支，否则向前
+对于 JAL，JALR -> 100% taken
 
-## Dynamic predictor
+## 动态预测器
 
-### one bit predictor
+### 一位预测器
 
-### two bit predictor
+### 两位预测器
 
-1. Oscillator of one bit predictor
+1.一位预测器会产生震荡
 
-## More advanced dynamic predictor
+## 更高级的动态预测器
 
-# Open source project predictor and their CPI
+# 开源项目采用的预测器: 准确率和 CPI
 
-## nutshell
+## 果壳
 
-## xs
+## 香山
 
-## E203
+## 蜂鸟 E203
 
-Use backward branch taken, forward branch not taken\_.
+> 后向分支跳转，前向分支不跳转
 
-## Alibaba C910
+## 阿里巴巴玄铁 C910
 
-## Arm M55
+## ARM M55
 
-## Arm A76
+## ARM A76
