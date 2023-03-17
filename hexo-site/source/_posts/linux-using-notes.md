@@ -44,6 +44,26 @@ tags: Linux
 | <Space>le        | n    | VimTex find error                                                                 |
 | <Space>lc        | n    | VimTex clear aux file                                                             |
 
+## nvim-surround plugin usage
+
+`ys{motion}{char}`, `ds{char}`, and `cs{target}{replacement}`
+
+target defines: `iw` for current word
+char defines:
+
+| char | defines |
+| ---- | ------- |
+| b    | `()`    |
+| B    | `{}`    |
+| r    | `[]`    |
+
+In visual mode, after you choose some text, you press `Shift s`, then you can type the surround stuff which you want to add.  
+eg: if you choose `xx`, then you press `Shift s` followed by `yy` then `xx` will turn in to `yy xx yy`
+
+## orderlist plugin usage
+1. inverse: `leader+x`
+2. reorder: `<leader>+r`
+
 > 3 steps to add a plugin in neovim
 
 1. add a plugin in the plugin-setup.lua
@@ -113,6 +133,7 @@ LSP shortcuts:
 - 替换一行所有匹配项：`s/source/goal/g`, the difference is that we change `%s` into `s`
 - 替换某几行所有匹配项：`shift+v` choose some lines, `s/source/goal/g`
 - 替换当前行及下面 n 行所有匹配项：`,+ns/source/goal/g`
+- 删除unicode `<200b>`: `%s/\%u200b//g`
 
 ## install plugin in neovim
 

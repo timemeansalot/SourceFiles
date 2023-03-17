@@ -241,3 +241,5 @@ Hello \LaTeX\cite{ad2}
 1. 在Mac上按照LaTeX
 2. 下载skim PDF reader: `brew install --cask skim`
 3. 参考[MacOS使用Nvim+LaTeX+Skim配置高效的论文写作环境](https://blog.51cto.com/u_15366127/5786454)
+  - `nvim` + `--headless -c "VimtexInverseSearch %line '%file'"`
+  - `nvr` + `--remote-silent +"%line" "%file"`, `cmd+shift+right click` in skim to back search
