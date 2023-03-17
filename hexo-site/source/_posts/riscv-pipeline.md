@@ -41,7 +41,10 @@ RISCV 5 级流水线设计，支持 RV-32IM 指令集
 2. 3x1 Mux: 实现 bypass
 3. Adder：计算 Target PC，跳转结果判断可以复用 ALU
 4. Branch Unit: 判断分支跳转是否发生
-5. EXE register: 缓存 ID 需要传递给 EXE 的数据
+5. Target PC generator:
+   - PC=PC+Imm: B-Type and JAL
+   - PC=(PC+Imm) & ~(-1): JALR
+6. EXE register: 缓存 ID 需要传递给 EXE 的数据
 
 ## MEM(Memory Access)
 
@@ -79,6 +82,8 @@ RV-32I 中设计到的 load/store 指令有如下 8 条:
 > S-Type 里没有 rd 寄存器
 
 # 访存指令的流水线映射
+
+![five-stage pipeline with hazard control](https://s2.loli.net/2023/03/18/fQwJFLbyNp6s183.png)
 
 ## Load 指令
 
