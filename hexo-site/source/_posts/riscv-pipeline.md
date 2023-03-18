@@ -83,9 +83,11 @@ RV-32I 中设计到的 load/store 指令有如下 8 条:
 
 # 访存指令的流水线映射
 
-![five-stage pipeline with hazard control](https://s2.loli.net/2023/03/18/fQwJFLbyNp6s183.png)
+![image-20230318092404128](/Users/fujie/Pictures/typora/image-20230318092404128.png)
 
 ## Load 指令
+
+![image-20230318092343421](/Users/fujie/Pictures/typora/image-20230318092343421.png)
 
 load 指令有 5 条, load 指令都是 I-Type 的指令，其编码格式为:
 
@@ -101,6 +103,8 @@ load 指令有 5 条, load 指令都是 I-Type 的指令，其编码格式为:
 5. WB(Write Back): 在 clk 上升沿将 memory 中读到的数据存入到 x[rd]
 
 ## Store 指令
+
+![image-20230318092145531](/Users/fujie/Pictures/typora/image-20230318092145531.png)
 
 Store 指令有 3 条，都是 S-Type 指令，其编码格式为:
 
