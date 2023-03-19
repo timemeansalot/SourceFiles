@@ -83,11 +83,11 @@ RV-32I 中设计到的 load/store 指令有如下 8 条:
 
 # 访存指令的流水线映射
 
-![image-20230318092404128](/Users/fujie/Pictures/typora/image-20230318092404128.png)
+![image-20230318092404128](https://s2.loli.net/2023/03/19/ycgDbujHp4nQJRm.png)
 
 ## Load 指令
 
-![image-20230318092343421](/Users/fujie/Pictures/typora/image-20230318092343421.png)
+![image-20230318092343421](https://s2.loli.net/2023/03/19/xOVKMb6Zq9JoDEU.png)
 
 load 指令有 5 条, load 指令都是 I-Type 的指令，其编码格式为:
 
@@ -104,7 +104,7 @@ load 指令有 5 条, load 指令都是 I-Type 的指令，其编码格式为:
 
 ## Store 指令
 
-![image-20230318092145531](/Users/fujie/Pictures/typora/image-20230318092145531.png)
+![image-20230318092145531](https://s2.loli.net/2023/03/19/krpq7IoAci2VBf8.png)
 
 Store 指令有 3 条，都是 S-Type 指令，其编码格式为:
 
