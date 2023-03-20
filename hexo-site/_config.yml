@@ -93,7 +93,7 @@ post_wordcount:
 
 encrypt:
    enable: true
-   default_abstract: time is very important
+   default_abstract: Don't get gengle into that good night!
    default_message: Input password to view diary.
 
 
