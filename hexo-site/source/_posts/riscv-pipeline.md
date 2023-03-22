@@ -9,6 +9,10 @@ RISCV 5 级流水线设计，支持 RV-32IM 指令集
 
 <!--more-->
 
+# TODO:
+
+- [ ] 增加不同类型的 forward 分析（对流水线的影响、对$C_t$的影响)
+
 # 5 级流水线上的功能部件
 
 **Total instructions amount = 37+3 = 40**
