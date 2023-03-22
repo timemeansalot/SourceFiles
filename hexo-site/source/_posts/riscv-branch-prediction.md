@@ -117,6 +117,11 @@ $$
 T_{program}=Amount_{instructions}*CPI_{average}*T_{c}
 $$
 
+## 分支预测的流水线展示
+### 在EXE判断分支预测的结果 
+### 在ID判断分支预测的结果
+
+
 # 主流的分支预测器: 预测准确率和其对 CPI 的影响
 
 > 准确的分支预测器 -> 减少错误预测 -> 减少 pipeline flush -> 减少 CPI
@@ -293,6 +298,7 @@ $$
 
 ![CPI compare over 65% accuracy](https://s2.loli.net/2023/03/18/bspUwoWaF5tTvhl.png)
 
+
 # To Do Lists
 
 - [x] 参考 C910, xs, rocket chip, nutshell, e203 的分之预测设计
@@ -301,3 +307,4 @@ $$
 - [x] 看分支预测设计的论文
 - [x] 数学公式: 分之指令的频率和预测失败的概率以及整体的预测水平; 不同预测准确度的分支预测器的效果： 不同的分支预测准确率从 50%到 95%，预测的效果差距是否很大
 - [ ] 具体比较设计方案中的“静态预测”和“简单动态预测”的代价，敲定最终的方案
+- [ ] Branch Prediction Pipeline demenstrate
