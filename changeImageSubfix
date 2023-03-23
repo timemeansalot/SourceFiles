@@ -1,0 +1,106 @@
+#!/usr/bin/python3
+import re, sys, os
+
+first = 0
+second = 0
+third = 0
+
+fileName = sys.argv[1]
+targetPic = 2  # default not change
+
+if len(sys.argv) > 2:
+    targetPic = sys.argv[2]  # 0 for png, 1 for svg
+
+fileBak = fileName + ".bak"
+From_file = open(fileName)  # txt文件位置
+f = open(fileBak, "w")  # 生成的文件名字
+
+
+# change subfix to targetPic
+# change sentence if target image type miss match source image type
+def change(sentence, targetPic):
+    return sentence + "." + targetPic+"\n"
+
+
+# ![1 bit predictor](https://s2.loli.net/2023/03/15/ABW43YhqrETUZgJ.png)
+
+# print("targetPic= " , targetPic)
+# print(type(targetPic)) # argv value is string
+
+
+for each_line in From_file:
+    ss = re.split("\.", each_line)
+    sentence = each_line
+    # change sentence if target image type miss match source image type
+    if len(ss) > 1:
+        if (re.search("!\[.*\]\(http", each_line)==None): # don't change url
+            sourcePic = ss[1]
+            if targetPic != sourcePic:
+                sentence = change(ss[0], targetPic)
+    f.writelines(sentence)
+    # if re.search("!\[.*\]\(http", each_line):
+    #     f.writelines(each_line)
+    # elif re.search("!\[.*\](.*.png)", each_line):
+    #     if targetPic == 'svg':
+    #         f.writelines(ss[0] + ".svg\n")
+    #     else:
+    #         f.writelines(each_line)
+    # elif re.search("!\[.*\](.*.svg)", each_line):
+    #     if (targetPic == 'png'):
+    #         f.writelines(ss[0] + ".png\n")
+    #     else:
+    #         f.writelines(each_line)
+    # else:
+    #     f.writelines(each_line)
+
+# for each_line in From_file:
+#     ss = re.split("\.", each_line)
+#     if re.search("!\[.*\]\(http", each_line):
+#         f.writelines(each_line)
+#     elif re.search("!\[.*\](.*.png)", each_line):
+#         if targetPic == 'svg':
+#             f.writelines(ss[0] + ".svg\n")
+#         else:
+#             f.writelines(each_line)
+#     elif re.search("!\[.*\](.*.svg)", each_line):
+#         if (targetPic == 'png'):
+#             f.writelines(ss[0] + ".png\n")
+#         else:
+#             f.writelines(each_line)
+#     else:
+#         f.writelines(each_line)
+# if(re.search("^# ",each_line)):
+# 	first+=1
+# 	second=0
+# 	third=0
+# 	new_line=re.sub("^# ","# "+str(first)+" ",each_line)
+# 	if(re.search("^# \d ",each_line)):
+# 		f.writelines(each_line)
+# 	else:
+# 		f.writelines(new_line)
+# elif(re.search("^## ",each_line)):
+# 	second+=1
+# 	third=0
+# 	new_line=re.sub("^## ","## "+str(first)+"."+str(second)+" ",each_line)
+# 	if(re.search("^## \d\.\d ",each_line)):
+# 		f.writelines(each_line)
+# 	else:
+# 		f.writelines(new_line)
+# elif(re.search("^### ",each_line)):
+# 	third+=1
+# 	new_line=re.sub("^### ","### "+str(first)+"."+str(second)+"."+str(third)+" ",each_line)
+# 	if(re.search("^### \d\.\d\.\d ",each_line)):
+# 		f.writelines(each_line)
+# 	else:
+# 		f.writelines(new_line)
+# else:
+# 	f.writelines(each_line)
+
+f.close()
+From_file.close()
+
+
+# change file name
+
+os.remove(fileName)
+os.rename(fileBak, fileName)
