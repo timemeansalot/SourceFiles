@@ -117,10 +117,85 @@ $$
 T_{program}=Amount_{instructions}*CPI_{average}*T_{c}
 $$
 
-## 分支预测的流水线展示
-### 在EXE判断分支预测的结果 
-### 在ID判断分支预测的结果
+## 分支预测的流水线映射
 
+### 动态分支预测
+
+> 使用 BTB, RAS, PHT 在 IF 的时候做动态分支预测，在 EXE 经过计算判断分支指令实际的跳转方向和目的 PC，用于判断是否需要冲刷流水线&更新 IF 级的分支预测器
+
+动态分支预测器的优缺点如下：
+
+1. 优点：
+
+   - 由于使用了*BTB*，可以直接在 BTB 中存储指令的类型，则 IF 不用通过 pre-decode 就可以判断当前指令的类型
+   - 由于使用了*BTB*，则可以直接根据预判的指令类型，配合 RAS 和 PHT 得到对应的跳转地址，避免了**计算 target pc**、也避免了**delay slot 的引入**
+   - 预测情况的判断很简单：只存在<u>预测正确</u>&<u>预测错误</u>两种情况 <- 所有的指令的类型、是否跳转、target pc 都在 IF 得到，所有指令实际的跳转结果、target pc 都在 EXE 阶段得到
+
+2. 缺点：
+
+   - 如果要保证预测的准确率，需要维护一个 BTB、RAS、PHT，在 IF 会带来额外的硬件、功耗开销
+   - BTB 是 content addressable memory，根据 PC 在其中遍历时间延迟较高，可能会导致 IF 成为 critical path
+   - 分支预测器需要根据 EXE 的结果进行更新，如果预测错误会需要冲刷后续 2 条流水线，则 miss penalty 是 2 个 cycle
+
+动态分支预测器有如下两种可能预测的情况:
+
+1. 预测错误：
+   - 预测分支指令跳转、但是经过计算得到结果之后发现其不跳转
+   - 预测分支指令不跳转、但是经过计算得到结果之后发现其跳转
+2. 预测正确：
+   - 预测分支指令跳转、但是经过计算得到结果之后发现其跳转
+   - 预测分支指令不跳转、但是经过计算得到结果之后发现其不跳转
+
+|                        | 实际跳转 | 实际不跳转 |
+| ---------------------- | -------- | ---------- |
+| 预测跳转(PC=Target PC) | ✅       | ❌         |
+| 预测不跳转(PC+=4)      | ❌       | ✅         |
+
+- ✅：预测正确(Prediction Success)
+- ❌：预测错误(Prediction Fail)
+
+1. 在 EXE 判断分支预测**错误**
+
+   - redirection PC
+   - flush **ID Pipeline Register**
+   - flush **EXE Pipeline Register**
+
+   ![Branch Prediction EXE Fail](/Users/fujie/Pictures/typora/riscv-micro-arch/bp/branch_prediction_exe_fail.svg)
+
+2. 在 EXE 判断分支预测**正确**
+   ![Branch Prediction EXE Success](/Users/fujie/Pictures/typora/riscv-micro-arch/bp/branch_prediction_exe_success.svg)
+
+### ID 阶段静态分支预测
+
+> 静态分支预测器首先通过译码判断当前指令是否是分支指令，如果是分支指令则采用固定的分支跳转策略做分支处理；在 EXE 阶段计算得到真是的分支结果之后，判断分支预测器是否错误，如果错误再进行重定向处理
+
+静态分支预测器的优缺点如下：
+
+1. 优点：硬件实现简单
+
+   - 可以复用 ID 阶段的译码器来判断指令的类型
+   - 如果实现了到 ID 的 bypass，则 bypass 的结果也可以复用
+   - 只需要在 ID 阶段添加计算 target pc 的加法器即可
+
+2. 缺点：
+
+   - 如果当前指令在 ID 阶段预测跳转，则其后面那条指令必须被冲刷掉 <- 因为 IF 阶段没有 BP 的功能，BP 的功能被后移到了 ID 阶段
+
+静态分支预测器针对不同的分支指令其指令流水线是不同的
+
+1. 针对 JAL 和 JALR 指令：其必定会发生跳转; 在 ID 阶段会计算到下一条指令真实的 target pc、会冲刷到此时 IF 阶段的指令  
+   JAL, JALR 的 miss penalty 恒为 1 个 cycle
+   ![static_bp_jal](/Users/fujie/Pictures/typora/riscv-micro-arch/bp/static_bp_jal.svg)
+
+2. 针对条件分支 B-Type 指令，其流水线有如下四种情况：
+   1. ID 预测跳转、EXE 判断 BP 正确(实际上跳转) -> flush掉instruction 2, penalty cycle = 1
+      ![static_bp_btype_success](/Users/fujie/Pictures/typora/riscv-micro-arch/bp/static_bp_btype_success.svg)
+   2. ID 预测跳转、EXE 判断 BP 错误(实际不跳转) -> flush掉instruction 3, penalty cycle = 1
+      ![static_bp_btype_fail](/Users/fujie/Pictures/typora/riscv-micro-arch/bp/static_bp_btype_fail.svg)
+   3. ID 预测不跳转、EXE 判断 BP 正确(实际不跳转) -> 不用flush流水线, penalty cycle = 0
+      ![static_bp_btype_ntaken_success](/Users/fujie/Pictures/typora/riscv-micro-arch/bp/static_bp_btype_ntaken_success.svg)
+   4. ID 预测不跳转、EXE 判断 BP 错误(实际上跳转) -> flush掉instruction 2, 3, penalty cycle = 2
+      ![static_bp_btype_ntaken_fail](/Users/fujie/Pictures/typora/riscv-micro-arch/bp/static_bp_btype_ntaken_fail.svg)
 
 # 主流的分支预测器: 预测准确率和其对 CPI 的影响
 
@@ -298,13 +373,14 @@ $$
 
 ![CPI compare over 65% accuracy](https://s2.loli.net/2023/03/18/bspUwoWaF5tTvhl.png)
 
-
 # To Do Lists
 
+- [ ] Branch Prediction Pipeline demenstrate: dynamical prediction
+- [ ] Branch Prediction Pipeline demenstrate: static prediction
+- [ ] 具体比较设计方案中的“静态预测”和“简单动态预测”的代价，敲定最终的方案
+- [ ] 添加静态分支预测、动态分支预测的微结构图
 - [x] 参考 C910, xs, rocket chip, nutshell, e203 的分之预测设计
 - [x] performance analysis: digital design and computer architecture: riscv edition page 476, 7.5.4; lecture 14 page 45, Pipelined performance Example
 - [x] 了解一些有名的分支预测器的设计，如 TAGE
 - [x] 看分支预测设计的论文
 - [x] 数学公式: 分之指令的频率和预测失败的概率以及整体的预测水平; 不同预测准确度的分支预测器的效果： 不同的分支预测准确率从 50%到 95%，预测的效果差距是否很大
-- [ ] 具体比较设计方案中的“静态预测”和“简单动态预测”的代价，敲定最终的方案
-- [ ] Branch Prediction Pipeline demenstrate
