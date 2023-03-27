@@ -119,6 +119,50 @@ Spike <-> openOCD <-> GDB
 
 [Icarus Verilog Tutorial](https://gist.github.com/donn/d9ecf0cf6e7ae3d99c7c4395e7e10afa)
 
+```Verilog
+/*adder.v*/
+module adder (a, b, c);
+
+  input a,b;
+  output c;
+
+  assign c=a+b;
+endmodule
+```
+
+```Verilog
+/*adder_tb.v*/
+`include "adder.v"
+module adder_tb();
+  reg a,b;
+  wire c;
+
+  adder my_adder(a,b,c);
+
+  // set inputs
+  initial 
+    begin
+
+      a=0; b=0; #10;
+      $display("c= %d\n",c);
+      a=0; b=1; #10;
+      $display("c= %d\n",c);
+      a=1; b=0; #10;
+      $display("c= %d\n",c);
+      a=1; b=1; #10;
+      $display("c= %d\n",c);
+
+      $finish;
+    end
+
+  // get waveform file
+  initial begin
+      $dumpfile("signals.vcd"); // Name of the signal dump file
+      $dumpvars(0, adder_tb); // Signals to dump
+  end
+endmodule
+```
+
 1. 编译文件：`iverilog -o <filename>.vvp <testbench-name>.v`
 2. 运行文件：`vvp <filename>.vvp`
 3. 查看波形：`gtkwave xx.vcd`
