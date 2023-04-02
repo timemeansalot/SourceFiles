@@ -15,17 +15,6 @@ tags: RISCV
 
 # YouTube 开源学习资料
 
-Contents to study:
-
-- [x] RISCV Tutorial: Spike & Proxy Kernel from Source to Hello World
-- [ ] RISCV Instruction and Assembly Tutorial
-- [x] RISCV Assembly Tutorial: Practice with LED and Switch on Simulator
-- [ ] RISCV Tutorial: Binary Instrumentation Technique using LLVM/CLANG Machine Instruction Pass
-- [x] RISCV Tutorial: Running FEDORA on RISCV using QEMU
-- [ ] RISCV Tutorial: How to Setup LLVM / CLANG for RISC-V
-- [x] RISCV Tutorial: Spike Debugging, OpenOCD, GDB
-- [x] RISCV Tutorial: Setup GCC Toolchain & SiFive Prebuilt Toolchain
-
 ## Tool Install
 
 ### RISCV GNU Toolchain
@@ -140,7 +129,7 @@ module adder_tb();
   adder my_adder(a,b,c);
 
   // set inputs
-  initial 
+  initial
     begin
 
       a=0; b=0; #10;
@@ -180,8 +169,8 @@ endmodule
 
 1. objcopy: `objcopy -O binary main.elf main.bin`, copy codes from main.elf to main.bin, in binary format.
 2. objdump: disassemble code, eg: `objdump -S main.elf`, generate assemble code from main.elf
-3. readelf: show elf file info, eg: `readelf -S xx.elf`
-4. hexdump: binary to hex
+3. readelf: show elf file info, eg: `riscv64-unknown-elf-readelf -SW hello.o`
+4. hexdump: convert binary to hex, eg: `hexdump -C hello.bin`
 
 # Referrences
 
