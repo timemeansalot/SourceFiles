@@ -93,7 +93,8 @@ RISCV 5 级流水线“取指”部分设计
 ### PC 重定向
 
 1. IF 没有分支预测，PC+=4  
-   IF 阶段会判断指令是否是压缩指令，如果是压缩指令，则下次 PC+2，否则下次 PC+4
+   IF 阶段会判断指令是否是压缩指令，如果是压缩指令，则下次 PC+2，否则下次 PC+4  
+   IF 阶段有 `prefetch buffer` 用于提前一个周期存储指令，这样流水线从 stall 恢复的时候，就不用等待 1cycle 从 I-memory 中取对应指令了
 
    > 32bits 的指令`instr[1:0]==11`
 
@@ -119,6 +120,8 @@ RISCV 5 级流水线“取指”部分设计
    - 如果$pc[2]==1$, 读 bank1
    - 如果$pc[2]==0$, 读 bank0
 
+> PS: 在只支持 32bits 指令的处理器中，JALR 指令可能会计算得到的 PC 不是 4B 对齐的，但是在模拟器中测试该场景的时候，模拟器默认忽略了 PC 最低 2bits，导致不对齐的 PC 也可以从 I-memory 中读取指令，没有触发 exception.
+
 ![2bankSram](/Users/fujie/Pictures/typora/IF/2bankSram.svg)
 
 <div STYLE="page-break-after: always;"></div>
@@ -126,3 +129,11 @@ RISCV 5 级流水线“取指”部分设计
 
 1. [Nutshell Documents](https://oscpu.github.io/NutShell-doc/%E6%B5%81%E6%B0%B4%E7%BA%BF/ifu.html)
 2. [riscv-mcu/e203_hbirdv2](https://github.com/riscv-mcu/e203_hbirdv2)
+
+## simulation platform
+
+1. 各级流水线最基础的RTL代码，能够实现`ADD`指令的5级流水仿真
+2. [代码仓库地址](https://github.com/timemeansalot/FAST_INTR_CPU/tree/master/src/rtl)
+
+![ADD x7, x5, x6](https://s2.loli.net/2023/03/31/RvNAIQWx8HS1FLs.png)
+![Waveform of ADD](https://s2.loli.net/2023/03/31/aqTs5JuvUCMfWcp.png)
