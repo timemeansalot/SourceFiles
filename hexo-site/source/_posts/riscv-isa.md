@@ -672,100 +672,59 @@ RV-32IM 涉及到的指令如下图所示：
 ![RV-32IM Instructions](https://s2.loli.net/2023/03/11/qLnapIYf25EGQdX.jpg)
 ALU 可能执行的操作一共有如下 18 种：
 
-# Logic 单元复用加法器
+# ISA 中指令对应的各种编码
 
-![1 bit full adder without or gate](https://s2.loli.net/2023/03/10/bBRHtUcKMVNGYQ5.png)
-![1 bit full adder with or gate](https://s2.loli.net/2023/03/10/WymKYDeLM1pZHx5.png)
+1. aluOperation: one hot bit encoding
 
-# 32 Shifter Design
+| 指令   | Type   | aluOperation | immType | branchType | memWriteEn | dMemType | regWBEn | regWBSrc     |
+| ------ | ------ | ------------ | ------- | ---------- | ---------- | -------- | ------- | ------------ |
+| LUI    | U-Type | ALU_NO       | IMM_U   | BNO        | 0          | DMEM_NO  | 1       | Extended_IMM |
+| AUIPC  | U-Type | ALU_ADD      | IMM_U   | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
+| JAL    | J-Type | ALU_NO       | IMM_J   | BNO        | 0          | DMEM_NO  | 1       | PC+4         |
+| JALR   | I-Type | ALU_NO       | IMM_I   | BNO        | 0          | DMEM_NO  | 1       | PC+4         |
+| BEQ    | B-Type | ALU_SUB      | IMM_B   | BEQ        | 0          | DMEM_NO  | 0       | ALU_RESULT   |
+| BNE    | B-Type | ALU_SUB      | IMM_B   | BNE        | 0          | DMEM_NO  | 0       | ALU_RESULT   |
+| BLT    | B-Type | ALU_SLT      | IMM_B   | BLT        | 0          | DMEM_NO  | 0       | ALU_RESULT   |
+| BGE    | B-Type | ALU_SLT      | IMM_B   | BLT        | 0          | DMEM_NO  | 0       | ALU_RESULT   |
+| BLTU   | B-Type | ALU_SLTU     | IMM_B   | BLTU       | 0          | DMEM_NO  | 0       | ALU_RESULT   |
+| BGEU   | B-Type | ALU_SLTU     | IMM_B   | BLTU       | 0          | DMEM_NO  | 0       | ALU_RESULT   |
+| LB     | I-Type | ALU_ADD      | IMM_I   | BNO        | 0          | DMEM_LB  | 1       | DMEM_READ    |
+| LH     | I-Type | ALU_ADD      | IMM_I   | BNO        | 0          | DMEM_LH  | 1       | DMEM_READ    |
+| LH     | I-Type | ALU_ADD      | IMM_I   | BNO        | 0          | DMEM_LH  | 1       | DMEM_READ    |
+| LBU    | I-Type | ALU_ADD      | IMM_I   | BNO        | 0          | DMEM_LBU | 1       | DMEM_READ    |
+| LHU    | I-Type | ALU_ADD      | IMM_I   | BNO        | 0          | DMEM_LHU | 1       | DMEM_READ    |
+| SB     | S-Type | ALU_ADD      | IMM_S   | BNO        | 1          | DMEM_SB  | 0       | ALU_RESULT   |
+| SH     | S-Type | ALU_ADD      | IMM_S   | BNO        | 1          | DMEM_SH  | 0       | ALU_RESULT   |
+| SW     | S-Type | ALU_ADD      | IMM_S   | BNO        | 1          | DMEM_SW  | 0       | ALU_RESULT   |
+| ADDI   | I-Type | ALU_ADD      | IMM_I   | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
+| SLTI   | I-Type | ALU_SLT      | IMM_I   | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
+| SLTIU  | I-Type | ALU_SLTU     | IMM_I   | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
+| XORI   | I-Type | ALU_XOR      | IMM_I   | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
+| ORI    | I-Type | ALU_OR       | IMM_I   | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
+| ANDI   | I-Type | ALU_AND      | IMM_I   | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
+| SLLI   | I-Type | ALU_SLL      | IMM_I   | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
+| SRLI   | I-Type | ALU_ARL      | IMM_I   | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
+| SRAI   | I-Type | ALU_SRA      | IMM_I   | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
+| ADD    | R-Type | ALU_ADD      | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
+| SUB    | R-Type | ALU_SUB      | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
+| SLL    | R-Type | ALU_SLL      | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
+| SRL    | R-Type | ALU_ARL      | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
+| SRA    | R-Type | ALU_SRA      | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
+| XOR    | R-Type | ALU_XOR      | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
+| OR     | R-Type | ALU_OR       | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
+| AND    | R-Type | ALU_AND      | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
+| SLT    | R-Type | ALU_SLT      | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
+| SLTU   | R-Type | ALU_SLTU     | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
+| MUL    | R-Type | ALU_MUL      | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
+| MULH   | R-Type | ALU_MULH     | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
+| MULHSU | R-Type | ALU_MULHSU   | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
+| MULHU  | R-Type | ALU_MULHU    | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
+| DIV    | R-Type | ALU_DIV      | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
+| DIVU   | R-Type | ALU_DIVU     | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
+| REM    | R-Type | ALU_REM      | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
+| REMU   | R-Type | ALU_REMU     | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
 
-[Github 仓库地址](https://github.com/ChipDesign/FAST_INTR_CPU/tree/main/src/rtl)
-![](https://s2.loli.net/2023/03/10/CtRza3lUdwKHB7y.png)
+1. JAL 和 JALR 的 target PC 有 Static BP 在 ID Stage 计算得到，ALU 不用再计算 target PC, 因此其 alu_opeartion 为 ALU_NO
 
-RV-32IM 需要实现的移位操作不包括循环移位，只包括：<u>逻辑左移</u>、<u>逻辑右移</u>和<u>算数右移</u>。  
-若使用**移位寄存器**来实现移位，每个周期移位是固定的，因此需要多个周期才可以完成移位操作。
-![shift01](https://s2.loli.net/2023/03/11/D6uWOnjrogmNsvk.png)
-上图是一个由 4 个 D 触发器构成的简单向右移位寄存器，数据从移位寄存器的左端输入，每个触发器的内容在时钟的上升沿将数据传到下一个触发器。
 
-在 ALU 种需要多数据进行多位移位的操作，采用移位寄存器一次只能移动移位，效率太低；**桶形移位器**采用组合逻辑的方式来实现同时移动多位，在效率上优势极大。因此桶形移位器常被用在于 ALU 中实现移位。
-
-![barrlShifter](https://s2.loli.net/2023/03/11/wSgedMkjVhoq1A6.jpg)
-
-1. din：待移位待输入数据
-2. shift: 移位待位数，有效范围为$[0, \log N-1]$
-3. Left/Right: 左移或者右移
-4. Arith/Logic：算数右移/逻辑右移
-5. dout：移位后的数据
-
-以 4bits din 的 barrlShifter 为例，其 Schematic 如下：
-
-![barrlShift4bits](https://s2.loli.net/2023/03/11/Wv3ZMVen9fEbXpY.jpg)
-
-- 对于 Nbits 的输入数据，其需要的选择器一共有$\log N$层，每一层共有 N 个选择器，其中第一层选择是否移位 1bit，第二层选择是否移位 2bits，...。
-- 对每一个 4 选 1 选择器，其 00 和 10 输入选择未移位后的数据；01 选择右移的数据、11 选择左移的数据。
-
-# 乘法器&除法器总结
-
-一、加减法单元
-
-通过结合 CLA（Carry Lookahead Adder）和 CBA（Carry Bypass Adder, or Carry Skip Adder）在器件增长有限的情况下提高加法的运算速度。加法直接输入两个加数，减法则将减数取反后 c0 置 1
-
-![](https://s2.loli.net/2023/03/11/TyN2zUmwd3ngS4a.png)
-其中 4-bit CLA 的结构如下
-
-![](https://s2.loli.net/2023/03/11/OGevaiwC8AMhdfx.png)
-ci 的表达式如下
-
-![](https://s2.loli.net/2023/03/11/SFCL7nNHizKarhf.png)
-
-其中
-
-$$
-g_i=1 \iff a_i+b_i=2\\
-p_i=1 \iff a_i+b_i=1
-$$
-
-二、乘法单元
-
-乘法需要 4 个 Cycle 完成，每个 Cycle 完成一次 16\*16 乘法，采用 booth 编码，该方案可以减少加法树的层数及器件的数量。
-
-乘法器的整体架构如下：
-
-![](https://s2.loli.net/2023/03/11/Z9xzBtiTKNyWagU.png)
-
-加法树使用 4-2 压缩器构建，4-2 压缩器的结构如图
-![](https://s2.loli.net/2023/03/11/15jlGqNFQaVeiTA.png)
-
-其中 CGEN 为
-
-![](https://s2.loli.net/2023/03/11/hqNxBUWLuvafoIT.png)
-
-三、除法单元
-
-除法单元采用一次获得 2bit 商的方案，采用 SRT 算法，每次商位选择的范围为{-2，-1，0，1，2}。若部分余数 p 与除数 b 满足
-
-$$
-\beta-\frac{2}{3}\le p \le \beta+\frac{2}{3}
-$$
-
-则可以将商定为 β，如此一来，不同商的选择范围会有重叠部分，因此商位选择的分界线为在该重叠部分的一条折线。
-
-除法器整体架构如图所示：
-
-![](https://s2.loli.net/2023/03/11/zO81yMsQNj3mFpK.png)
-
-其中 QDS 为商位选择器，on the fly 为实时商数转换器
-
-## 香山
-
-1. 香山的乘法器默认为 3 级流水线的华莱士树乘法器，也可通过配置修改为直接由\*实现的乘法器，再 通过 register retiming 来优化时序。
-2. 香山使用了 SRT16 定点除法器，每周期运算 4 位，除法循环前后处理各两拍
-
-## 玄铁 C910
-
-MULT 支持 16*16、32*32、64\*64 整数乘法。除法器的设计采用了基 16 的 SRT 算法， 执行周期视操作数而变化
-Mult 单元的执行延时为 4 个周期
-
-## ARM A76
-
-乘法 2 ～ 3 周期
+## 编码说明
