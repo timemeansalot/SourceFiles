@@ -6,6 +6,26 @@ tags: LaTex
 
 # 学习使用LaTex的一些记录
 <!--more-->
+# LaTeX学习笔记
+## 条件编译
+类似于C语言的`#ifdefine`，当某个条件判断为真的时候，才会编译对应内容
+```latex
+  % test.tex
+  \newif\ifchinese
+  \chinesetrue % 打开中文部分的编译
+
+  \documentclass{article}
+  \usepackage{ctex} % 引用Chinese LaTeX包，支持中文
+
+  \begin{document}
+  English document, don't need to turn on \textbf{chinesetrue}, it will always be outputed.
+
+  \ifchinese
+  中文部分的内容，需要\textbf{chinesetrue}判断为真
+  \fi
+  \end{document}
+```
+编译的时候，使用命令`lualatex test.tex`
 
 # 我的LaTex模板
 

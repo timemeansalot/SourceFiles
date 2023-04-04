@@ -1,3 +1,4 @@
 *.deploy.git
 Blog/.deploy_git
 Outlook/.deploy_git
+.DS_Store
