@@ -6,6 +6,8 @@ tags: RISCV
 
 ## RISCV ID Stage 各个功能部件设计
 
+![pipeline_ID](/Users/fujie/Pictures/typora/pipeline/pipeline_ID.svg)
+
 ### 译码控制(Decoder)
 
 1. 输入接口
@@ -186,8 +188,6 @@ tags: RISCV
    | memBypass[31:0] | MEM stage | data forwarding from MEM stage |
    | wbBypass[31:0]  | WB stage  | data forwarding from WB stage  |
 
-   TODO: 确定一下 forwarding 的来源
-
 2. 输出接口
 
    | Name       | Target          | Description           |
@@ -195,6 +195,4 @@ tags: RISCV
    | RD1D[31:0] | ID/EXE pipeline | 送给 ALU 的 operand 1 |
    | RD2D[31:0] | ID/EXE pipeline | 送给 ALU 的 operand 2 |
 
-3. 模块功能
-
-TODO: 补充到 hazard unit 的 wire 连接
+3. 模块功能: 根据forwarding选择信号，选择合适的forward数据，将选择的数据输送到EXE Stage
