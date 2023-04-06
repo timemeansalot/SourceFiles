@@ -676,55 +676,63 @@ ALU 可能执行的操作一共有如下 18 种：
 
 1. aluOperation: one hot bit encoding
 
-| 指令   | Type   | aluOperation | immType | branchType | memWriteEn | dMemType | regWBEn | regWBSrc     |
-| ------ | ------ | ------------ | ------- | ---------- | ---------- | -------- | ------- | ------------ |
-| LUI    | U-Type | ALU_NO       | IMM_U   | BNO        | 0          | DMEM_NO  | 1       | Extended_IMM |
-| AUIPC  | U-Type | ALU_ADD      | IMM_U   | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
-| JAL    | J-Type | ALU_NO       | IMM_J   | BNO        | 0          | DMEM_NO  | 1       | PC+4         |
-| JALR   | I-Type | ALU_NO       | IMM_I   | BNO        | 0          | DMEM_NO  | 1       | PC+4         |
-| BEQ    | B-Type | ALU_SUB      | IMM_B   | BEQ        | 0          | DMEM_NO  | 0       | ALU_RESULT   |
-| BNE    | B-Type | ALU_SUB      | IMM_B   | BNE        | 0          | DMEM_NO  | 0       | ALU_RESULT   |
-| BLT    | B-Type | ALU_SLT      | IMM_B   | BLT        | 0          | DMEM_NO  | 0       | ALU_RESULT   |
-| BGE    | B-Type | ALU_SLT      | IMM_B   | BLT        | 0          | DMEM_NO  | 0       | ALU_RESULT   |
-| BLTU   | B-Type | ALU_SLTU     | IMM_B   | BLTU       | 0          | DMEM_NO  | 0       | ALU_RESULT   |
-| BGEU   | B-Type | ALU_SLTU     | IMM_B   | BLTU       | 0          | DMEM_NO  | 0       | ALU_RESULT   |
-| LB     | I-Type | ALU_ADD      | IMM_I   | BNO        | 0          | DMEM_LB  | 1       | DMEM_READ    |
-| LH     | I-Type | ALU_ADD      | IMM_I   | BNO        | 0          | DMEM_LH  | 1       | DMEM_READ    |
-| LH     | I-Type | ALU_ADD      | IMM_I   | BNO        | 0          | DMEM_LH  | 1       | DMEM_READ    |
-| LBU    | I-Type | ALU_ADD      | IMM_I   | BNO        | 0          | DMEM_LBU | 1       | DMEM_READ    |
-| LHU    | I-Type | ALU_ADD      | IMM_I   | BNO        | 0          | DMEM_LHU | 1       | DMEM_READ    |
-| SB     | S-Type | ALU_ADD      | IMM_S   | BNO        | 1          | DMEM_SB  | 0       | ALU_RESULT   |
-| SH     | S-Type | ALU_ADD      | IMM_S   | BNO        | 1          | DMEM_SH  | 0       | ALU_RESULT   |
-| SW     | S-Type | ALU_ADD      | IMM_S   | BNO        | 1          | DMEM_SW  | 0       | ALU_RESULT   |
-| ADDI   | I-Type | ALU_ADD      | IMM_I   | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
-| SLTI   | I-Type | ALU_SLT      | IMM_I   | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
-| SLTIU  | I-Type | ALU_SLTU     | IMM_I   | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
-| XORI   | I-Type | ALU_XOR      | IMM_I   | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
-| ORI    | I-Type | ALU_OR       | IMM_I   | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
-| ANDI   | I-Type | ALU_AND      | IMM_I   | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
-| SLLI   | I-Type | ALU_SLL      | IMM_I   | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
-| SRLI   | I-Type | ALU_ARL      | IMM_I   | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
-| SRAI   | I-Type | ALU_SRA      | IMM_I   | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
-| ADD    | R-Type | ALU_ADD      | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
-| SUB    | R-Type | ALU_SUB      | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
-| SLL    | R-Type | ALU_SLL      | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
-| SRL    | R-Type | ALU_ARL      | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
-| SRA    | R-Type | ALU_SRA      | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
-| XOR    | R-Type | ALU_XOR      | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
-| OR     | R-Type | ALU_OR       | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
-| AND    | R-Type | ALU_AND      | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
-| SLT    | R-Type | ALU_SLT      | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
-| SLTU   | R-Type | ALU_SLTU     | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
-| MUL    | R-Type | ALU_MUL      | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
-| MULH   | R-Type | ALU_MULH     | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
-| MULHSU | R-Type | ALU_MULHSU   | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
-| MULHU  | R-Type | ALU_MULHU    | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
-| DIV    | R-Type | ALU_DIV      | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
-| DIVU   | R-Type | ALU_DIVU     | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
-| REM    | R-Type | ALU_REM      | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
-| REMU   | R-Type | ALU_REMU     | IMM_NO  | BNO        | 0          | DMEM_NO  | 1       | ALU_RESULT   |
+| 指令   | Type   | aluOperation | immType | branchType | dMemWriteEn | dMemType | regWBEn | regWBSrc     |
+| ------ | ------ | ------------ | ------- | ---------- | ----------- | -------- | ------- | ------------ |
+| LUI    | U-Type | ALU_NO       | IMM_U   | BNO        | 0           | DMEM_NO  | 1       | Extended_IMM |
+| AUIPC  | U-Type | ALU_ADD      | IMM_U   | BNO        | 0           | DMEM_NO  | 1       | ALU_RESULT   |
+| JAL    | J-Type | ALU_NO       | IMM_J   | JUMP       | 0           | DMEM_NO  | 1       | PC+4         |
+| JALR   | I-Type | ALU_NO       | IMM_I   | JUMP       | 0           | DMEM_NO  | 1       | PC+4         |
+| BEQ    | B-Type | ALU_SUB      | IMM_B   | BEQ        | 0           | DMEM_NO  | 0       | ALU_RESULT   |
+| BNE    | B-Type | ALU_SUB      | IMM_B   | BNE        | 0           | DMEM_NO  | 0       | ALU_RESULT   |
+| BLT    | B-Type | ALU_SLT      | IMM_B   | BLT        | 0           | DMEM_NO  | 0       | ALU_RESULT   |
+| BGE    | B-Type | ALU_SLT      | IMM_B   | BLT        | 0           | DMEM_NO  | 0       | ALU_RESULT   |
+| BLTU   | B-Type | ALU_SLTU     | IMM_B   | BLTU       | 0           | DMEM_NO  | 0       | ALU_RESULT   |
+| BGEU   | B-Type | ALU_SLTU     | IMM_B   | BLTU       | 0           | DMEM_NO  | 0       | ALU_RESULT   |
+| LB     | I-Type | ALU_ADD      | IMM_I   | BNO        | 0           | DMEM_LB  | 1       | DMEM_READ    |
+| LH     | I-Type | ALU_ADD      | IMM_I   | BNO        | 0           | DMEM_LH  | 1       | DMEM_READ    |
+| LH     | I-Type | ALU_ADD      | IMM_I   | BNO        | 0           | DMEM_LH  | 1       | DMEM_READ    |
+| LBU    | I-Type | ALU_ADD      | IMM_I   | BNO        | 0           | DMEM_LBU | 1       | DMEM_READ    |
+| LHU    | I-Type | ALU_ADD      | IMM_I   | BNO        | 0           | DMEM_LHU | 1       | DMEM_READ    |
+| SB     | S-Type | ALU_ADD      | IMM_S   | BNO        | 1           | DMEM_SB  | 0       | ALU_RESULT   |
+| SH     | S-Type | ALU_ADD      | IMM_S   | BNO        | 1           | DMEM_SH  | 0       | ALU_RESULT   |
+| SW     | S-Type | ALU_ADD      | IMM_S   | BNO        | 1           | DMEM_SW  | 0       | ALU_RESULT   |
+| ADDI   | I-Type | ALU_ADD      | IMM_I   | BNO        | 0           | DMEM_NO  | 1       | ALU_RESULT   |
+| SLTI   | I-Type | ALU_SLT      | IMM_I   | BNO        | 0           | DMEM_NO  | 1       | ALU_RESULT   |
+| SLTIU  | I-Type | ALU_SLTU     | IMM_I   | BNO        | 0           | DMEM_NO  | 1       | ALU_RESULT   |
+| XORI   | I-Type | ALU_XOR      | IMM_I   | BNO        | 0           | DMEM_NO  | 1       | ALU_RESULT   |
+| ORI    | I-Type | ALU_OR       | IMM_I   | BNO        | 0           | DMEM_NO  | 1       | ALU_RESULT   |
+| ANDI   | I-Type | ALU_AND      | IMM_I   | BNO        | 0           | DMEM_NO  | 1       | ALU_RESULT   |
+| SLLI   | I-Type | ALU_SLL      | IMM_I   | BNO        | 0           | DMEM_NO  | 1       | ALU_RESULT   |
+| SRLI   | I-Type | ALU_ARL      | IMM_I   | BNO        | 0           | DMEM_NO  | 1       | ALU_RESULT   |
+| SRAI   | I-Type | ALU_SRA      | IMM_I   | BNO        | 0           | DMEM_NO  | 1       | ALU_RESULT   |
+| ADD    | R-Type | ALU_ADD      | IMM_NO  | BNO        | 0           | DMEM_NO  | 1       | ALU_RESULT   |
+| SUB    | R-Type | ALU_SUB      | IMM_NO  | BNO        | 0           | DMEM_NO  | 1       | ALU_RESULT   |
+| SLL    | R-Type | ALU_SLL      | IMM_NO  | BNO        | 0           | DMEM_NO  | 1       | ALU_RESULT   |
+| SRL    | R-Type | ALU_ARL      | IMM_NO  | BNO        | 0           | DMEM_NO  | 1       | ALU_RESULT   |
+| SRA    | R-Type | ALU_SRA      | IMM_NO  | BNO        | 0           | DMEM_NO  | 1       | ALU_RESULT   |
+| XOR    | R-Type | ALU_XOR      | IMM_NO  | BNO        | 0           | DMEM_NO  | 1       | ALU_RESULT   |
+| OR     | R-Type | ALU_OR       | IMM_NO  | BNO        | 0           | DMEM_NO  | 1       | ALU_RESULT   |
+| AND    | R-Type | ALU_AND      | IMM_NO  | BNO        | 0           | DMEM_NO  | 1       | ALU_RESULT   |
+| SLT    | R-Type | ALU_SLT      | IMM_NO  | BNO        | 0           | DMEM_NO  | 1       | ALU_RESULT   |
+| SLTU   | R-Type | ALU_SLTU     | IMM_NO  | BNO        | 0           | DMEM_NO  | 1       | ALU_RESULT   |
+| MUL    | R-Type | ALU_MUL      | IMM_NO  | BNO        | 0           | DMEM_NO  | 1       | ALU_RESULT   |
+| MULH   | R-Type | ALU_MULH     | IMM_NO  | BNO        | 0           | DMEM_NO  | 1       | ALU_RESULT   |
+| MULHSU | R-Type | ALU_MULHSU   | IMM_NO  | BNO        | 0           | DMEM_NO  | 1       | ALU_RESULT   |
+| MULHU  | R-Type | ALU_MULHU    | IMM_NO  | BNO        | 0           | DMEM_NO  | 1       | ALU_RESULT   |
+| DIV    | R-Type | ALU_DIV      | IMM_NO  | BNO        | 0           | DMEM_NO  | 1       | ALU_RESULT   |
+| DIVU   | R-Type | ALU_DIVU     | IMM_NO  | BNO        | 0           | DMEM_NO  | 1       | ALU_RESULT   |
+| REM    | R-Type | ALU_REM      | IMM_NO  | BNO        | 0           | DMEM_NO  | 1       | ALU_RESULT   |
+| REMU   | R-Type | ALU_REMU     | IMM_NO  | BNO        | 0           | DMEM_NO  | 1       | ALU_RESULT   |
 
 1. JAL 和 JALR 的 target PC 有 Static BP 在 ID Stage 计算得到，ALU 不用再计算 target PC, 因此其 alu_opeartion 为 ALU_NO
 
-
 ## 编码说明
+
+### immType
+
+1. IMM_U: `imm={instr[31:12], 12'h000}`
+2. IMM_J: `imm={11{instr[31]}, instr[31], instr[19:15], instr[20], instr[30:21], 1'b0}`
+3. IMM_I: `imm={20{instr[31]}, instr[31:20]}`
+4. IMM_B: `imm={19{instr[31]}, instr[31], instr[7], instr[30,25], instr[11,8]}`
+5. IMM_S: `imm={20{instr[31]}, instr[31:25], instr[11:7]}`
+6. IMM_NO: no immediate
