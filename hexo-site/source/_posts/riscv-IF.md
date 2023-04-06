@@ -60,9 +60,15 @@ RISCV 5 级流水线“取指”部分设计
 
 <img src="/Users/fujie/Pictures/typora/IF/EBirt2StagePipeline.jpg" alt="EBirt2StagePipeline" style="zoom:50%;" />
 
+![e203 storage system](https://s2.loli.net/2023/04/06/EIQD1LbWTl7OvGy.png)
+
 1. 采用 ITCM
+
    - 蜂鸟采用 64bits 的 SRAM 作为 ITCM
    - 面积更加紧凑、顺序读取 64bits 的数据，其只需要 1 次动态功耗
+
+   ![ITCM](https://s2.loli.net/2023/04/06/SKnDXtylg2pUuso.png)
+
 2. 指令对齐:
 
    - leftover buffer,  
@@ -83,20 +89,14 @@ RISCV 5 级流水线“取指”部分设计
 
    > 中断和异常的实现时处理器实现非常关键的一部分，同时也是最为烦琐的一部分。得益 于 RISC-V 架构对于中断和异常机制的简单定义，蜂鸟 E200 对其进行硬件实现的代价很小。 即便如此，异常和中断相关的源代码相比其他模块而言，仍然非常细琐繁杂
 
-<div STYLE="page-break-after: always;"></div>
-## 本项目取指部分设计
-
-![pipeline_scratch_detectInIF](/Users/fujie/Pictures/typora/IF/pipeline_scratch_detectInIF.svg)
+## 流水线取指部分设计
 
 > 取指阶段主要需要解决的问题是：<u>PC 重定向、指令对齐</u>
 
 ### PC 重定向
 
-1. IF 没有分支预测，PC+=4  
-   IF 阶段会判断指令是否是压缩指令，如果是压缩指令，则下次 PC+2，否则下次 PC+4  
-   IF 阶段有 `prefetch buffer` 用于提前一个周期存储指令，这样流水线从 stall 恢复的时候，就不用等待 1cycle 从 I-memory 中取对应指令了
-
-   > 32bits 的指令`instr[1:0]==11`
+1. IF 没有分支预测，PC+=2  
+   <u>IF 阶段设置有一个 FIFO，最多存储 5\*16bits 的数据</u>，该 FIFO 的设置是因为我们不知道指令是 16bits 的还是 32bits 的。
 
    **重定向发生的时候，I-Mem 直接采用重定向的 PC 作为取值地址**，可以避免 1 个 cycle 的 penalty
 
@@ -110,21 +110,30 @@ RISCV 5 级流水线“取指”部分设计
    冲刷 2 条流水线
    ![redirection_MEM](/Users/fujie/Pictures/typora/IF/redirection_MEM.svg)
 
-<div STYLE="page-break-after: always;"></div>
 ### 指令对齐
 
-1. 采用 2 bank SRAM 作为 I Memory 当指令地址没有 4B 对齐且指令是 32bit 指令时，跨 bank 读指令，并且完成指令拼接
-2. 在支持压缩指令是，指令默认是 2B 对齐的($pc[0]==0$)
-3. 如果$pc[1]==1$，需要读取 2 个 sram bank
-4. 否如果$pc[1]\neq1$, 则只需要读取其中 1 个 sran bank
-   - 如果$pc[2]==1$, 读 bank1
-   - 如果$pc[2]==0$, 读 bank0
+![pipeline_scratch](/Users/fujie/Pictures/typora/IF/pipeline_scratch.svg)
+
+1. FIFO 工作原理
+
+   - FIFO 每次从 I-memory 读取 2x16 的数据
+   - FIFO 中数据少于等于 3 的时候，FIFO 会从 I-memory 中读取数据，避免 underflow
+   - FIFO 中数据大于 3 的时候，FIFO 会停止从 I-memory 中读取数据，避免 overflow
+   - 当 ID 发现指令是 32bits 的时候，FIFO 头部 2 条数据会被 POP，FIFO 数据量-2
+   - 当 ID 发现指令是 16bits 的时候，FIFO 头部 1 条数据会被 POP，FIFO 数据量-1
+
+2. 采用 2 bank SRAM 作为 I-Memory, 两个 bank 的 SRAM 都是 16bits 的位宽，配合 FIFO 可以处理 32bits 指令不对齐的情况, 其工作原理如下：
+
+   - 顺序读取: 顺序读取的时候不存在 PC 重定向，FIFO 不需要刷新
+
+     1. 连续读 16bits 的指令：每次消耗 FIFO 中 1 条数据，读入 2 条数据到 FIFO，FIFO 数据量会逐步增加，当大于等于 3 的时候，FIFO 就不会继续从 I-memory 读取数据了
+     2. 连续读 32bits 的指令：每次消耗 FIFO 中 2 条数据，读入 2 条数据到 FIFO，FIFO 数据量会保持恒定，FIFO 会继续从 I-memory 读取数据了
+     3. 混合读取 16bits 和 32bits 的数据：上述两种方式的混合
+
+   - PC 重定定向: 当发生 PC 重定向之后，FIFO 中现存的所有数据都是无效的，需要被刷新，并且下一个周期从 I-memory 中读出的指令也是无效的指令，也需要被丢弃; 在第二个周期读出的指令是重定向 PC 对应的指令，会被 PUSH 到 FIFO 中
 
 > PS: 在只支持 32bits 指令的处理器中，JALR 指令可能会计算得到的 PC 不是 4B 对齐的，但是在模拟器中测试该场景的时候，模拟器默认忽略了 PC 最低 2bits，导致不对齐的 PC 也可以从 I-memory 中读取指令，没有触发 exception.
 
-![2bankSram](/Users/fujie/Pictures/typora/IF/2bankSram.svg)
-
-<div STYLE="page-break-after: always;"></div>
 ## References
 
 1. [Nutshell Documents](https://oscpu.github.io/NutShell-doc/%E6%B5%81%E6%B0%B4%E7%BA%BF/ifu.html)
@@ -132,7 +141,7 @@ RISCV 5 级流水线“取指”部分设计
 
 ## simulation platform
 
-1. 各级流水线最基础的RTL代码，能够实现`ADD`指令的5级流水仿真
+1. 各级流水线最基础的 RTL 代码，能够实现`ADD`指令的 5 级流水仿真
 2. [代码仓库地址](https://github.com/timemeansalot/FAST_INTR_CPU/tree/master/src/rtl)
 
 ![ADD x7, x5, x6](https://s2.loli.net/2023/03/31/RvNAIQWx8HS1FLs.png)
