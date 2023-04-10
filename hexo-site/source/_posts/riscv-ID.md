@@ -4,6 +4,11 @@ date: 2023-04-04 10:11:49
 tags: RISCV
 ---
 
+![Decode](https://s2.loli.net/2023/04/10/cMZH3xzBy5aDSeK.png)
+RISC-V 译码级设计
+
+<!--more-->
+
 ## RISCV ID Stage 各个功能部件设计
 
 ![pipeline_ID](/Users/fujie/Pictures/typora/pipeline/pipeline_ID.svg)
@@ -195,4 +200,4 @@ tags: RISCV
    | RD1D[31:0] | ID/EXE pipeline | 送给 ALU 的 operand 1 |
    | RD2D[31:0] | ID/EXE pipeline | 送给 ALU 的 operand 2 |
 
-3. 模块功能: 根据forwarding选择信号，选择合适的forward数据，将选择的数据输送到EXE Stage
+3. 模块功能: 根据 forwarding 选择信号，选择合适的 forward 数据，将选择的数据输送到 EXE Stage

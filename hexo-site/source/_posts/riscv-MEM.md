@@ -4,7 +4,8 @@ date: 2023-04-05 11:59:22
 tags: RISCV
 ---
 
-## RISCV MEM Stage 设计
+![memory](https://s2.loli.net/2023/04/10/kOp5QAIJYuU6q91.png)
+RISCV MEM Stage 设计
 
 <!--more-->
 

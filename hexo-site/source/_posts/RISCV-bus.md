@@ -4,6 +4,7 @@ date: 2023-04-06 15:45:24
 tags: RISCV
 ---
 
+![System Bus](https://s2.loli.net/2023/04/10/I7sfhHlEuwZcPaW.png)
 RISCV 总线设计
 
 <!--more-->

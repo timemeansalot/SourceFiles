@@ -4,6 +4,8 @@ date: 2023-03-08 14:45:34
 tags: RISCV
 ---
 
+![RISC-V](https://s2.loli.net/2023/04/10/MFRtEaZ6A7pY4y8.png)
+
 > Unix 环境下，RISCV 工具链使用笔记，包括如下内容：
 
 1. RISCV 编译工具：gcc, objdump, ...

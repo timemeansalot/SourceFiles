@@ -93,7 +93,8 @@ post_wordcount:
 encrypt:
   enable: true
   default_abstract: Don't get gengle into that good night!
-  default_message: Input password to view diary.
+  default_message: 您好, 这里需要密码.
+  wrong_pass_message: 抱歉, 这个密码看着不太对, 请再试试.
 
 # Extensions RSS
 ## Plugins: http://hexo.io/plugins/
