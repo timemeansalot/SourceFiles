@@ -3,7 +3,7 @@ title: 欢乐时光
 date: 2019-03-10 19:57:59
 tags: Diary
 top: true
-password: hello
+password: fumengting
 ---
 
 <center>[![Vouc8K.png](https://s2.ax1x.com/2019/06/15/Vouc8K.png)](https://imgchr.com/i/Vouc8K)</center>
@@ -12,7 +12,7 @@ password: hello
 
 <!--more-->
 
-# <center> <font color=#02F78E size=7> 付大爷的欢乐日常开始啦</font></center>
+<center> <font color=#02F78E size=7> 付大爷的欢乐日常开始啦</font></center>
 
 # 5 月，6 月存钱计划
 

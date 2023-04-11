@@ -94,7 +94,7 @@ encrypt:
   enable: true
   default_abstract: Don't get gengle into that good night!
   default_message: 您好, 这里需要密码.
-  wrong_pass_message: 抱歉, 这个密码看着不太对, 请再试试.
+  wrong_pass_message: 密码是您的姓名的拼音.
 
 # Extensions RSS
 ## Plugins: http://hexo.io/plugins/
