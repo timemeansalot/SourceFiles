@@ -9,311 +9,152 @@ RISC-V 压缩指令集学习笔记
 
 <!--more-->
 
-Total RVC instructions:
+## RISC-V 压缩指令基础
 
-1. Load and Store(4): `LW`, `SW`, `LWSP`, `SWSP`
-2. Control(4): `J`, `JAL`, `JR`, `JALR`
-3. Integer:
-   - Register-Immediate(9): `LI`, `LUI`, `ADDI`, `ADDI16SP`, `ADDI16SPN`, `SLLI`, `SRLI`, `SRAI`, `ANDI`
-   - Register-Register(6): `MV`, `AND`, `OR`, `XOR`, `SUB`, `ADD`
-   - Others(3): `NOP`, `EBREAK`, `HINT`
+1. RV32I 会在下述情况下压缩指令，生成 RISC-V 压缩指令(RVC)
 
-RV-32IM 中不存在压缩指令的指令：
-
-| $opcode_{[6:2]}$ | Instruction Type | Relative Instructions                          |
-| ---------------- | ---------------- | ---------------------------------------------- |
-| 00101            | U-Type           | AUIPC                                          |
-| 01000            | S-Type           | SB, SH                                         |
-| 00000            | I-Type           | LB, BH, LBU, LHU                               |
-| 00100            | I-Type           | SLTI, SLTIU, XORI, ORI                        |
-| 01100            | R-Type           | SLT, SLTU, SLLI, SRLI, SRAI                    |
-| 11000            | B-Type           | BLT, BGE, BLTU, BGEU                           |
-| 01100            | RV-M             | MUL, MULH, MULHSU, MULHU, DIV, DIVU, REM, REMU |
-
-## RV-32C
-
-> Typically, 50%–60% of the RISC-V instructions in a program can be replaced with RVC instructions, resulting in a 25%–30% code-size reduction.
-
-1. 什么时候可以压缩
    1. imm, offset 很小的时候
-   2. register 是 x0, x1 或者 x2
-   3. register 是常用的那 8 个
+   2. register 是 x0 或者 x2
+   3. register 是常用的那 8 个: x8~x15
    4. rs1=rd
-2. RV-32C 可以跟其他指令集搭配使用，不能单独使用；启用 RV-32C 之后，32bits 的指令和 16bits 的指令是混合存放的，并且此时不会有 `instruction-address-misaligned exceptions`
-3. RV-32C 可以在 ID 的时候很容易地被恢复成 RV-32I
 
-## RV-32C 编码
+2. RVC 中的指令大致可以分为如下三类:
+
+   1. Load and Store(4): `LW`, `SW`, `LWSP`, `SWSP`
+   2. Control(6): `J`, `JAL`, `JR`, `JALR`, `BEQZ`, `BNEZ`
+   3. Integer:
+      - Register-Immediate(9): `LI`, `LUI`, `ADDI`, `ADDI16SP`, `ADDI4SPN`, `SLLI`, `SRLI`, `SRAI`, `ANDI`
+      - Register-Register(6): `MV`, `AND`, `OR`, `XOR`, `SUB`, `ADD`
+      - Others(3): `NOP`, `EBREAK`, `HINT`
+
+3. RV-32IM 中没有对应压缩指令的指令：
+
+   | $opcode_{[6:2]}$ | Instruction Type | Relative Instructions                          |
+   | ---------------- | ---------------- | ---------------------------------------------- |
+   | 00101            | U-Type           | AUIPC                                          |
+   | 01000            | S-Type           | SB, SH                                         |
+   | 00000            | I-Type           | LB, BH, LBU, LHU                               |
+   | 00100            | I-Type           | SLTI, SLTIU, XORI, ORI                         |
+   | 01100            | R-Type           | SLT, SLTU, SLLI, SRLI, SRAI                    |
+   | 11000            | B-Type           | BLT, BGE, BLTU, BGEU                           |
+   | 01100            | RV-M             | MUL, MULH, MULHSU, MULHU, DIV, DIVU, REM, REMU |
+
+## 压缩指令格式
+
+### C.LW 格式举例
+
+| 15-13 | 12-10     | 9-7  | 6-5        | 4-2 | 1-0 |
+| ----- | --------- | ---- | ---------- | --- | --- |
+| 010   | uimm[5:3] | rs1' | uimm[2\|6] | rd' | 00  |
+
+1. `LW` for _load word_, 是`CL`格式的压缩指令
+2. 功能：`x[8+rd’] = sext(M[x[8+rs1’] + uimm][31:0])`
+3. 扩展成 32bits 指令：`c.lw rd’,uimm(rs1’) --> lw rd’,offset[6:2](rs1’)`
+   - imm 占 5bits，imm 乘 4，**零扩展**为 32bits
+   - rs1'和 rd'都是寄存器的下标，只有 3bits，其可以索引 x8~x15 的寄存器
+
+由于 RVC 指令的格式、功能比较固定，且官方的手册已经说的足够精简了，因此本文档不再专门逐一总结其余 26 条 RV32I 相关的 RVC 指令，请参考以下链接自行阅读：
+
+1. 🌟[Official: “C” Standard Extension for Compressed Instructions, Version 2.0 ](https://five-embeddev.com/riscv-isa-manual/latest/c.html)
+2. [RV32C, RV64C Instructions on riscv-isa-page](https://msyksphinz-self.github.io/riscv-isadoc/html/rvc.html)
 
-![RVC formats](https://s2.loli.net/2023/04/11/snKwlv6QH1yPWxJ.png)
+### 恢复成 RV32I 指令
+
+> RVC 恢复成 RV32I 指令的时候，首先根据 op 部分对指令进行分类，再根据 funct3 部分对指令分类。如果多个指令 op 和 funct3 都相同，则需要进一步根据其它字段来区分他们
+
+#### op=00
+
+| 压缩指令 | op=inst[1:0] | funct3=inst[15:13] | 压缩指令格式 | 对应 32I 指令               |
+| -------- | ------------ | ------------------ | ------------ | --------------------------- |
+| ADDI4SPN | 00           | 000                | CIW          | `addi rd’,x2,nzuimm`        |
+| LW       | 00           | 010                | CL           | `lw rd’,offset[6:2](rs1’)`  |
+| SW       | 00           | 110                | CS           | `sw rs2’,offset[6:2](rs1’)` |
+
+op=00 时，如果 funct3 不是上述 3 种情况，则都是非法压缩指令
+
+#### op=01
+
+| 压缩指令 | op=inst[1:0] | funct3=inst[15:13] | 压缩指令格式 | 对应 32I 指令             |
+| -------- | ------------ | ------------------ | ------------ | ------------------------- |
+| ADDI     | 01           | 000                | CI           | `addi rd, rd, nzimm[5:0]` |
+| NOP      | 01           | 000                | CI           | `addi x0, x0, 0`          |
+| JAL      | 01           | 001                | CJ           | `jal x1, offset[11:1]`    |
+| LI       | 01           | 010                | CI           | `addi rd,x0,imm[5:0]`     |
+| ADDI16SP | 01           | 011                | CI           | `addi x2,x2, nzimm[9:4]`  |
+| LUI      | 01           | 011                | CI           | `lui rd,nzuimm[17:12]`    |
+| SRLI     | 01           | 100000             | CB           | `srli rd’,rd’,shamt[5:0]` |
+| SRAI     | 01           | 100001             | CB           | `srai rd’,rd’,shamt[5:0]` |
+| ANDI     | 01           | 100x10             | CB           | `andi rd’,rd’,imm[5:0]`   |
+| SUB      | 01           | 100011             | CA           | `sub rd’,rd’,rs2’`        |
+| XOR      | 01           | 100011             | CA           | `xor rd’,rd’,rs2’`        |
+| OR       | 01           | 100011             | CA           | `or rd’,rd’,rs2`          |
+| AND      | 01           | 100011             | CA           | `and rd’,rd’,rs2’`        |
+| J        | 01           | 101                | CJ           | `jal x0,offset[11:1]`     |
+| BEQZ     | 01           | 110                | CB           | `beq rs1’,x0,offset[8:1]` |
+| BNEZ     | 01           | 111                | CB           | `bne rs1’,x0,offset[8:1]` |
+
+#### op==10
+
+| 压缩指令 | op=inst[1:0] | funct3=inst[15:13] | 压缩指令格式 | 对应 32I 指令            |
+| -------- | ------------ | ------------------ | ------------ | ------------------------ |
+| SLLI     | 10           | 000                | CI           | `slli rd,rd,shamt[5:0]`  |
+| LWSP     | 10           | 010                | CI           | `lw rd,offset[7:2](x2)`  |
+| JR       | 10           | 1000               | CR           | `jalr x0,rs1,0`          |
+| MV       | 10           | 1000               | CR           | `add rd, x0, rs2`        |
+| JALR     | 10           | 1001               | CR           | `jalr x1,rs1,0`          |
+| ADD      | 10           | 1001               | CR           | `add rd,rd,rs2`          |
+| EBREAK   | 10           | 1001               | CR           | `ebreak`                 |
+| SWSP     | 10           | 110                | CSS          | `sw rs2,offset[7:2](x2)` |
+
+![rvc](/Users/fujie/Pictures/typora/rvc.svg)
+
+## 🌟 格式相似的指令
+
+1. `SRLI`、`SRAI`和`ANDI`[11:10]:
+   - `SRLI`: 00
+   - `SRAI`: 01
+   - `ANDI`: 10
+2. `J`和`JAL`只有 inst[15]不一样
+3. `JR`和`JALR`只有 inst[12]不一样
+4. `BNEZ`和`BEQZ`只有 inst[13]不一样
+
+## 🌟 非法指令(illegal instruction)
 
-1. frequently used registers：x8~x15，其 3bits 编码从 000 到 111
-2. rs1, rs2 放在 RVC 固定的字段、rd 在 RVC 中的字段是不固定的
-3. 在 RVC 中，imm 不可以被赋值为 0，0 不是合法的 register index(x0 不会在 RVC 字段中出现)
-4. CR, CI, CSS 格式的指令可以使用所有的 32 个 register，因为其 register 由 5bits 指定；其余格式的指令只可以使用 x8~x15 这 8 个 register，因为其 register 由 3bits 指定
-
-### Stack-Pointer Based Loads and Stores
-
-SP 默认使用 x2 作为基地址来和 offset 相加得到访问 Data-Memory 的地址
-
-#### C.LWSP(Load Word Stack Pointer)
-
-1. 是 `CI` 格式的指令
-2. C.LWSP loads a 32-bit value from memory into register rd.
-3. It computes an effective address by adding the <u>zero-extended offset, scaled by 4</u>, to the stack pointer, x2.
-4. It expands to `lw rd, offset[7:2](x2)`
-5. 要求$rd\neq0$
-
-C.LWSP 指令格式：
-
-| 15-13  | 12         | 11-7 | 6-2               | 1-0    |
-| ------ | ---------- | ---- | ----------------- | ------ |
-| funct3 | imm        | rd   | imm               | opcode |
-| 010    | uOffset[5] | rd   | uOffset[4:2\|7:6] | 10     |
-
-> PS: uOffset for unsigned_offset
-
-LW 的指令格式：
-
-| 31-20        | 19-15 | 14-12  | 11-7 | 6-0     |
-| ------------ | ----- | ------ | ---- | ------- |
-| imm          | rs1   | funct3 | rd   | opcode  |
-| offset[11:0] | rs1   | 010    | rd   | 0000011 |
-
-令 LW 指令为 I，C.LWSP 指令为 C，则由 C 扩展为 I 的过程如下：
-
-1. 恢复 opcode
-
-   ```verilog
-   I[6:0]=I_opcode=7'b0000011
-   ```
-
-2. 恢复 funct3
-   ```verilog
-   C_funct3=C[15:13]
-   I_funct3=C_funct3
-   I[14:12]=I_funct3
-   ```
-3. 恢复 rd
-   ```verilog
-   C_rd=C[11:7]
-   I_rd=C_rd
-   I[11:7]=I_rd
-   ```
-4. 恢复 rs1
-   ```verilog
-   I_rs1=x2=5'b00010
-   I[14:12]=I_rs1
-   ```
-5. <u>恢复 offset</u>
-
-   ```verilog
-   C_offset={C[3:2], C[12], C[6:5]}
-   I_offset={4'b0000, C_offset, 2'b00} // scaled by 4, zero-extended
-   I[31:20]=I_offset
-   ```
-
-#### C.SWSP(Store Word Stack Pointer)
-
-1. 是 `CSS` 格式的指令
-2. stores a 32-bit value in register rs2 to memory.
-3. It computes an effective address by adding the <u>zero-extended offset, scaled by 4</u>, to the stack pointer, x2.
-4. It expands to `sw rs2, offset[7:2](x2)`
-
-C.SWSP 指令格式：
-
-| 15-13  | 12-7              | 6-2 | 1-0    |
-| ------ | ----------------- | --- | ------ |
-| funct3 | imm               | rs2 | opcode |
-| 110    | uOffset[5:2\|7:6] | src | 10     |
-
-SW 指令格式：
-
-| 31-25        | 24-20 | 19-15 | 14-12  | 11-7        | 6-0     |
-| ------------ | ----- | ----- | ------ | ----------- | ------- |
-| imm          | src   | base  | funct3 | imm         | opcode  |
-| offset[11:5] | rs2   | rs1   | 010    | offset[4:0] | 0100011 |
-
-令 SW 指令为 I，C.SWSP 指令为 C，则由 C 扩展为 I 的过程如下：
-
-1. 恢复 opcode
-
-   ```verilog
-   I[6:0]=I_opcode=7'b0100011
-   ```
-
-2. 恢复 funct3
-   ```verilog
-   I_funct3=3'b010
-   I[14:12]=I_funct3
-   ```
-3. 恢复 rs2
-   ```verilog
-   C_rs2=C[6:2]
-   I_rs2=C_rs2
-   I[24:20]=I_rs2
-   ```
-4. 恢复 rs1
-   ```verilog
-   I_rs1=x2=5'b00010
-   I[14:12]=I_rs1
-   ```
-5. <u>恢复 offset</u>
-
-   ```verilog
-   C_offset={C[8:7], C[12:9]}
-   I_offset={4'b0000, C_offset, 2'b00} // scaled by 4, zero-extended
-   {I[31:25], I[11:7]}=I_offset
-   ```
-
-### Register-Based Loads and Stores
-
-rs1 不再是默认为 x2，而是由 3bits 的 rs1'来指定，可以选择 x8~x15 中的任一个；同时 rd 也由 5bits 缩短为 3bits 的 rd'
-
-#### C.LW
-
-1. 是`CW`格式
-2. loads a 32-bit value from memory into register rd′.
-3. It computes an effective address by adding the <u>zero-extended offset, scaled by 4</u>, to the base address in register rs1′.
-4. It expands to `lw rd′, offset[6:2](rs1′)`.
-
-C.LW 指令格式
-
-| 15-13  | 12-10        | 9-7  | 6-5           | 4-2  | 1-0    |
-| ------ | ------------ | ---- | ------------- | ---- | ------ |
-| funct3 | imm          | rs1' | imm           | rd'  | opcode |
-| 010    | uOffset[5:3] | base | uOffset[2\|6] | dest | 00     |
-
-LW 的指令格式：
-
-| 31-20        | 19-15 | 14-12  | 11-7 | 6-0     |
-| ------------ | ----- | ------ | ---- | ------- |
-| imm          | rs1   | funct3 | rd   | opcode  |
-| offset[11:0] | rs1   | 010    | rd   | 0000011 |
-
-令 LW 指令为 I，C.LW 指令为 C，则由 C 扩展为 I 的过程如下：
-
-1. 恢复 opcode
-
-   ```verilog
-   I[6:0]=I_opcode=7'b0000011
-   ```
-
-2. 恢复 funct3
-   ```verilog
-   C_funct3=C[15:13]
-   I_funct3=C_funct3
-   I[14:12]=I_funct3
-   ```
-3. 恢复 rd
-   ```verilog
-   C_rd=C[4:2]
-   I_rd={2'b01, C_rd}
-   I[11:7]=I_rd
-   ```
-4. 恢复 rs1
-   ```verilog
-   C_rs1=C[9:7]
-   I_rs1={2'b01, C_rs1}
-   I[14:12]=I_rs1
-   ```
-5. <u>恢复 offset</u>
-
-   ```verilog
-   C_offset={C[5], C[12:10], C[6]}
-   I_offset={5'b00000, C_offset, 2'b00} // scaled by 4, zero-extended, imm in CL only 5 bits
-   I[31:20]=I_offset
-   ```
-
-#### C.SW
-
-1. 是`CS`格式
-2. stores a 32-bit value in register rs2′ to memory.
-3. It computes an effective address by adding the <u>zero-extended offset, scaled by 4</u>, to the base address in register rs1′.
-4. It expands to `sw rs2′, offset[6:2](rs1′)`
-
-C.SW 指令格式
-
-| 15-13  | 12-10        | 9-7  | 6-5           | 4-2  | 1-0    |
-| ------ | ------------ | ---- | ------------- | ---- | ------ |
-| funct3 | imm          | rs1' | imm           | rs2' | opcode |
-| 110    | uOffset[5:3] | base | uOffset[2\|6] | src  | 00     |
-
-> PS: C.SW 和 C.LW 的区别在于
->
-> 1. 其[4:2]字段由 rd'变成了 rs2'
-> 2. 其[15]字段由 0 变成了 1
-
-SW 的指令格式：
-
-| 31-25        | 24-20 | 19-15 | 14-12  | 11-7        | 6-0     |
-| ------------ | ----- | ----- | ------ | ----------- | ------- |
-| imm          | src   | base  | funct3 | imm         | opcode  |
-| offset[11:5] | rs2   | rs1   | 010    | offset[4:0] | 0100011 |
-
-令 SW 指令为 I，C.SW 指令为 C，则由 C 扩展为 I 的过程如下：
-
-1. 恢复 opcode
-
-   ```verilog
-   I[6:0]=I_opcode=7'b0100011
-   ```
-
-2. 恢复 funct3
-   ```verilog
-   I_funct3=3'b010
-   I[14:12]=I_funct3
-   ```
-3. 恢复 rs2
-   ```verilog
-   C_rs2=C[4:2]
-   I_rs2={2'b01, C_rs2}
-   I[24:20]=I_rs2
-   ```
-4. 恢复 rs1
-   ```verilog
-   C_rs1=C[9:7]
-   I_rs1={2'b01, C_rs1}
-   I[14:12]=I_rs1
-   ```
-5. <u>恢复 offset</u>
-
-   ```verilog
-   C_offset={C[5], C[12:10], C[6]}
-   I_offset={5'b00000, C_offset, 2'b00} // scaled by 4, zero-extended, imm in CS only 5 bits
-   {I[31:25], I[11:7]}=I_offset
-   ```
-
-6. `I[ 6: 0]=7b'0100011`
-7. `I[11: 7]={C[11:10], C[6], 2{1'b0}}`
-8. `I[14:12]=3'b010`
-9. `I[19:15]={2'b01, C[9:7]}`
-10. `I[24:20]={2'b01, C[4:2]}`
-11. `I[31:25]={5{1'b0},C[12], C[5]}`
-
-> PS: C.LW 和 C.SW 的 imm 都只有 5bits，C.LWSP 和 C.SWSP 的 imm 都有 6bits
-
-### Control Transfer instructions
-
-1. C.J 和 C.JAL 都是`CJ`格式的指令
-2. The offset is <u>sign-extended and added to the pc</u> to form the jump target address
-
-其中：
-
-1. C.J 扩展为`jal x0, offset[11:1]`, funct3=101
-2. C.JAL 扩展为: `jal x1, offset[11:1]`, funct3=001
-
-C.J 和 C.JAL 指令格式：
-
-| 15-13  | 12-2                                | 1-0    |
-| ------ | ----------------------------------- | ------ |
-| funct3 | imm                                 | opcode |
-| 101    | offset[11\|4\|9:8\|10\|6\|7\|3:1\|5 | 01     |
-| 001    | offset[11\|4\|9:8\|10\|6\|7\|3:1\|5 | 01     |
-
-JAL 指令格式为：
-
-| 31-20            | 19-12      | 11-7 | 6-0     |
-| ---------------- | ---------- | ---- | ------- |
-| imm[20\|10:1\|11 | imm[19:12] | rd   | 1101111 |
-
-令 JAL 指令为 I，C.J 或者 C.JAL 指令为 C，则由 C 扩展为 I 的过程如下：
+1. `ADDI4SPN`: $imm == 0$, 被保留了(reserved)
+2. `ADDI16SP`: $imm == 0$, reserved
+3. `LUI`: $imm == 0$, reserved
+4. `SLLI`、`SRLI`和`SRAI`: $imm5=inst[12]==1$，导致移位超过了 31bits
+5. `JR`:$rs1 == x0$, `JR`其 offset 恒为 0，若 rs1 还等于 x0, 则跳转 PC 就是当前的 PC
+6. 其他未定义的压缩指令也都是 illegal instruction
+
+## 🌟 RVC 的 imm 如何拓展为对应 RV32I 的 imm
+
+1. 立即数做零扩展 (zero-extend imm): `SLLI`, `ADDI4SPN`, `SRLI`, `SRAI`, `SW`, `LW`, `LWSP`, `SWSP`;  
+   立即数做符号拓展 (sign-extend imm): Others
+
+   > RVC 中的 imm 的位宽会比 RV32I 指令中的 imm 位宽小，因此需要扩展为对应的位宽.
+
+2. imm 左移位数
+
+   - 1: `J`, `JAL`,`BEQZ`, `BNEZ`
+   - 2: `ADDI4SPN`, `LW`, `SW`, `LWSP`, `SWSP`
+   - 4: `ADDI16SP`
+   - 12: `LUI`
+
+   > RVC 中的 imm 拓展到 RV32I 中的立即数的时候，会有一个放大（scale）倍数，需要对其 imm 进行左移
+
+## 变成其他压缩指令(change to other RVC instruction)
+
+1. `ADDI`: 如果$rd==x0$, 则`ADDI -> NOP`
+2. `LUI`: 如果$rd=x2$, 则`LUI -> ADDI16SP`
+3. `MV`: 如果$rs2=x0$, 则`MV -> JR`
+4. `ADD`: 如果$rs2=x0$, 则`ADD -> EBREAK`
+5. `JALR`: 如果$rs1==x0$, 则`JALR -> EBREAK`
+
+## HINTs instruction
+
+> HINTs 指令功能类似于 nop 指令，它除了增加 PC 或者其他 counter 之外不会对系统产生任何影响, 不用在微架构里实现 HINTs 指令
+
+1. `NOP`和`ADDI`: $imm==0$
+2. `LI`, `LUI`: $rd==x0$
+3. `SLLI`, `SRLI`和`SRAI`: $rd==x0$ 或者$imm==0$
