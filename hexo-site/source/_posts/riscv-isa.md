@@ -97,7 +97,7 @@ RISCV 中涉及到溢出的指令有: `ANDI`, `ADD`, `SUB`
 | 01000            | S-Type           | 3                  | SB, SH, SW                                           |
 | 00000            | I-Type           | 5                  | LB, BH, LW, LBU, LHU                                 |
 | 00100            | I-Type           | 9                  | ADDI, SLTI, SLTIU, XORI, ORI, ANDI, SLLI, SRLI, SRAI |
-| 01100            | R-Type           | 10                 | ADD, SUB, SLL, SLTU, XOR, OR, AND, SLL, SRL, SRA     |
+| 01100            | R-Type           | 10                 | ADD, SUB, SLT, SLTU, XOR, OR, AND, SLL, SRL, SRA     |
 | 11001            | R-Type           | 1                  | JALR                                                 |
 | 11011            | J-Type           | 1                  | JAL                                                  |
 | 11000            | B-Type           | 6                  | BEQ, BNE, BLT, BGE, BLTU, BGEU                       |
