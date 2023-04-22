@@ -114,6 +114,8 @@ RISCV 5 级流水线“取指”部分设计
 
 ![pipeline_scratch](/Users/fujie/Pictures/typora/IF/pipeline_scratch.svg)
 
+ITCM 占 64kB
+
 1. FIFO 工作原理
 
    - FIFO 每次从 I-memory 读取 2x16 的数据
