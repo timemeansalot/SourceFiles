@@ -1,5 +1,5 @@
 #!/bin/bash
-$cd hexo-site
+cd hexo-site
 bash hexo-site/d.sh
-$cd ..
+cd ..
 bash cmt.sh
