@@ -1,5 +1,7 @@
-#!/bin/bash
-cd hexo-site
-bash hexo-site/d.sh
+echo "deploy hexo site"
+cd hexo-site 
+pwd
+zsh ./d.sh
+echo "push to github"
 cd ..
-bash cmt.sh
+zsh ./cmt.sh
