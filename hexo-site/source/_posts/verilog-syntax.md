@@ -143,7 +143,7 @@ tags:
          initial begin
            fd = $fopen("compressDecoderInput.txt", "r"); // 打开一个文件
            err = $ferror(fd, str); // 判断该文件是否存在
-           if(!err)begin
+           if(!err)begin // 如果文件打开成功
             // code = $fread(src, fd);
             code =$fscanf(fd, "%d", src); // 从文件里读取数据到寄存器里
             $display("src is %d", src);
