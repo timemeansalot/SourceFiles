@@ -219,3 +219,9 @@ op=00 时，如果 funct3 不是上述 3 种情况，则都是非法压缩指令
 
 <div STYLE="page-break-after: always;"></div>
 ![rvc](/Users/fujie/Pictures/typora/rvc.svg)
+
+## Verilog 实现
+
+将 16 bits 的压缩指令，恢复成 32bits 的正常指令，再通过 decoder 进行解码
+![compress Instructions expanding to 32I](https://s2.loli.net/2023/04/26/vLnagHUEzKwyx5e.png)
+![waveforms](https://s2.loli.net/2023/04/26/yrsJhVn7MU4AkH6.png)
