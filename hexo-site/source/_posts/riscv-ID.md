@@ -13,6 +13,10 @@ RISC-V 译码级设计
 
 ![pipeline_ID](/Users/fujie/Pictures/typora/pipeline/pipeline_ID.svg)
 
+### 压缩指令译码(compress decoder)
+
+用于将压缩指令恢复成 32 bits 的正常指令，再送往 decoder 进行译码，压缩指令详细说明见[压缩指令](https://timemeansalot.github.io/2023/04/10/RISCV-compressISA/)
+
 ### 译码控制(Decoder)
 
 1. 输入接口
@@ -46,57 +50,76 @@ RISC-V 译码级设计
 
       > opcode 一共 7bits，其中低 2bits 恒为 11，只有高 5bits 不同
 
-      | $opcode_{[6:2]}$ | Instruction Type | Instruction Amount | Relative Instructions                                |
-      | ---------------- | ---------------- | ------------------ | ---------------------------------------------------- |
-      | 01101            | U-Type           | 1                  | LUI                                                  |
-      | 00101            | U-Type           | 1                  | AUIPC                                                |
-      | 01000            | S-Type           | 3                  | SB, SH, SW                                           |
-      | 00000            | I-Type           | 5                  | LB, BH, LW, LBU, LHU                                 |
-      | 00100            | I-Type           | 9                  | ADDI, SLTI, SLTIU, XORI, ORI, ANDI, SLLI, SRLI, SRAI |
-      | 01100            | R-Type           | 10                 | ADD, SUB, SLT, SLTU, XOR, OR, AND, SLL, SRL, SRA     |
-      | 11001            | R-Type           | 1                  | JALR                                                 |
-      | 11011            | J-Type           | 1                  | JAL                                                  |
-      | 11000            | B-Type           | 6                  | BEQ, BNE, BLT, BGE, BLTU, BGEU                       |
-      | 01100            | RV-M             | 8                  | MUL, MULH, MULHSU, MULHU, DIV, DIVU, REM, REMU       |
+      | $opcode_{[6:0]}$ | Instruction Opcode Type | Instruction Amount | Relative Instructions                                                                            |
+      | ---------------- | ----------------------- | ------------------ | ------------------------------------------------------------------------------------------------ |
+      | 0000011          | OPCODE_LOAD             | 5                  | LB, BH, LW, LBU, LHU                                                                             |
+      | 0010011          | OPCODE_OP_IMM           | 9                  | ADDI, SLTI, SLTIU, XORI, ORI, ANDI, SLLI, SRLI, SRAI                                             |
+      | 0010111          | OPCODE_AUIPC            | 1                  | AUIPC                                                                                            |
+      | 0100011          | OPCODE_STORE            | 3                  | SB, SH, SW                                                                                       |
+      | 0110011          | OPCODE_RTYPE            | 18                 | ADD, SUB, SLT, SLTU, XOR, OR, AND, SLL, SRL, SRA, MUL, MULH, MULHSU, MULHU, DIV, DIVU, REM, REMU |
+      | 0110111          | OPCODE_LUI              | 1                  | LUI                                                                                              |
+      | 1100011          | OPCODE_BRANCH           | 6                  | BEQ, BNE, BLT, BGE, BLTU, BGEU                                                                   |
+      | 1100111          | OPCODE_JALR             | 1                  | JALR                                                                                             |
+      | 1101111          | OPCODE_JAL              | 1                  | JAL                                                                                              |
 
    2. 由指令类型得到 immType, branchType, aluOp, dMemType, dMemWriteEn, regWBEn, regWBSrc
 
-      - immType:
+      1. immType:
 
-        | immType | Amount | Instruction opcode  |
-        | ------- | ------ | ------------------- |
-        | IMM_U   | 2      | 01101, 00101        |
-        | IMM_J   | 1      | 11011               |
-        | IMM_I   | 15     | 00100, 00000, 11001 |
-        | IMM_B   | 6      | 11000               |
-        | IMM_S   | 3      | 01000               |
-        | IMM_NO  | 18     | 11000, 01100        |
+         | immType | Amount | Instruction opcode                      |
+         | ------- | ------ | --------------------------------------- |
+         | IMM_U   | 2      | OPCODE_LUI, OPCODE_AUIPC                |
+         | IMM_J   | 1      | OPCODE_JAL                              |
+         | IMM_I   | 15     | OPCODE_OP_IMM, OPCODE_LOAD, OPCODE_JALR |
+         | IMM_B   | 6      | OPCODE_BRANCH                           |
+         | IMM_S   | 3      | OPCODE_STORE                            |
+         | IMM_NO  | 18     | OPCODE_RTYPE                            |
 
-      - dMemType, dMemWriteEn
+      2. dMemType, dMemWriteEn
 
-        | Instructions opcode | funct3                              | dMemType                                             | dMemWriteEn |
-        | ------------------- | ----------------------------------- | ---------------------------------------------------- | ----------- |
-        | 01000               | 000<br/>001<br/>010                 | MEM_SB<br/>MEM_SH<br/>MEM_SW                         | 1           |
-        | 00000               | 000<br/>001<br/>010<br/>100<br/>101 | MEM_LH<br/>MEM_LB<br/>MEM_LW<br/>MEM_LBU<br/>MEM_LHU | 0           |
-        | others              | xxx                                 | MEM_NO                                               | 0           |
+         | Instructions opcode | funct3                              | dMemType                                             | dMemWriteEn |
+         | ------------------- | ----------------------------------- | ---------------------------------------------------- | ----------- |
+         | 01000               | 000<br/>001<br/>010                 | MEM_SB<br/>MEM_SH<br/>MEM_SW                         | 1           |
+         | 00000               | 000<br/>001<br/>010<br/>100<br/>101 | MEM_LH<br/>MEM_LB<br/>MEM_LW<br/>MEM_LBU<br/>MEM_LHU | 0           |
+         | others              | xxx                                 | MEM_NO                                               | 0           |
 
-      - regWBEn
+      3. regWBEn
 
-        | regWBEn | Amount | Instruction opcode |
-        | ------- | ------ | ------------------ |
-        | 0       | 9      | 01000, 11000       |
-        | 1       | 36     | others             |
+         | regWBEn | Amount | Instruction opcode |
+         | ------- | ------ | ------------------ |
+         | 0       | 9      | 01000, 11000       |
+         | 1       | 36     | others             |
 
-      - regWBSrc
+      4. regWBSrc
 
-        | regWBSrc           | Amount | Instruction opcode |
-        | ------------------ | ------ | ------------------ |
-        | WBSrc_aluResult    | 37     | others             |
-        | WBSrc_dMemReadData | 5      | 00000              |
-        | WBSrc_extendedImm  | 1      | 01101              |
-        | WBSrc_pcPlus4      | 2      | 11001, 11011       |
+         | regWBSrc           | Amount | Instruction opcode |
+         | ------------------ | ------ | ------------------ |
+         | WBSrc_aluResult    | 37     | others             |
+         | WBSrc_dMemReadData | 5      | 00000              |
+         | WBSrc_extendedImm  | 1      | 01101              |
+         | WBSrc_pcPlus4      | 2      | 11001, 11011       |
 
-      - TODO: branchType, aluOp
+      5. branchType
+
+         - branchBType: OPCODE_BRANCH
+         - branchJAL: OPCODE_JAL
+         - branchJALR: OPCODE_JALR
+
+      6. aluOp
+
+         | Instruction Opcode Type    | funct3(funct7)                                                                          | Relative Instructions                                                        | aluOp                                                                                                                                            |
+         | -------------------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+         | OPCODE_LOAD                | 000<br />001<br /><br />010<br />100<br />101                                           | LB<br />BH<br />LW<br />LBU<br />LHU                                         | ALUOP_ADD                                                                                                                                        |
+         | OPCODE_OP_IMM              | 000<br />010<br />011<br />100<br />110<br />111<br />001<br />101(0)<br />101(1)       | ADDI<br/>SLTI<br/>SLTIU<br/>XORI<br/>ORI<br/>ANDI<br/>SLLI<br/>SRLI<br/>SRAI | ALUOP_ADD<br />ALUOP_SLT<br />ALUOP_SLTU<br />ALUOP_XOR<br />ALUOP_OR<br />ALUOP_AND<br />ALUOP_SLL<br />ALUOP_SRL<br />ALUOP_SRA                |
+         | OPCODE_AUIPC<br/>`rd1=pc`               |                                                                                         | AUIPC                                                                        | ALUOP_ADD                                                                                                                                        |
+         | OPCODE_STORE               | 000<br/>001<br/>010                                                                     | SB<br/>SH<br/>SW                                                             | ALUOP_ADD                                                                                                                                        |
+         | OPCODE_RTYPE(instr[25]==0)<br/> `rd2=register file` | 000(0)<br/>000(1)<br/>001<br/>010<br/>011<br/>100<br/>101(0)<br/>101(1)<br/>110<br/>111 | ADD<br/>SUB<br/>SLL<br/>SLT<br/>SLTU<br/>XOR<br/>SRL<br/>SRA<br/>OR<br/>AND  | ALUOP_ADD<br />ALUOP_SUB<br />ALUOP_SLL<br />ALUOP_SLT<br />ALUOP_SLTU<br />ALUOP_XOR<br />ALUOP_SRL<br />ALUOP_SRA<br />ALUOP_OR<br />ALUOP_AND |
+         | OPCODE_RTYPE(instr[25]==1)<br/> `rd2=register file`  | 000<br/>001<br/>010<br/>011<br/>100<br/>101<br/>110<br/>111                             | MUL<br/>MULH<br/>MULHSU<br/>MULHU<br/>DIV<br/>DIVU<br/>REM<br/>REMU          | ALUOP_MUL<br/>ALUOP_MULH<br/>ALUOP_MULHSU<br/>ALUOP_MULHU<br/>ALUOP_DIV<br/>ALUOP_DIVU<br/>ALUOP_REM<br/>ALUOP_REMU                              |
+         | OPCODE_LUI                 |                                                                                         | LUI                                                                          | ALUOP_ADD                                                                                                                                        |
+         | OPCODE_BRANCH<br/>`rd1=pc`              | 000<br/>001<br/>100<br/>101<br/>110<br/>111                                             | BEQ<br/>BNE<br/>BLT<br/>BGE<br/>BLTU<br/>BGEU                                | ALUOP_SUB<br />ALUOP_SUB<br />ALUOP_SLT<br />ALUOP_SLT<br />ALUOP_SLTU<br />ALUOP_SLTU                                                           |
+         | OPCODE_JALR                |                                                                                         | JALR                                                                         | ALUOP_ADD                                                                                                                                        |
+         | OPCODE_JAL<br/>`rd1=pc`                 |                                                                                         | JAL                                                                          | ALUOP_ADD                                                                                                                                        |
+
 
    3. 根据 instruction 得到 rs1, rs2 和 rd: `rs2=instr[24:20], rs1=[19:15], rd=instr[11:7]`
 
@@ -174,30 +197,28 @@ RISC-V 译码级设计
 
    该模块是纯组合电路，其根据输入的 immType 字段从 instruction 中摘取对应字段生成 32bits 的扩展立即数
 
-   1. IMM_U: `imm={instr[31:12], 12'h000}`
-   2. IMM_J: `imm={11{instr[31]}, instr[31], instr[19:15], instr[20], instr[30:21], 1'b0}`
-   3. IMM_I: `imm={20{instr[31]}, instr[31:20]}`
-   4. IMM_B: `imm={19{instr[31]}, instr[31], instr[7], instr[30,25], instr[11,8]}`
-   5. IMM_S: `imm={20{instr[31]}, instr[31:25], instr[11:7]}`
-   6. IMM_NO: no immediate
+   1. IMM_U: `imm_o={instr_i[31:12], 12'h000};`
+   2. IMM_J: `imm_o={{11{instr_i[31]}}, instr_i[31], instr_i[19:12], instr_i[20], instr_i[30:21], 1'b0};`
+   3. IMM_I: `imm_o={{20{instr_i[31]}}, instr_i[31:20]};`
+   4. IMM_B: `imm_o={{19{instr_i[31]}}, instr_i[31], instr_i[7], instr_i[30:25], instr_i[11:8], 1'b0};`
+   5. IMM_S: `imm_o={{20{instr_i[31]}}, instr_i[31:25], instr_i[11:7]};`
+   6. IMM_NO: no immediate ==> `imm_o = 32'h00000000;`
 
-### 4x1 Mux
+~~### 4x1 Mux~~
+~~1. 输入接口~~
 
-1. 输入接口
-
-   | Name            | Source    | Description                    |
-   | --------------- | --------- | ------------------------------ |
-   | RD1[31:0]       | RF        | 从 RF 读出的操作数 1           |
-   | RD2[31:0]       | RF        | 从 RF 读出的操作数 2           |
-   | exeBypass[31:0] | EXE stage | data forwarding from EXE stage |
-   | memBypass[31:0] | MEM stage | data forwarding from MEM stage |
-   | wbBypass[31:0]  | WB stage  | data forwarding from WB stage  |
-
-2. 输出接口
-
-   | Name       | Target          | Description           |
-   | ---------- | --------------- | --------------------- |
-   | RD1D[31:0] | ID/EXE pipeline | 送给 ALU 的 operand 1 |
-   | RD2D[31:0] | ID/EXE pipeline | 送给 ALU 的 operand 2 |
-
-3. 模块功能: 根据 forwarding 选择信号，选择合适的 forward 数据，将选择的数据输送到 EXE Stage
+```
+~~   | Name            | Source    | Description                    |~~
+~~   | --------------- | --------- | ------------------------------ |~~
+~~   | RD1[31:0]       | RF        | 从 RF 读出的操作数 1           |~~
+~~   | RD2[31:0]       | RF        | 从 RF 读出的操作数 2           |~~
+~~   | exeBypass[31:0] | EXE stage | data forwarding from EXE stage |~~
+~~   | memBypass[31:0] | MEM stage | data forwarding from MEM stage |~~
+~~   | wbBypass[31:0]  | WB stage  | data forwarding from WB stage  |~~
+~~2. 输出接口~~
+~~   | Name       | Target          | Description           |~~
+~~   | ---------- | --------------- | --------------------- |~~
+~~   | RD1D[31:0] | ID/EXE pipeline | 送给 ALU 的 operand 1 |~~
+~~   | RD2D[31:0] | ID/EXE pipeline | 送给 ALU 的 operand 2 |~~
+~~3. 模块功能: 根据 forwarding 选择信号，选择合适的 forward 数据，将选择的数据输送到 EXE Stage~~
+```
