@@ -1,7 +1,7 @@
 ---
-title: RISCV 译码级设计
+title: RISC-V 译码级设计
 date: 2023-04-04 10:11:49
-tags: RISCV
+tags: RISC-V
 ---
 
 ![Decode](https://s2.loli.net/2023/04/10/cMZH3xzBy5aDSeK.png)

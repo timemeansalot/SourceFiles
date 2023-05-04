@@ -1,10 +1,10 @@
 ---
-title: RISCV写回级
+title: RISC-V写回级
 date: 2023-04-04 09:35:30
-tags: RISCV
+tags: RISC-V
 ---
 
-## RISCV WB Stage 设计
+## RISC-V WB Stage 设计
 
 <!--more-->
 

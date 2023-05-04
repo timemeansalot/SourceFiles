@@ -1,7 +1,7 @@
 ---
-title: RISCV 访存级
+title: RISC-V 访存级
 date: 2023-04-05 11:59:22
-tags: RISCV
+tags: RISC-V
 ---
 
 ![memory](https://s2.loli.net/2023/04/10/kOp5QAIJYuU6q91.png)

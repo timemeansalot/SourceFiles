@@ -1,16 +1,16 @@
 ---
-title: Unix 环境下，RISCV 工具链使用笔记
+title: Unix 环境下，RISC-V 工具链使用笔记
 date: 2023-03-08 14:45:34
-tags: RISCV
+tags: RISC-V
 ---
 
 ![RISC-V](https://s2.loli.net/2023/04/10/MFRtEaZ6A7pY4y8.png)
 
-> Unix 环境下，RISCV 工具链使用笔记，包括如下内容：
+> Unix 环境下，RISC-V 工具链使用笔记，包括如下内容：
 
-1. RISCV 编译工具：gcc, objdump, ...
-2. RISCV 调试工具：spike, pk, openOCD, GDB, llvm
-3. RISCV assemble
+1. RISC-V 编译工具：gcc, objdump, ...
+2. RISC-V 调试工具：spike, pk, openOCD, GDB, llvm
+3. RISC-V assemble
 4. Verilator: 编译工具，将 Verilog 编译成 C++文件和 Makefile, 结合 C++的 testbench，可以编译成可执行的测试文件
 
 <!--more-->
@@ -19,7 +19,7 @@ tags: RISCV
 
 ## Tool Install
 
-### RISCV GNU Toolchain
+### RISC-V GNU Toolchain
 
 Linux 下有 2 种方法安装**编译工具链**：
 
@@ -32,7 +32,7 @@ Linux 下有 2 种方法安装**编译工具链**：
 
 ### 仿真工具：spike, pk, openocd, QEMU
 
-1. [Spike](https://github.com/riscv-software-src/riscv-isa-sim)和[QEMU](https://github.com/qemu/qemu)都是模拟器，可以模拟 RISCV 指令的运行
+1. [Spike](https://github.com/riscv-software-src/riscv-isa-sim)和[QEMU](https://github.com/qemu/qemu)都是模拟器，可以模拟 RISC-V 指令的运行
 2. [pk](https://github.com/riscv-software-src/riscv-pk) 是 proxy kernel，用于在 spike 中模拟一个简单的操作系统和 bbl，这样我们才可以加载程序到 spike 中模拟运行
 3. [openocd](https://github.com/riscv/riscv-openocd) 是负责远程调试使用
 4. [iverilog](https://github.com/steveicarus/iverilog): 免费开源的 Verilog 仿真工具，vcs 的平替
@@ -163,7 +163,7 @@ endmodule
 1. 当需要快速验证一个模块的时候，可以使用 iverilog，因为它只需要编写 dut 和 tb 即可.
 2. 当需要验证比较大的模块的时候，还是使用 verilator+UVM 的方式，因为它虽然前期需要编写比较复杂的 c++ testbench，但是扩展性和自动化比较强。
 3. 此外：使用 Chisel Test 来验证 Chisel 编写的硬件模块，则更加的高级，还可以配合 difftest 使用。
-4. Spike 模拟器可以配合 RISCV 汇编代码使用，当我们不了解 RISCV 指令细节的时候，可以通过 Spike 运行对应的指令，然后查看结果。
+4. Spike 模拟器可以配合 RISC-V 汇编代码使用，当我们不了解 RISC-V 指令细节的时候，可以通过 Spike 运行对应的指令，然后查看结果。
 
 # ELF
 
@@ -176,7 +176,7 @@ endmodule
 
 # Referrences
 
-1. [RISCV Tutorial on Youtube by Derry Pratama](https://www.youtube.com/watch?v=zZUtTplVHwE&list=PLgzAvj2cYr3qGvecT_PSnKzl5SxECZmI3)
+1. [RISC-V Tutorial on Youtube by Derry Pratama](https://www.youtube.com/watch?v=zZUtTplVHwE&list=PLgzAvj2cYr3qGvecT_PSnKzl5SxECZmI3)
 2. [Veriloator Guide by Norbert](https://www.itsembedded.com/), Norbert also gives guide on [how to use vivado](https://itsembedded.com/dhd/vivado_sim_1/)
 3. [Icarus Verilog Tutorial](https://gist.github.com/donn/d9ecf0cf6e7ae3d99c7c4395e7e10afa)
 4. [循序渐进，学习开发一个 RISC-V 上的操作系统 - 汪辰](https://www.bilibili.com/video/BV1Q5411w7z5?p=5&vd_source=2eb89fc06210190d19c0a6c277925270)

@@ -1,7 +1,7 @@
 ---
-title: RISCV分支预测器设计
+title: RISC-V分支预测器设计
 date: 2023-03-13 16:15:33
-tags: RISCV
+tags: RISC-V
 ---
 
 ![1 bit predictor](https://s2.loli.net/2023/03/15/ABW43YhqrETUZgJ.png)

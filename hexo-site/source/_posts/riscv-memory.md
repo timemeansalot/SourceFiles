@@ -1,7 +1,7 @@
 ---
-title: RISCV存储设计
+title: RISC-V存储设计
 date: 2023-03-13 16:15:40
-tags: RISCV
+tags: RISC-V
 ---
 
 <!--more-->

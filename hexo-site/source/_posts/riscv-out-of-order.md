@@ -1,7 +1,7 @@
 ---
-title: RISCV 乱序执行
+title: RISC-V 乱序执行
 date: 2023-03-28 10:41:52
-tags: RISCV
+tags: RISC-V
 ---
 
 乱序执行微架构学习笔记：

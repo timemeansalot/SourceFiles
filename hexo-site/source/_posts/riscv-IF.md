@@ -1,7 +1,7 @@
 ---
-title: RISCV 5级流水线取指级设计
+title: RISC-V 5级流水线取指级设计
 date: 2023-03-27 10:57:57
-tags: RISCV
+tags: RISC-V
 ---
 
 RISCV 5 级流水线“取指”部分设计

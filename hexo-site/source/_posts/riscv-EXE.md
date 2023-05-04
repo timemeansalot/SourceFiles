@@ -1,7 +1,7 @@
 ---
-title: RISCV执行级设计
+title: RISC-V执行级设计
 date: 2023-04-04 15:38:11
-tags: RISCV
+tags: RISC-V
 ---
 
 ![ALU](https://s2.loli.net/2023/04/10/xW4djv3JGEB2zyg.png)

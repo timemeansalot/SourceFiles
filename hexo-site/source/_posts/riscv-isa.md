@@ -1,7 +1,7 @@
 ---
-title: RISCV指令集介绍
+title: RISC-V指令集介绍
 date: 2023-03-07 14:58:41
-tags: RISCV
+tags: RISC-V
 ---
 
 RV-32IM 每条指令的特性和功能, 寄存器的通用功能(register mapping)

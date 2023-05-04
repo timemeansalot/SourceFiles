@@ -1,7 +1,7 @@
 ---
 title: RISC-V压缩指令集
 date: 2023-04-10 19:58:24
-tags: RISCV
+tags: RISC-V
 ---
 
 ![RV-32C](https://s2.loli.net/2023/04/10/C73opKyZbMJrktW.png)

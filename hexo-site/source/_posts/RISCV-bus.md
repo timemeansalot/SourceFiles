@@ -1,7 +1,7 @@
 ---
-title: RISCV总线
+title: RISC-V总线
 date: 2023-04-06 15:45:24
-tags: RISCV
+tags: RISC-V
 ---
 
 <div style="text-align:center"><div style="zoom: 15%;"><img src="https://s2.loli.net/2023/04/10/I7sfhHlEuwZcPaW.png"/></div></div>

@@ -1,18 +1,18 @@
 ---
-title: RISCV 异常和中断
+title: RISC-V 异常和中断
 date: 2023-03-23 14:58:33
-tags: RISCV
+tags: RISC-V
 ---
 
-RISCV 异常和中断
+RISC-V 异常和中断
 
 <!--more-->
 
 [TOC]
 
-## RISCV Exception & Interrupt
+## RISC-V Exception & Interrupt
 
-RISCV 特权等级：
+RISC-V 特权等级：
 
 | Level | Encoding | Name             | Abbreviation |
 | ----- | -------- | ---------------- | ------------ |
@@ -21,7 +21,7 @@ RISCV 特权等级：
 | 2     | 10       | Reserved         |              |
 | 3     | 11       | Machine          | M            |
 
-RISCV 支持的特权模式组合：
+RISC-V 支持的特权模式组合：
 
 | 组合序号 | 支持的模式 | 应用场景                           |
 | -------- | ---------- | ---------------------------------- |
@@ -78,7 +78,7 @@ RISCV 支持的特权模式组合：
     例：当**machine time interrupt**发生的时候，已知其对应的 mcause=111，故`pc=BASE+(111<<2)=BASE+0x1C`
   - $\ge 2$: Reserved
 
-  > PS: RISCV 中的指令都是 little endian
+  > PS: RISC-V 中的指令都是 little endian
 
 ![mie](/Users/fujie/Pictures/typora/csr/mie.jpg)
 ![mie](/Users/fujie/Pictures/typora/csr/miestandard.jpg)
