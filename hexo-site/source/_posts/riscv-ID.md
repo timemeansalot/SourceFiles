@@ -107,19 +107,18 @@ RISC-V 译码级设计
 
       6. aluOp
 
-         | Instruction Opcode Type    | funct3(funct7)                                                                          | Relative Instructions                                                        | aluOp                                                                                                                                            |
-         | -------------------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-         | OPCODE_LOAD                | 000<br />001<br /><br />010<br />100<br />101                                           | LB<br />BH<br />LW<br />LBU<br />LHU                                         | ALUOP_ADD                                                                                                                                        |
-         | OPCODE_OP_IMM              | 000<br />010<br />011<br />100<br />110<br />111<br />001<br />101(0)<br />101(1)       | ADDI<br/>SLTI<br/>SLTIU<br/>XORI<br/>ORI<br/>ANDI<br/>SLLI<br/>SRLI<br/>SRAI | ALUOP_ADD<br />ALUOP_SLT<br />ALUOP_SLTU<br />ALUOP_XOR<br />ALUOP_OR<br />ALUOP_AND<br />ALUOP_SLL<br />ALUOP_SRL<br />ALUOP_SRA                |
-         | OPCODE_AUIPC<br/>`rd1=pc`               |                                                                                         | AUIPC                                                                        | ALUOP_ADD                                                                                                                                        |
-         | OPCODE_STORE               | 000<br/>001<br/>010                                                                     | SB<br/>SH<br/>SW                                                             | ALUOP_ADD                                                                                                                                        |
+         | Instruction Opcode Type                             | funct3(funct7)                                                                          | Relative Instructions                                                        | aluOp                                                                                                                                            |
+         | --------------------------------------------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+         | OPCODE_LOAD                                         | 000<br />001<br /><br />010<br />100<br />101                                           | LB<br />BH<br />LW<br />LBU<br />LHU                                         | ALUOP_ADD                                                                                                                                        |
+         | OPCODE_OP_IMM                                       | 000<br />010<br />011<br />100<br />110<br />111<br />001<br />101(0)<br />101(1)       | ADDI<br/>SLTI<br/>SLTIU<br/>XORI<br/>ORI<br/>ANDI<br/>SLLI<br/>SRLI<br/>SRAI | ALUOP_ADD<br />ALUOP_SLT<br />ALUOP_SLTU<br />ALUOP_XOR<br />ALUOP_OR<br />ALUOP_AND<br />ALUOP_SLL<br />ALUOP_SRL<br />ALUOP_SRA                |
+         | OPCODE_AUIPC<br/>`rs1=pc`                           |                                                                                         | AUIPC                                                                        | ALUOP_ADD                                                                                                                                        |
+         | OPCODE_STORE                                        | 000<br/>001<br/>010                                                                     | SB<br/>SH<br/>SW                                                             | ALUOP_ADD                                                                                                                                        |
          | OPCODE_RTYPE(instr[25]==0)<br/> `rd2=register file` | 000(0)<br/>000(1)<br/>001<br/>010<br/>011<br/>100<br/>101(0)<br/>101(1)<br/>110<br/>111 | ADD<br/>SUB<br/>SLL<br/>SLT<br/>SLTU<br/>XOR<br/>SRL<br/>SRA<br/>OR<br/>AND  | ALUOP_ADD<br />ALUOP_SUB<br />ALUOP_SLL<br />ALUOP_SLT<br />ALUOP_SLTU<br />ALUOP_XOR<br />ALUOP_SRL<br />ALUOP_SRA<br />ALUOP_OR<br />ALUOP_AND |
-         | OPCODE_RTYPE(instr[25]==1)<br/> `rd2=register file`  | 000<br/>001<br/>010<br/>011<br/>100<br/>101<br/>110<br/>111                             | MUL<br/>MULH<br/>MULHSU<br/>MULHU<br/>DIV<br/>DIVU<br/>REM<br/>REMU          | ALUOP_MUL<br/>ALUOP_MULH<br/>ALUOP_MULHSU<br/>ALUOP_MULHU<br/>ALUOP_DIV<br/>ALUOP_DIVU<br/>ALUOP_REM<br/>ALUOP_REMU                              |
-         | OPCODE_LUI                 |                                                                                         | LUI                                                                          | ALUOP_ADD                                                                                                                                        |
-         | OPCODE_BRANCH<br/>`rd1=pc`              | 000<br/>001<br/>100<br/>101<br/>110<br/>111                                             | BEQ<br/>BNE<br/>BLT<br/>BGE<br/>BLTU<br/>BGEU                                | ALUOP_SUB<br />ALUOP_SUB<br />ALUOP_SLT<br />ALUOP_SLT<br />ALUOP_SLTU<br />ALUOP_SLTU                                                           |
-         | OPCODE_JALR                |                                                                                         | JALR                                                                         | ALUOP_ADD                                                                                                                                        |
-         | OPCODE_JAL<br/>`rd1=pc`                 |                                                                                         | JAL                                                                          | ALUOP_ADD                                                                                                                                        |
-
+         | OPCODE_RTYPE(instr[25]==1)<br/> `rd2=register file` | 000<br/>001<br/>010<br/>011<br/>100<br/>101<br/>110<br/>111                             | MUL<br/>MULH<br/>MULHSU<br/>MULHU<br/>DIV<br/>DIVU<br/>REM<br/>REMU          | ALUOP_MUL<br/>ALUOP_MULH<br/>ALUOP_MULHSU<br/>ALUOP_MULHU<br/>ALUOP_DIV<br/>ALUOP_DIVU<br/>ALUOP_REM<br/>ALUOP_REMU                              |
+         | OPCODE_LUI                                          |                                                                                         | LUI                                                                          | ALUOP_ADD                                                                                                                                        |
+         | OPCODE_BRANCH<br/>`rs1=pc`                          | 000<br/>001<br/>100<br/>101<br/>110<br/>111                                             | BEQ<br/>BNE<br/>BLT<br/>BGE<br/>BLTU<br/>BGEU                                | ALUOP_SUB<br />ALUOP_SUB<br />ALUOP_SLT<br />ALUOP_SLT<br />ALUOP_SLTU<br />ALUOP_SLTU                                                           |
+         | OPCODE_JALR                                         |                                                                                         | JALR                                                                         | ALUOP_ADD                                                                                                                                        |
+         | OPCODE_JAL<br/>`rs1=pc`                             |                                                                                         | JAL                                                                          | ALUOP_ADD                                                                                                                                        |
 
    3. 根据 instruction 得到 rs1, rs2 和 rd: `rs2=instr[24:20], rs1=[19:15], rd=instr[11:7]`
 
@@ -130,7 +129,7 @@ RISC-V 译码级设计
    | Name            | Source         | Description                                                                               |
    | --------------- | -------------- | ----------------------------------------------------------------------------------------- |
    | PC[31:0]        | IF/ID pipeline | 用于计算重定向 PC                                                                         |
-   | RD1[31:0]       | 4x1 Mux        | 用于计算重定向 PC                                                                         |
+   | rs1[31:0]       | 4x1 Mux        | 用于计算重定向 PC                                                                         |
    | offset[31:0]    | EU             | 用于计算重定向 PC                                                                         |
    | branchType[2:0] | Decoder        | `branchType[0]==1 -> JAL`<br/>`branchType[1]==1 -> JALR`<br/>`branchType[2]==1 -> B-Type` |
 
@@ -151,9 +150,13 @@ RISC-V 译码级设计
    2. 计算跳转的方向 calculation
 
       - JAL, B-Type: `RPC=PC+offset`
-      - JALR: `RPC=(RD1+offset) & 0xfffffffe`
+      - JALR: `RPC=(rs1+offset) & 0xfffffffe`
 
-      calculation 部分需要一个加法器用于计算 RPC，加法器的一个输入恒为 offset; 另一个输入为 PC 或者是 RD1, RD1 如果存在数据依赖，需要从后面的流水线 bypass(此处复用了 ID 级本身的 bypass 逻辑，即复用了 ID 的四选一 mux)
+   3. ** 在计算 JARL 指令的新的 pc 地址的时候，需要访问寄存器，但是寄存器的值可能会跟前面的指令存在数据依赖，此时有两种方法**来解决：
+      - 利用 bypass 来结局数据依赖问题之后，再在 SBP 中计算目的 pc，该方法可能会导致 ID 关键路径太长
+      - 仅在 rs1=x0, x1 的时候计算 JALR 的目的 pc，其余情况下若存在数据依赖，则预判 JALR 不跳转，在 EXE 中计算正确的目的 pc
+
+   > 前者 JALR 指令预测准确率 100%，但是 ID 级关键路径长；后者 JALR 指令预测率稍低但是 ID 关键路径短
 
 ### RF(Register File)
 
@@ -171,7 +174,7 @@ RISC-V 译码级设计
 
    | Name | Target  | Description            |
    | ---- | ------- | ---------------------- |
-   | RD1  | 4x1 Mux | 从 RF 中读出的操作数 1 |
+   | rs1  | 4x1 Mux | 从 RF 中读出的操作数 1 |
    | RD2  | 4x1 Mux | 从 RF 中读出的操作数 2 |
 
 3. 模块功能
@@ -210,7 +213,7 @@ RISC-V 译码级设计
 ```
 ~~   | Name            | Source    | Description                    |~~
 ~~   | --------------- | --------- | ------------------------------ |~~
-~~   | RD1[31:0]       | RF        | 从 RF 读出的操作数 1           |~~
+~~   | rs1[31:0]       | RF        | 从 RF 读出的操作数 1           |~~
 ~~   | RD2[31:0]       | RF        | 从 RF 读出的操作数 2           |~~
 ~~   | exeBypass[31:0] | EXE stage | data forwarding from EXE stage |~~
 ~~   | memBypass[31:0] | MEM stage | data forwarding from MEM stage |~~
@@ -218,7 +221,7 @@ RISC-V 译码级设计
 ~~2. 输出接口~~
 ~~   | Name       | Target          | Description           |~~
 ~~   | ---------- | --------------- | --------------------- |~~
-~~   | RD1D[31:0] | ID/EXE pipeline | 送给 ALU 的 operand 1 |~~
+~~   | rs1D[31:0] | ID/EXE pipeline | 送给 ALU 的 operand 1 |~~
 ~~   | RD2D[31:0] | ID/EXE pipeline | 送给 ALU 的 operand 2 |~~
 ~~3. 模块功能: 根据 forwarding 选择信号，选择合适的 forward 数据，将选择的数据输送到 EXE Stage~~
 ```
