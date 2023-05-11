@@ -7,7 +7,9 @@ tags:
 
 此文档包含我学习 Verilog 时遇到的问题，对于一些第一次遇到的 Verilog 关键字进行了记录
 
-# Verilog 语法
+# Verilog 基础
+
+[Verilog 代码规范](https://www.runoob.com/w3cnote/verilog2-codeguide.html), [Verilog 编码风格](https://www.runoob.com/w3cnote/verilog2-codestyle.html)
 
 1. verilog 定义模块的时候，其输入端口只能定义成`wire`(从模块内部来看，外部输入给它的信号就是一个导线)，其输出端口可以定义成`wire`，也可以定义成`reg`
 2. verilog 例化模块的时候，模块的输入端口可以链接到`wire`或者`reg`，模块的输出只能连接到`wire`(从模块外部来看，模块输送到外部的信号也只是一个导线)
@@ -114,8 +116,6 @@ tags:
         $dumpfile("mux_tb.vcd");
         $dumpvars(0, mux_tb);
       end
-
-
       // 例化测试对象
       mux muxInstance(
       .sel(sel),
@@ -123,16 +123,14 @@ tags:
       .p1(p1),
       .sout(sout)
       );
-
-
       // 进阶1：从文件读取输入数据&输出结果到文件
       // 进阶2：打印波形的时候，打印内部的数组（默认情况下是不会打印dut内部数据数据的
-
     endmodule
-
    ```
 
-5. 文件操作：可以直接从文件读取数据来给“dut 输入信号赋值”，也可以直接通过文件读取数据“来给 dut 内部数组赋值”, [参考：runoob.com Verilog 文件操作](https://www.runoob.com/w3cnote/verilog2-file.html)
+5. 文件操作：可以直接从文件读取数据来给“dut 输入信号赋值”，也可以直接通过文件读取数据“来给 dut 内部数组赋值”,
+   [参考：runoob.com Verilog 文件操作](https://www.runoob.com/w3cnote/verilog2-file.html)
+
    - 给 dut 输入信号赋值
      ```verilog
          integer fd, err;
@@ -158,43 +156,47 @@ tags:
            $readmemh("i-memory.txt", muxInstance.sramInstance.m_array,0,15);
          end
      ```
+
 6. 输出 dut 内部数组的波形（verilog 默认情况下只会输出 dut 内部信号的波形，但是不会输出 dut 内部的数组的波形），因此需要手动通过一个循环，逐行输出 dut 的内部数组
 
-```verilog
-  initial begin
-    $dumpfile("mux_tb.vcd");
-    $dumpvars(0, mux_tb);
-    for(i=0;i<16;i++) // 循环输出内部数组每一行的波形
-      $dumpvars(0, muxInstance.sramInstance.m_array[i]);
-  end
-```
+   ```verilog
+     initial begin
+       $dumpfile("mux_tb.vcd");
+       $dumpvars(0, mux_tb);
+       for(i=0;i<16;i++) // 循环输出内部数组每一行的波形
+         $dumpvars(0, muxInstance.sramInstance.m_array[i]);
+     end
+   ```
 
-7. Makefile：实用 Makefile 是为了更方便地编译文件、运行仿真、生成波形
+7. Makefile：使用 Makefile 是为了更方便地编译文件、运行仿真、生成波形
 
-```Makefile
-# Makefile
-src = compressDecoder
-include iverilog.mk
-```
+   ```Makefile
+   # Makefile
+   src = compressDecoder
+   include iverilog.mk
+   ```
 
-```Makefile
-# iverilog.mk
-.PHONY: clean all run waveform
+   ```Makefile
+    # iverilog.mk
+   .PHONY: clean all run waveform
 
-DEFAULT_GOAL:=all
-all: ${src}.v ${src}_tb.v
-	@iverilog -o ${src}_tb.vvp ${src}_tb.v # @ means don't echo this command to terminal, just run it.
+   DEFAULT_GOAL:=all
+   all: ${src}.v ${src}_tb.v
+       @iverilog -o ${src}_tb.vvp ${src}_tb.v # @ means don't echo this command to terminal, just run it.
 
-run: all
-	vvp ${src}_tb.vvp
+   run: all
+       vvp ${src}_tb.vvp
 
-waveform: run
-	@gtkwave ${src}_tb.vcd -a gtkwave_setup.gtkw
+   waveform: run
+       @gtkwave ${src}_tb.vcd -a gtkwave_setup.gtkw
 
-clean:
-	-rm *vcd *vvp
-```
+   clean:
+       -rm *vcd *vvp
+   ```
+
 8. 打印控制信息: `$write`打印完后自动不换行、`$display`：打印完后要自动换行
 9. 逻辑符号：
    - `&&`：逻辑与、`&`：按位与
    - `!`: 逻辑取反、`~`：按位取反
+
+# FIFO

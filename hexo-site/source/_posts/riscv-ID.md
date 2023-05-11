@@ -116,9 +116,21 @@ RISC-V 译码级设计
          | OPCODE_RTYPE(instr[25]==0)<br/> `rd2=register file` | 000(0)<br/>000(1)<br/>001<br/>010<br/>011<br/>100<br/>101(0)<br/>101(1)<br/>110<br/>111 | ADD<br/>SUB<br/>SLL<br/>SLT<br/>SLTU<br/>XOR<br/>SRL<br/>SRA<br/>OR<br/>AND  | ALUOP_ADD<br />ALUOP_SUB<br />ALUOP_SLL<br />ALUOP_SLT<br />ALUOP_SLTU<br />ALUOP_XOR<br />ALUOP_SRL<br />ALUOP_SRA<br />ALUOP_OR<br />ALUOP_AND |
          | OPCODE_RTYPE(instr[25]==1)<br/> `rd2=register file` | 000<br/>001<br/>010<br/>011<br/>100<br/>101<br/>110<br/>111                             | MUL<br/>MULH<br/>MULHSU<br/>MULHU<br/>DIV<br/>DIVU<br/>REM<br/>REMU          | ALUOP_MUL<br/>ALUOP_MULH<br/>ALUOP_MULHSU<br/>ALUOP_MULHU<br/>ALUOP_DIV<br/>ALUOP_DIVU<br/>ALUOP_REM<br/>ALUOP_REMU                              |
          | OPCODE_LUI                                          |                                                                                         | LUI                                                                          | ALUOP_ADD                                                                                                                                        |
-         | OPCODE_BRANCH<br/>`rs1=pc`                          | 000<br/>001<br/>100<br/>101<br/>110<br/>111                                             | BEQ<br/>BNE<br/>BLT<br/>BGE<br/>BLTU<br/>BGEU                                | ALUOP_SUB<br />ALUOP_SUB<br />ALUOP_SLT<br />ALUOP_SLT<br />ALUOP_SLTU<br />ALUOP_SLTU                                                           |
+         | OPCODE_BRANCH<br/>`rs2=register file`               | 000<br/>001<br/>100<br/>101<br/>110<br/>111                                             | BEQ<br/>BNE<br/>BLT<br/>BGE<br/>BLTU<br/>BGEU                                | ALUOP_SUB<br />ALUOP_SUB<br />ALUOP_SLT<br />ALUOP_SLT<br />ALUOP_SLTU<br />ALUOP_SLTU                                                           |
          | OPCODE_JALR                                         |                                                                                         | JALR                                                                         | ALUOP_ADD                                                                                                                                        |
-         | OPCODE_JAL<br/>`rs1=pc`                             |                                                                                         | JAL                                                                          | ALUOP_ADD                                                                                                                                        |
+         | OPCODE_JAL<br/>                                     |                                                                                         | JAL                                                                          | ALUOP_ADD                                                                                                                                        |
+
+      7. JAL, JALR, Branch 设计到的计算部件
+
+         |        | 跳转预测 | 跳转确认         | 跳转 PC 计算 | pc=pc+4     |
+         | ------ | -------- | ---------------- | ------------ | ----------- |
+         | JAL    | SBP      | 不需要确认       | SBP          | IF->ID->EXE |
+         | JALR   | SBP      | ALU 确认跳转 PC  | SBP          | IF->ID->EXE |
+         | Branch | SBP      | ALU 确认跳转方向 | SBP          | IF->ID->EXE |
+
+         - JAL 指令: SBP 可以 100%预测其跳转的方向和 PC，ALU 不需要做额外的计算
+         - JALR 指令: 当 rd 为 x0、x1 或者是没有数据依赖时，SBP 可以 100%判断跳转方向和 PC；若 rd 存在数据依赖，则 SBP 判断 JALR 跳转，但是不会计算目的 PC，需要由 ALU 计算跳转的 PC
+         - Branch 指令: SBP 不可以 100%预测跳转方向，但是可以 100%计算出重定向 PC，需要 ALU 判断跳转方向是否正确
 
    3. 根据 instruction 得到 rs1, rs2 和 rd: `rs2=instr[24:20], rs1=[19:15], rd=instr[11:7]`
 
