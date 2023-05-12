@@ -27,3 +27,7 @@ WB Stage 主要功能部件是一个 4 选 1 Mux，根据 regWBSrcM 做写回选
 | regWBDataW[31:0] | ID stage | 经过 4x1 Mux 选择的写回数据，写回到 ID 的 RF |
 | regWBEnM         | ID stage | RF 写回使能信号                              |
 | rdW[4:0]         | ID stage | RF 的写回 index                              |
+
+
+> 由于 ID 级的 RF 需要一个 cycle 才可以写入，因此 WB Stage 的 output 被定义为 wire 类型，从而避免额外一个 cycle 的 RF 写入延迟，此时 WB 变成纯组合逻辑
+

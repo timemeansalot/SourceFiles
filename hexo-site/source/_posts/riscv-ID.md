@@ -122,21 +122,32 @@ RISC-V 译码级设计
 
       7. JAL, JALR, Branch 设计到的计算部件
 
-         |        | 跳转预测 | 跳转确认         | 跳转 PC 计算 | pc=pc+4     |
-         | ------ | -------- | ---------------- | ------------ | ----------- |
-         | JAL    | SBP      | 不需要确认       | SBP          | IF->ID->EXE |
-         | JALR   | SBP      | ALU 确认跳转 PC  | SBP          | IF->ID->EXE |
-         | Branch | SBP      | ALU 确认跳转方向 | SBP          | IF->ID->EXE |
+         |        | 跳转预测 | 跳转确认         | 跳转 PC 计算       | pc=pc+4     |
+         | ------ | -------- | ---------------- | ------------------ | ----------- |
+         | JAL    | SBP      | 不需要确认       | SBP                | IF->ID->EXE |
+         | JALR   | SBP      | 不需要确认       | PC=alu_result & ~1 | IF->ID->EXE |
+         | Branch | SBP      | ALU 确认跳转方向 | SBP                | IF->ID->EXE |
 
          - JAL 指令: SBP 可以 100%预测其跳转的方向和 PC，ALU 不需要做额外的计算
-         - JALR 指令: 当 rd 为 x0、x1 或者是没有数据依赖时，SBP 可以 100%判断跳转方向和 PC；若 rd 存在数据依赖，则 SBP 判断 JALR 跳转，但是不会计算目的 PC，需要由 ALU 计算跳转的 PC
+         - JALR 指令: 当 rd 为 x0、x1 或者是没有数据依赖时，SBP 可以 100%判断跳转方向和 PC；若 rd 存在数据依赖，则 SBP 知道 JALR 跳转，但是不会判断它跳转，也不会计算目的 PC，需要由 ALU 计算跳转的 PC 和判断跳转，发送给 IF。
          - Branch 指令: SBP 不可以 100%预测跳转方向，但是可以 100%计算出重定向 PC，需要 ALU 判断跳转方向是否正确
 
    3. 根据 instruction 得到 rs1, rs2 和 rd: `rs2=instr[24:20], rs1=[19:15], rd=instr[11:7]`
 
 ### 静态分支预测 SBP(Static Branch Predictor)
 
-1. 输入接口
+1. RF(register File)异步读出、同步写入
+
+2. 静态分支预测 SBP(static branch prediction)
+   - `JAL`: SBP 预测`taken=1`，且`pc=pc+offset`，ID 需要输出 flush 信号来清楚 prefetch 的 2 条指令，**具体表现为设置 IF/ID, ID/EXE pipeline register flush=1**
+   - `b-type`: 采取 BTFN(backward taken, forward not taken), 且`pc=pc+offset`
+   - `JALR`: 分情况讨论
+     - 如果 rs1 是 x0,或者 rs1 没有数据依赖：SBP 预测`taken=1`，且`pc=(rd+offset)&~1`
+     - 如果 rs1 有数据依赖：SBP 预测`taken=0`
+       ![](/Users/fujie/Pictures/typora/pipeline/jalr.svg)
+3. bypass: ID 级根据 Hazard 的信号，在需要 bypass 的时候，选择合适的 bypass 信号取代 RF 里读出去的运算数
+
+4. 输入接口
 
    | Name            | Source         | Description                                                                               |
    | --------------- | -------------- | ----------------------------------------------------------------------------------------- |
@@ -145,14 +156,14 @@ RISC-V 译码级设计
    | offset[31:0]    | EU             | 用于计算重定向 PC                                                                         |
    | branchType[2:0] | Decoder        | `branchType[0]==1 -> JAL`<br/>`branchType[1]==1 -> JALR`<br/>`branchType[2]==1 -> B-Type` |
 
-2. 输出接口
+5. 输出接口
 
    | Name      | Target                    | Description                                                      |
    | --------- | ------------------------- | ---------------------------------------------------------------- |
    | RPC[31:0] | IF Stage                  | Redirection PC                                                   |
    | taken     | IF Stage, ID/EXE pipeline | 预测跳转是否发生, ALU 会计算实际跳转是否发生并且与此预测结果比较 |
 
-3. 模块功能
+6. 模块功能
 
    若 decoder 译码之后判断指令是分支指令，则 SBP 需要根据静态分支预测的规则，生成重定向 PC，发送给 IF 级。SBP 具体做了如下两个任务：
 

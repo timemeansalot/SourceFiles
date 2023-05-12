@@ -93,6 +93,21 @@ RISCV 5 级流水线“取指”部分设计
 
 > 取指阶段主要需要解决的问题是：<u>PC 重定向、指令对齐</u>
 
+1. PC -> I-Memory -> Instruction: 一共有 2 个 cycle 的 delay，需要保证 PC 和 instruction 在流水线上是匹配的，在代码里使用了一个额外的`pc_delay`寄存器来提供额外一个 cycle 的 PC 延迟
+   ![if_id_sbp](/Users/fujie/Pictures/typora/IF/if_id_sbp.svg)
+
+2. 当流水线刷新之后，新地址对应的指令在 2 个 cycle 之后送到 ID Stage ，因此其后续两个 cycle 的指令都是无效指令，看作 2 条 nop 指令
+
+3. EXE 如果和 ID 同时发来了重定向信号，则 EXE 的信号优先级更高：因为EXE的指令更老
+
+   ```verilog
+   // pipelineIF.v
+   assign pc_mux = (taken_e_i == 1'b1) ? redirection_e_i:
+     							(taken_d_i == 1'b1) ? redirection_d_i : pc_register;
+   ```
+
+   ![flushID](/Users/fujie/Pictures/typora/IF/flushID.svg)
+
 ### PC 重定向
 
 1. IF 没有分支预测，PC+=2  

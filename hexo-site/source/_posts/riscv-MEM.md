@@ -88,6 +88,8 @@ RISCV MEM Stage 设计
    | MEM_LBU  | 00<br/>01<br/>10<br/>11<br/> | `dMemReadData={24{1'b0}, dMemOutput[7:0]}`<br/> `dMemReadData={24{1'b0}, dMemOutput[15:8]}`<br/> `dMemReadData={24{1'b0}, dMemOutput[23:16]}`<br/> `dMemReadData={24{1'b0}, dMemOutput[31:24]}`                                        |
    | MEM_LHU  | 00<br/>10                    | `dMemReadData={16{1b'0}, dMemOutput[15:0]}`<br/>`dMemReadData={16{1'b0}, dMemOutput[31:16]}`                                                                                                                                           |
 
+> MEM 和 EXE 需要 resetn 信号，否则系统 reset 之后，MEM Stage 输出的`reg_wb_en`会是 x，传输给 ID Stage 之后，会导致第一次读取 RF 时读出的也是 x
+
 ### Control Status Register Unit(CSRU)
 
 TBD
