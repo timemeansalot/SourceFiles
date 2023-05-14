@@ -10,8 +10,6 @@
   - [x] 集成 ALU
   - [x] 测试 ALU 加入之后重定向成功
   - [x] 加入 Flush 信号、resetn
-  
-    
 - [x] instru
   - [x] jal
   - [x] jalr
@@ -29,9 +27,9 @@
 1. PC -> I-Memory -> Instruction: 一共有 2 个 cycle 的 delay，需要保证 PC 和 instruction 在流水线上是匹配的，在代码里使用了一个额外的`pc_delay`寄存器来提供额外一个 cycle 的 PC 延迟
    ![if_id_sbp](/Users/fujie/Pictures/typora/IF/if_id_sbp.svg)
 
-2. 当流水线刷新之后，新地址对应的指令在 2 个 cycle 之后送到 ID Stage ，因此其后续两个 cycle 的指令都是无效指令，看作 2 条 nop 指令
+> Q: 为什么 I-Memory 里取出的指令需要经过 IF/ID register 再 decode；但是 ALU 计算得到的 addr 不用经过 EXE/MEM register 就直接给 D-Memory 用于访存 2. 当流水线刷新之后，新地址对应的指令在 2 个 cycle 之后送到 ID Stage ，因此其后续两个 cycle 的指令都是无效指令，看作 2 条 nop 指令
 
-3. EXE 如果和 ID 同时发来了重定向信号，则 EXE 的信号优先级更高：因为EXE的指令更老
+3. EXE 如果和 ID 同时发来了重定向信号，则 EXE 的信号优先级更高：因为 EXE 的指令更老
 
    ```verilog
    // pipelineIF.v
@@ -102,11 +100,11 @@
 2. sbp 预测 taken==0，alu 判断 taken==1
    - sbp 预测 taken==0 的时候，ID 不会给 IF 发送重定向 rediction_pc, beq 后续第三条指令会被取入
    - alu 判断 taken==1，需要冲刷掉 prefetch 的 2 条指令和顺序取指的 1 条指令，**具体表现为设置 IF/ID, ID/EXE, EXE/MEM pipeline register flush=1**
-   - <u>并且 alu 需要向 IF 发送 rediction_pc为跳转目标</u>
+   - <u>并且 alu 需要向 IF 发送 rediction_pc 为跳转目标</u>
 3. sbp 预测 taken==1，alu 判断 taken==0
    - sbp 预测 taken==1 的时候，ID 会给 IF 发送重定向 rediction_pc，IF 在 2 个 cycle 之后会将 rediction_pc 对应的指令送到 ID
    - alu 判断 taken==0，需要冲刷掉 rediction_pc 对应的这条指令，**具体表现为设置 ID/IF pipeline register flush=1**
-   - <u>并且 alu 需要向 IF 发送 rediction_pc为顺序取指pc</u>
+   - <u>并且 alu 需要向 IF 发送 rediction_pc 为顺序取指 pc</u>
 4. sbp 预测 taken==1，alu 判断 taken==1
    - sbp 预测 taken==1 的时候，ID 会给 IF 发送重定向 rediction_pc，IF 在 2 个 cycle 之后会将 rediction_pc 对应的指令送到 ID
    - alu 判断 taken==1，说明 ID 重定向是对的，此时需要冲刷掉 b-type 指令后面 prefetch 的 2 条指令, **具体表现为设置 ID/EXE, EXE/MEM pipeline register flush=1**
@@ -237,7 +235,7 @@ _start:
     nop
     nop
     nop
-    jr x2
+    jr x0
     addi x2, x2, 2
     addi x3, x3, 3
     addi x4, x4, 4
@@ -280,7 +278,7 @@ stop:
 	.global	_start		# Define entry _start
 
 _start:
-    # sbp not taken, alu taken
+    # sbp not taken, alu not taken
     addi x5, x6, 4
     addi x1, x1, 1
     nop
@@ -431,6 +429,7 @@ stop:
 4. `b-type`指令，sbp taken, alu taken
 
 ### 冲刷 EXE/MEM pipeline register 的情况
+
 1. `jalr`指令由 exe stage 冲刷 ID/EXE
 2. `b-type`指令，sbp not taken, alu taken
 3. `b-type`指令，sbp taken, alu taken
