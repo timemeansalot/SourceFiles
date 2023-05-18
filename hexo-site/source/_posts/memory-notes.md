@@ -96,6 +96,24 @@ tags: CA
    - programmer don't know what hardware their program will running on, so they can't suspect the physical memory
    - their are many programs running at the same time, programmer don't know the memory state when the program is running
 2. it's the OS to manage the mapping of virtual memory and physical memory, the OS use _Page Table_ to manage address mapping
+   - page table entry has valid bits to indicate if virtual memory is mapped to physical memory
+   - valid bit is 0 -> <u>page fault</u> -> trap to OS -> bring in missing page -> update page table
+     ![](https://s2.loli.net/2023/05/18/tqbYvi3mrswFea6.png)
+   - page entry has <u>dirty bits</u> to indicate if the page in memory has been modified,
+     when the page is evicted back to disk, only modified page will be write back
+   - **page replacement algorithm**: when physical frame is full, we need an algorithm to choose a
+     victim frame to swap out to disk.
+     1. FIFO: will cause <u>Belady's Anomaly</u>(frame size grows, page fault grows)
+     2. Optimal algorithm: can't implement this, we don't know the future
+     3. LRU:
+        - method 1: each page-table entry has a counter, every time page is referenced through
+          this entry, set the entry counter to clock -> the least recently used page has the
+          smallest counter
+        - method 2: keep a stack of page numbers in double-link form -> page referenced, 
+         move the page number to stack top
+   - for multi-user system, the OS has a page table for each user, so each user
+     can share the whole physical memory
+     ![](https://s2.loli.net/2023/05/18/QZ5MiNx6cT2gfHG.png)
 3. memory size can't be to small, or the complexity of manage virtual/physical mapping is difficult.
    modern processor has virtual memory page size equal to 64b
 4. we need TLB(which is a cache) to accelerate the translation from virtual memory to physical memory
