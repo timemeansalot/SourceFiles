@@ -73,8 +73,8 @@ RISC-V 支持的特权模式组合：
 - `BASE`字段必须是 4byte 对齐
 - `MODE`
 
-  - 0 for direct: `pc=BASE`
-  - 1 for vectored: `pc=BASE+4*cause`,
+  - 0 for direct: `pc=BASE`, 中断发生的时候会跳到这个固定的地址
+  - 1 for vectored: `pc=BASE+4*cause`, 中断发生的时候，会根据中断类型，跳到不同的地址
     例：当**machine time interrupt**发生的时候，已知其对应的 mcause=111，故`pc=BASE+(111<<2)=BASE+0x1C`
   - $\ge 2$: Reserved
 
@@ -85,6 +85,10 @@ RISC-V 支持的特权模式组合：
 `mie`(ie for interrupt enable)寄存器中的每 bit 指定 mcause 中的各种类型的 trap 是否打开
 
 #### Trap Handling:
+
+> 在 RISC-V 架构中，并没有定义进入和退出中断处理时硬件自动保存和恢复现场的机制，
+> 用户需要用软件主动保护和恢复程序现场。在发生中断时，拉低 mstatus 寄存器的 MIE 域屏蔽全局中断，
+> 也是为了软件保存和恢复现场的过程不 会被更高级别的中断打断，导致数据的丢失。
 
 | 寄存器   | 描述                                                                          | 长度 |
 | -------- | ----------------------------------------------------------------------------- | ---- |
@@ -234,9 +238,29 @@ RISC-V 支持的特权模式组合：
 
 ![csr_demo](/Users/fujie/Pictures/typora/csr/csr_demo.jpg)
 
+## Trap
+
+> 中断响应是嵌入式微控制器的关键特性之一。
+> 中断响应时间指的是从中断设备产生中断信号到处理器开始执行中断服务程序（Interrupt Service Routine, ISR） 中的第一条指令所花费的时间。
+> 拥有快速的中断响应对于嵌入式处理器而言至关重要。
+
+1. 加速中断的方法
+   - 扩展了<u>硬件自动</u>保存和恢复现场和全局中断硬件屏蔽设计
+   - 支持自动的<u>中断嵌套</u>缩短了中断响应时间，减少了软件的开销
+   - 除此之外，还增加了<u>中断尾链</u>设计，进一步提升了处理器响应中断的性能
+2. RISC-V 中断为什么慢？
+
+   - RISC-V 硬件不会自动保存现场，需要使用软件去手动保存现场，增加了很多的 cycle
+   - RISC-V 默认不支持中断嵌套，如果需要支持中断嵌套，需要使用软件对 CSR 寄存器进行操作，增加了 cycle
+
+   > 将软件的工作用硬件来实现，可以降低中断整体的时间近 1/3
+
+   ![](https://s2.loli.net/2023/05/17/HSfWF1qGo7iVuKx.png)
+
 ## References
 
 1. [The RISC-V Instruction Set Manual Volume I: Unprivileged ISA, Chapter 9 “Zicsr”, Control and Status Register (CSR)](https://five-embeddev.com/riscv-isa-manual/latest/csr.html)
 2. [The RISC-V Instruction Set Manual Volume II: Privileged Architecture, Chapter 3 Machine-Level ISA](https://www.five-embeddev.com/riscv-isa-manual/latest/machine.html)
 3. [Writing a RISC-V Emulator in Rust: Control and Status Register](https://book.rvemu.app/hardware-components/03-csrs.html#:~:text=RISC%2DV%20calls%20the%206,5%2Dbit%20zero%2Dextended.)
 4. [RISC-V Bytes: Privilege Levels](https://danielmangum.com/posts/risc-v-bytes-privilege-levels/)
+5. 用于计量的嵌入式 RISC-V 处理器设计及 MCU 实现

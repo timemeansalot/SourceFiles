@@ -23,29 +23,39 @@ tags: CA
 
 ## Cache
 
-1. L1 cache can be separated into I-Cache and D-Cache
+![cache arch](https://s2.loli.net/2023/05/17/5ZLsH8INkB3abgY.png)
+
+1. cache has a tag which is part of the main-memory address,  
+   cache line may have other bits like: valid or dirty
+2. L1 cache can be separated into I-Cache and D-Cache
    - avoid instruction or data to occupy the whole cache and let the other has no cache
    - instruction and data cache can all be close to the processor, both are fast
-2. last level cache may be shared by multi-cores
+   - L1 cache can't be too big:
+     - L1 cache has to be fast to fit in the pipeline
+     - capacity grows, speed decrease
+3. last level cache may be shared by multi-cores
    - avoid only one core occupy the whole cache
    - cache consistency
-3. cache organization
+4. cache organization
    - multi-level cache has the same data
      cache consistency check is very simple: only check the last level of cache is OK
    - only one level of cache has the data, other level of cache don't has that data,
    - mix of the above two method
-4. manage policy:
+5. manage policy:
 
    - full-associative: main memory chunk can map into every cache block
+     - higher hit rate
+     - more complexity: more comparator, bigger mux
+     - bigger latency
    - directly-mapped: memory chunk can only mapped into one specific cache block
-   - set-associative: memory chunk can only mapped into one set, but any cache block inside that set.  
+   - set-associative: memory chunk can only mapped into one set, but any cache block inside that set.
      a W-way cache:
      - W==N: full-associative
      - W==1: directly-mapped
 
    ![](https://s2.loli.net/2023/05/16/Rfg6NoOzwM3BU1V.png)
 
-5. write handling:
+6. write handling:
    - write through: when cache is write into, all higher level memory must be write into
      - easier for check cache consistency, prevents any data discrepancy from arising
      - waste energy and bandwidth
@@ -53,7 +63,8 @@ tags: CA
      - save energy and bandwidth
      - more complicated when design cache
      - need dirty flag
-6. use cache can reduce memory access time, the hit rate is very important in cache design
+7. use cache can reduce memory access time, the hit rate is very important in cache design,  
+   but hit rate and capacity are zero-sum of access latency of cache
 
 ## DRAM
 
@@ -73,9 +84,9 @@ tags: CA
 4. usually DRAM is not on chip, it's on motherboard
    - high energy, long latency, low bandwidth
    - 3D-Stacking: put DRAM on top of processor
-5. PCM(phase charge memory)
-   - represent 0, 1 by resistance, resistance is effected by current
-   - high resistance for 1, low resistance for 0
+5. PCM(phase charge memory) <- emerging memory technology
+   - Write data by pulsing current $dQ/dt$
+   - Read data by detecting resistance: high resistance for 1, low resistance for 0
    - better scalable than DRAM, no need to refresh
    - longer latency, short lifetime(can only write into a few times)
 
