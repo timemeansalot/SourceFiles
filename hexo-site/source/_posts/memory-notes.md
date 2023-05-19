@@ -19,7 +19,7 @@ tags: CA
    - cache: small but fast
    - main memory: big bug slow
    - disk: large and very slow
-   - ![memory hierarchy](https://s2.loli.net/2023/05/16/w67oIMLc9lzJgUj.png)
+     ![memory hierarchy](https://s2.loli.net/2023/05/16/w67oIMLc9lzJgUj.png)
 
 ## Cache
 
@@ -29,8 +29,11 @@ tags: CA
    cache line may have other bits like: valid or dirty
 2. L1 cache can be separated into I-Cache and D-Cache
    - avoid instruction or data to occupy the whole cache and let the other has no cache
-   - instruction and data cache can all be close to the processor, both are fast
-   - L1 cache can't be too big:
+   - <u>pipeline constraints</u>: I-cache and D-cache are used in different parts of pipeline,
+     when they are separate from each other, both of them can be put near the hardware which
+     need them most.  
+     So both I-cache and D-cache access can be very fast.
+   - latency if crucial for L1 cache, so L1 cache is small and has low set-associative:
      - L1 cache has to be fast to fit in the pipeline
      - capacity grows, speed decrease
 3. last level cache may be shared by multi-cores
@@ -65,6 +68,34 @@ tags: CA
      - need dirty flag
 7. use cache can reduce memory access time, the hit rate is very important in cache design,  
    but hit rate and capacity are zero-sum of access latency of cache
+8. types of cache miss:
+   - compulsory: the first time data is needed, prefetch can be helpful
+   - capacity: cash is too small <- better replacement policy
+   - conflict: X and Y have to use the same cache location <- higher associativity, better index algorithm
+9. LRU:
+   - for N-way set-associative cache, you have to keep the order of N cache blocks in LRU algorithm
+   - method 1: each page-table entry has a counter, every time page is referenced through
+     this entry, set the entry counter to clock -> the least recently used page has the
+     smallest counter
+   - method 2: keep a stack of page numbers in double-link form -> page referenced,
+   - although LRU is probably not the best cache replacement policy, true LRU is complexity
+     to implement, so highly-associative processor don't implement true LRU.  
+     <u>for example</u>: in 2-way set-associative cache, suppose data sequence is `ABCABCABC`
+     then random replacement policy is better than LRU replacement policy
+10. improve cache performance
+
+    - improve hit rate
+      - more associativity
+      - better hashing
+      - better replacement policy
+      - software approaches
+    - reduce miss penalty
+      - multi-level cache
+      - crucial word first: when cache block is to large, don't wait the whole
+        cache block, just feed the processor with most important words first to save time
+      - sub-blocking: divide the cache block to smaller sub-blocks, so the cache replacement
+        can happen in sub-blocks
+      - software approaches
 
 ## DRAM
 
@@ -72,19 +103,54 @@ tags: CA
    - capacitor leaks, this is why DRAM is **dynamic**
    - need refresh at least 1 once in 64ms
    - higher density than SRAM(6T)
-2. operations of DRAM is controlled by **MC(memory controller)**
+   - DRAM is in 2D structure, while NVEM is in 3D structure,
+     DRAM can be 16 GB, while NVEM can be 2TB, but DRAM is 3000 times faster.
+2. DRAM operations:
+   ![DRAM operations](https://s2.loli.net/2023/05/19/B4E1jtgNixVLAFJ.png)
+
+   - Read
+     1. row close
+     2. pre-charge to 0.5 VDD
+     3. row open
+     4. sense-amplifier get the correct 0,1 of all bits in the row
+     5. mux choose 8 bits of the row to output
+     6. output driver write output the data get from the mux
+
+   > ps: read operations is used as refresh of DRAM
+
+   - Write
+     1. row close
+     2. pre-charge to 0.5 VDD
+     3. row open
+     4. sense-amplifier get the correct 0,1 of all bits in the row
+     5. mux choose 8 bits of the row to output
+     6. input driver write the data into the mux, because input driver is stronger than sense-amplifier
+
+   ![DRAM write](https://s2.loli.net/2023/05/18/QZ5MiNx6cT2gfHG.png)
+
+3. sense-amplifier
+   ![](https://s2.loli.net/2023/05/19/bT7orOUuc4zI8kv.jpg)
+
+   - <u>differential pair</u>: in DRAM, one row only attaches to one bit line of sense-amplifier, either B or B'
+   - in pre-charge, detach inverter of sense-amplifier, charge B to VDD, open G, then B and B' will both become VDD/2
+   - connect inverter of sense-amplifier, turn on one row, sense-amplifier can read the stored data,  
+     Example: suppose A is 1, then B will be charged to higher than VDD/2, which is eventually VDD,   
+     and B' is eventually 0, because B is 1 and the bottom inverter will drive B' to 0
+   - besides, because B' is not connected to any store cell at this time, it will not influence other store cell
+
+4. operations of DRAM is controlled by **MC(memory controller)**
    - activate
    - pre-charge
    - read/write
-3. level of DRAM
+5. level of DRAM
    - channel: has unique address, control and data path
    - rank
    - bank
      ![DRAM structure](https://s2.loli.net/2023/05/16/AwulDzrFVa2C4G5.png)
-4. usually DRAM is not on chip, it's on motherboard
+6. usually DRAM is not on chip, it's on motherboard
    - high energy, long latency, low bandwidth
    - 3D-Stacking: put DRAM on top of processor
-5. PCM(phase charge memory) <- emerging memory technology
+7. PCM(phase charge memory) <- emerging memory technology
    - Write data by pulsing current $dQ/dt$
    - Read data by detecting resistance: high resistance for 1, low resistance for 0
    - better scalable than DRAM, no need to refresh
@@ -105,12 +171,7 @@ tags: CA
      victim frame to swap out to disk.
      1. FIFO: will cause <u>Belady's Anomaly</u>(frame size grows, page fault grows)
      2. Optimal algorithm: can't implement this, we don't know the future
-     3. LRU:
-        - method 1: each page-table entry has a counter, every time page is referenced through
-          this entry, set the entry counter to clock -> the least recently used page has the
-          smallest counter
-        - method 2: keep a stack of page numbers in double-link form -> page referenced, 
-         move the page number to stack top
+        move the page number to stack top
    - for multi-user system, the OS has a page table for each user, so each user
      can share the whole physical memory
      ![](https://s2.loli.net/2023/05/18/QZ5MiNx6cT2gfHG.png)
