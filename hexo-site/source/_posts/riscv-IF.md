@@ -90,7 +90,7 @@ RISCV 5 级流水线“取指”部分设计
 
    > 中断和异常的实现时处理器实现非常关键的一部分，同时也是最为烦琐的一部分。得益 于 RISC-V 架构对于中断和异常机制的简单定义，蜂鸟 E200 对其进行硬件实现的代价很小。 即便如此，异常和中断相关的源代码相比其他模块而言，仍然非常细琐繁杂
 
-## 流水线取指部分设计
+## MCU 流水线取指部分设计
 
 > 取指阶段主要需要解决的问题是：<u>PC 重定向、指令对齐</u>
 
@@ -115,6 +115,17 @@ RISCV 5 级流水线“取指”部分设计
    <u>IF 阶段设置有一个 FIFO，最多存储 5\*16bits 的数据</u>，该 FIFO 的设置是因为我们不知道指令是 16bits 的还是 32bits 的。
 
    **重定向发生的时候，I-Mem 直接采用重定向的 PC 作为取值地址**，可以避免 1 个 cycle 的 penalty
+   重定向的 PC 有如下可能的原因：
+
+   1. 系统初始化 reset 的时候，需要更新 PC 为初始化地址
+   2. 顺序 PC
+   3. ID 阶段的静态分支预测，需要发送预测的 PC 和跳转信号到 IF
+   4. EXE 阶段若判断 ID 的分支预测错误，需要发送正确的 PC 和跳转信号到 IF
+   5. MEM 阶段当异常和中断发生的时候，需要 CSR 单元发送 对应的地址 和跳转信号到 IF
+      - illegal_addr, interrupt_addr, debug_addr
+      - 此外，对于`mret`指令，MEM 阶段需要从 CSR 寄存器中返回 EPC 的值到 IF
+
+   **在引入 MEM 阶段的重定向信息之前，只有 ID，EXE 会导致 IF 的 PC 重定向；引入 MEM 的重定向之后，对应的 pipeline 冲刷逻辑，都变得更加复杂**
 
 2. ID 采用静态分支预测，如果解码判断是分支指令，会计算 target PC  
    不会冲刷流水线
@@ -156,11 +167,3 @@ ITCM 占 64kB
 
 1. [Nutshell Documents](https://oscpu.github.io/NutShell-doc/%E6%B5%81%E6%B0%B4%E7%BA%BF/ifu.html)
 2. [riscv-mcu/e203_hbirdv2](https://github.com/riscv-mcu/e203_hbirdv2)
-
-## simulation platform
-
-1. 各级流水线最基础的 RTL 代码，能够实现`ADD`指令的 5 级流水仿真
-2. [代码仓库地址](https://github.com/timemeansalot/FAST_INTR_CPU/tree/master/src/rtl)
-
-![ADD x7, x5, x6](https://s2.loli.net/2023/03/31/RvNAIQWx8HS1FLs.png)
-![Waveform of ADD](https://s2.loli.net/2023/03/31/aqTs5JuvUCMfWcp.png)

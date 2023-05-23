@@ -1,19 +1,19 @@
 [TOC]
 
-# 处理器核验证的方法
+# 1 处理器核验证的方法
 
 1. 验证目标：验证处理器微架构设计，是否符合 RISC-V 手册的规范，保证处理器的行为符合 RISC-V 定义
 2. 验证方法（从简单到复杂）：Self Check, Signature Comparison, Trace Log Comparison, Step and Compare
 
-## Self Check
+## 1.1 Self Check
 
 1. 验证方法：测试激励内包含了测试的正确答案，如果 DUT(Device Under Test) 的运行结果匹配争取答案，则测试通过，否则不通过  
    典型的代表是：**[riscv-tests](https://github.com/riscv-software-src/riscv-tests)**
    , 编写定量指令码验证内核的功能，
    - 包括各类指令的逻辑功能
-   - 数据冒险
+   - 数据依赖
    - 分支跳转
-   - 流水线刷新(refresh)、暂停(stall)
+   - 流水线冲刷(flush)、暂停(stall)
    - CSR 指令
 2. 优点：
    - 最简单实现：测试的 assmbly 文件编写简单
@@ -25,7 +25,7 @@
 4. Self Check 举例:
    ![Self Check Example](/Users/fujie/Pictures/typora/image-20230518180223338.png)
 
-## Signature Comparison
+## 1.2 Signature Comparison
 
 1. 验证方法：
    - Self Check 的改进
@@ -39,7 +39,7 @@
 4. Signature Comparison 举例:
    ![Signature Comparison Example](/Users/fujie/Pictures/typora/image-20230518180427488.png)
 
-## Trace Log Comparison
+## 1.3 Trace Log Comparison
 
 1. 验证方法：
    - 与 reference-model 进行对比来验证 DUT 的功能
@@ -58,7 +58,7 @@
 4. Trace Log Comparison 举例:
    ![Trace Log Comparison](/Users/fujie/Pictures/typora/image-20230518191123232.png)
 
-## Sync/Async Step and Compare
+## 1.4 Sync/Async Step and Compare
 
 1. 验证方法：
    - **业界质量最高、最高效的**验证方法
@@ -74,13 +74,13 @@
 4. Step and Compare 举例:
    ![Imperas Open Verification to RISC-V](https://s2.loli.net/2023/05/19/y6BxWXvJ7dhOkle.webp)
 
-# RISC-V 处理器验证组建
+# 2 RISC-V 处理器验证组建
 
 ![test bench components](https://s2.loli.net/2023/05/19/trjTgvokFKhSi8V.png)
 
-## 测试用例(Test Case Suite)
+## 2.1 测试用例(Test Case Suite)
 
-### riscv-tests
+### 2.1.1 riscv-tests
 
 1. RISC-V 基金会提供了一组开源的测试实例 riscv-tests，用于测试 RISC-V 处理器的指令功能
 2. riscv-tests 中的测试程序由汇编语言编写，可由用户自行选择测试覆盖的指令集
@@ -265,7 +265,7 @@
         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      ```
 
-### riscv-compliance
+### 2.1.2 riscv-compliance
 
 [riscv-compliance](https://github.com/lowRISC/riscv-compliance/blob/master/doc/README.adocintroduction)
 的目标是检查正在开发的处理器是否符合开放的 RISC-V 标准。
@@ -277,7 +277,7 @@
 3. 将 signatures 跟正确的 signatures 比较，如果通过了则代表 DUT 通过测试
 4. 仿真结束可以得到 Coverage Report
 
-### riscv-arch-test
+### 2.1.3 riscv-arch-test
 
 [riscv-arch-test](https://github.com/riscv-non-isa/riscv-arch-test)
 是按照 RISC-V 指令集模块化分类了的一个测试集
@@ -324,7 +324,7 @@
          └── src                assembly tests for "Zifencei" extension
 ```
 
-### 🌟🌟🌟🌟imperas test suite
+### 2.1.4 🌟🌟🌟🌟imperas test suite
 
 [imperas test suite ](https://github.com/riscv-ovpsim/imperas-riscv-tests)
 
@@ -333,7 +333,7 @@
 3. 能够生成 Coverage Report
 4. 参考资料丰富，GitHub, YouTube 上资源较多
 
-## 指令流生成器(Instruction Stream Generators)
+## 2.2 指令流生成器(Instruction Stream Generators)
 
 1. Google [ riscv-dv ](https://github.com/chipsalliance/riscv-dv): 较为稳定
    - 是一个基于 SV/UVM 的开源指令生成器，用于 RISC-V 处理器验证
@@ -341,7 +341,7 @@
    - 可以模拟 illegal instruction
 2. [OpenHW Group force-riscv](https://github.com/openhwgroup/force-riscv): 主要用于 RV64，RV32 支持才开始
 
-## 功能覆盖(Functional Coverage)
+## 2.3 功能覆盖(Functional Coverage)
 
 > 在一定的测试用例上对 DUT 进行测试，并且测试通过，只能说明 DUT 在这些测试用例上是正确的，
 > 并不能 100%说明 DUT 功能就是正确。
@@ -350,15 +350,15 @@
 1. SystemVerilog covergroups and coverpoints
 2. Imperas build-in instruction coverage
 
-## 参考模型(reference model)
+## 2.4 参考模型(reference model)
 
 1. spike
 2. qeum
 3. riscvOVPsim
 
-## 总结
+## 2.5 总结
 
-1. 如果知识对 DUT 进行基本功能测试，可以选择某个 test suite 进行测试，如果通过了测试，可以在一定程度上保证 DUT 功能的正确性.
+1. 如果只是对 DUT 进行基本功能测试，可以选择某个 test suite 进行测试，如果通过了测试，可以在一定程度上保证 DUT 功能的正确性.
 
    > you can never have enough tests
 
@@ -366,9 +366,9 @@
    - 采用 asycn step and compare
    - 保证 Coverage Report 中 100%覆盖了 check point
 
-# SoC 后续测试
+# 3 SoC 后续测试
 
-## 功能性验证
+## 3.1 功能性验证
 
 > 利用*功能性 C 代码*来测试具体的功能，如：内部看门狗复位请求、UART 收发
 >
@@ -382,7 +382,7 @@
 2. 编写需要测试的 C 文件
 3. 对 C 文件调用工具链进行编译、从可执行文件中得到机器码、在 testbench 中通过系统函数$readmenh$加载到 I-Memory
 
-## 板级验证
+## 3.2 板级验证
 
 > FPGA 完全由用户通过行配置和编写并且可以反复擦写，非常适合用于嵌入式 SoC 系统芯片的原型验证
 
@@ -390,7 +390,7 @@
 2. 可以发现隐藏的时序问题
 3. debug: 支持在 host 上对 MCU 进行远程调试
 
-## 时序、面积、功耗
+## 3.3 时序、面积、功耗
 
 使用 DC(Design Compiler) 综合工具将处理器的设计代码进行综合，以验 证本文时序、面积、功耗的设计要求
 
@@ -400,7 +400,7 @@
 
 通过 DC 工具综合后可以得到 MCU 在时序、面积、功耗的报告
 
-# References
+# 4 References
 
 1. [RISC-V 及 RISC-V core compliance test 简析](https://zhuanlan.zhihu.com/p/232088281)
 2. [RISC-V Compliance Tests](https://github.com/lowRISC/riscv-compliance/blob/master/doc/README.adocintroduction)
