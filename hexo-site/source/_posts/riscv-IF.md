@@ -8,7 +8,6 @@ RISCV 5 级流水线“取指”部分设计
 
 1. 开源项目中“取指级”参考
 2. 本项目“取指级”设计
-3. TODO: PC 地址生成逻辑（制定压缩指令引入之后的 PC 地址更新逻辑）
 <!--more-->
 
 [TOC]
@@ -52,7 +51,7 @@ RISCV 5 级流水线“取指”部分设计
 
 4. WB
 
-   > 功能：**传递重定向 PC** 及写回数据(writ back data)
+   > 功能：**传递重定向 PC** 及写回数据(writ bank data)
 
    1. 重定向(redirection)：当 EXE 发现 BP 错误、CSR 判断 trap 发生的时候，触发重定向 -> 发送正确的 PC 给 IF
    2. 写回：将需要写回给 rd 的数据传回给 ISU，由 ISU 写入到 Register File
@@ -74,8 +73,8 @@ RISCV 5 级流水线“取指”部分设计
 
    - leftover buffer,  
      蜂鸟采用 leftover buffer 来实现指令对齐，存储指令的高 16bits 到 leftover buffer：连续取指的时候，1 个 cycle 可以解决指令不对齐问题；非连续取指的时候，必须 2 个 cycle 才可以解决指令不对齐问题
-     <img src="/Users/fujie/Pictures/typora/IF/leftoverBuffer.svg" alt="leftoverBuffer" style="zoom: 67%;" />
-   - 2 back SRAM
+     <img src="/Users/fujie/Pictures/typora/IF/leftover buffer.svg" alt="leftover buffer" style="zoom: 67%;" />
+   - 2 bank SRAM
 
      <img src="/Users/fujie/Pictures/typora/IF/2bankSram.svg" alt="2bankSram" style="zoom: 70%;" />
 
@@ -90,7 +89,7 @@ RISCV 5 级流水线“取指”部分设计
 
    > 中断和异常的实现时处理器实现非常关键的一部分，同时也是最为烦琐的一部分。得益 于 RISC-V 架构对于中断和异常机制的简单定义，蜂鸟 E200 对其进行硬件实现的代价很小。 即便如此，异常和中断相关的源代码相比其他模块而言，仍然非常细琐繁杂
 
-## MCU 流水线取指部分设计
+## 不带压缩指令时取指部分设计
 
 > 取指阶段主要需要解决的问题是：<u>PC 重定向、指令对齐</u>
 
@@ -162,6 +161,89 @@ ITCM 占 64kB
    - PC 重定定向: 当发生 PC 重定向之后，FIFO 中现存的所有数据都是无效的，需要被刷新，并且下一个周期从 I-memory 中读出的指令也是无效的指令，也需要被丢弃; 在第二个周期读出的指令是重定向 PC 对应的指令，会被 PUSH 到 FIFO 中
 
 > PS: 在只支持 32bits 指令的处理器中，JALR 指令可能会计算得到的 PC 不是 4B 对齐的，但是在模拟器中测试该场景的时候，模拟器默认忽略了 PC 最低 2bits，导致不对齐的 PC 也可以从 I-memory 中读取指令，没有触发 exception.
+
+## 带压缩指令时取指部分设计
+
+- [x] TODO: new pc source, refer to the essay
+- [ ] TODO: instruction 16 bits and 32 bits mix types, refer to the essay
+- [ ] TODO：new instruction pc must by used by EXE stage when revise SBP decision,
+      sbp taken, alu not taken<-need the third instruction after current instruction
+      method 1: pass pc+2 and pc+4(more register),
+      method 2: pass pc to exe and calculate pc+4 or pc+2 in exe(more calculation)
+- [ ] TODO: new diagram of IF with compressed instruction: 2 SRAM bank, FIFO, new pc logic
+  - [ ] with 2 bank SRAM, how to initiate data into SRAM? In testbench, write to 1 bank SRAM, then fill
+        the two SRAM by the SRAM in testbench.
+  - [ ] **PS: with 2 bank SRAM, the pc is a little different from 1 bank SRAM**.
+- [ ] TODO: flush logic with compressed instruction and redirection in MEM stage, **quite complicate**
+- [ ] TODO: pc increment logic when find compress instruction
+- [ ] TODO: with compress instruction, how to flush pipeline for B-type instruction?
+      With FIFO, the flush is complicate, because the FIFO will not always push in instruction to avoid overflow.
+- [ ] add some table or if-else to better illustrate the design
+
+**Design Focus**
+
+- [ ] pc match instruction: pc+4 or pc+2
+- [ ] flush is correct
+- [ ] continue fetch instruction: prefetch and redirection
+
+> 由于 RISC-V 在支持压缩指令的情况下，16bits 的压缩指令跟 32bits 的整数指令，是混合存储的，
+> 因此整数指令可能不是按照 4B 对齐的，微架构需要对整数指令不对齐的情况做处理。
+
+### 方案 1
+
+**核心思想**：采用 32 位宽的 SRAM，每次取指 4B 的数据，采用 leftover buffer 存储上次取指的高 16bits，用于判断指令是否是压缩指令、完成 32bits 指令的拼接
+
+> 参考了蜂鸟的设计、以及论文《用于计量的嵌入式 RISC-V 处理器设计及 MCU 实现》
+
+![压缩指令与整数指令存储组合](https://s2.loli.net/2023/05/23/OSDrPmAwNLc5iF7.png)
+![压缩指令译码器指令判别流程图](https://s2.loli.net/2023/05/23/XS4AhVs71Wmwl6r.png)
+
+1. leftover buffer 的作用：
+
+   1. 存储 32bits 指令的低 16bits 数据
+   2. 判断压缩指令和整数指令的标志
+
+2. 该方案的优点：顺序取指的时候，PC+=4 即可; 取指单位 4B，PC 最后两位取指的时候直接当`00`来处理
+3. 该方案的缺点：
+   1. 压缩指令跟整数指令的组合一共有 5 种，每次取 4B 数据之后，都需要经过复杂的判断才可以判断出指令的种类
+   2. 32bits 指令不对齐的情况下，需要跟 leftover buffer 中的数据拼接才可以得到真正的整数指令
+   3. 将指令与其对应的 pc 对应不方便（因为指令可能不是直接按照 pc 从 SRAM 中取出来的，而是跟 leftover buffer 拼接而成的）
+   4. 地址重定向发生的时候，如果重定向地址不是 4B 对齐的，需要 2 次访问 SRAM 才可以拼成一个整数指令
+
+### 方案 2
+
+**核心思想**：在方案 1 的基础上，将 32bits 的 SRAM 拆分成 2 块 16bits 的 SRAM，这样取指的粒度从 4B 变成了 2B
+
+![](/Users/fujie/Pictures/typora/IF/method2Sram.svg)
+
+1. 取指：取指的时候，根据 addr 是否 4B 对齐，分为两种情况
+   1. addr 是 4B 对齐：`instr={Left[addr>>2], Right[addr>>2]}`, 如图 pc==8 的情况
+   2. addr 是 2B 对齐：`instr={Left[Right[addr>>2+1], Left[addr>>2]}`，如图 pc==2 的情况
+2. 压缩指令判断，由于不存在 leftover buffer，判断压缩指令与整数指令，只需要看 instr[1:0]即可
+
+   1. `instr[1:0]==11`: pc+=4
+   2. `instr[1:0]!=11`: pc+=2
+
+   取出的指令`instr`可能的情况一共有 3 种：`I`, `C+C`, `I+C`,
+   针对 `C+C` 的情况，当作 `I+C` 处理，以简化流水线冲刷的逻辑(代价是 `C+C` 本可以只访问一次 SRAM 的)。
+
+   > 32bits 的压缩指令，不管是`C+C`还是`I+C`，送到 ID 的 extending unit(EU)之后，EU 都会将其低 16bits 压缩指令部分扩展成对应的 32bits 整数指令
+
+3. 该方案的优点：
+   1. 没有 leftover buffer，压缩指令判读变得简单、32bits 指令也不需要拼接
+   2. 将指令跟 PC 对应很简单，指令对应的 PC 一定是取指时的 PC
+   3. 地址重定向发生的时候，即使 PC 不是 4B 对齐，也可以一个 cycle 就从 SRAM 中取出指令
+4. 该方案的缺点：
+   1. pc 更新的逻辑依赖于**对取出的指令的判断**，从而判断 pc+4 还是 pc+2
+   2. 两个相邻的压缩指令(`C+C`类型)，明明可以访问 1 次 SRAM，但是却需要访问 2 次
+
+### 方案 3
+
+**核心思想**：在方案 2 的基础上，将取出的指令 instr 放到 16x5 的 FIFO 中，节约`C+C`类型指令存储的访问 SRAM
+
+1. 该方案的缺点：
+   1. FIFO 中的指令跟其对应 pc 的匹配比较复杂：很难知道 FIFO 中某条指令是从哪个 pc 取出的
+   2. ~~FIFO 引入之后，指令的冲刷变得很复杂~~
 
 ## References
 

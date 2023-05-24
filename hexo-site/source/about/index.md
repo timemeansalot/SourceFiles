@@ -6,3 +6,22 @@ date: 2022-09-07 10:28:29
 **AI, Robots and Chips** is the key for current world
 
 ![image-20230511100858171](https://s2.loli.net/2023/05/11/Fc5mIjsaCeG1vpH.png)
+
+# Important books to read
+
+卡内基：
+
+- [ ] 《人性的弱点》
+- [ ] 《人性的光辉》
+- [ ] 《沟通的艺术》
+- [ ] 《内心强大的力量》
+
+Others: 
+- [ ] 《君主论》 
+- [ ] 《国富论》 
+- [ ] 《斗战经》 
+- [ ] 《孙子兵法》 
+- [ ] 《战国策》 
+- [ ] 《三略六涛》 
+- [ ] 《资治通鉴》 
+- [ ] 《司马法》 

@@ -90,6 +90,58 @@ RISCV MEM Stage 设计
 
 > MEM 和 EXE 需要 resetn 信号，否则系统 reset 之后，MEM Stage 输出的`reg_wb_en`会是 x，传输给 ID Stage 之后，会导致第一次读取 RF 时读出的也是 x
 
-### Control Status Register Unit(CSRU)
+## MEM Stage Design for Load/Store instructions
 
-TBD
+> 由于 CSR 模块放到 MEM Stage 会导致流水线刷新逻辑涉及到更多一个 Stage，导致刷新逻辑变得复杂，
+> 因此考虑将 CSR 模块放到 EXE Stage，并且在 EXE Stage 对访存指令地址不对齐的情况触发 exception
+
+### 地址不对齐的情况
+
+- [ ] TODO: should be put in EXE stage in CSR unit
+
+1. LB, LBU, SB 指令由于其操作的是 1B 的数据，因此不会出现 address misaligned exception
+2. LH, LHU, SH 指令，`addr[0]!=0`时，会出现 address misaligned exception
+3. LW, SW 指令，`addr[1:0]!=00`时，会出现 address misaligned exception
+
+### dmem_write_en
+
+- [ ] TODO: memory with byte enable
+
+1. dmem_write_en = 0;
+
+| dmem_write_en | mem_type                                 |
+| ------------- | ---------------------------------------- |
+| 0             | MEM_LB, MEM_LBU, MEM_LH, MEM_LHU, MEM_LW |
+| 1             | MEM_SB, MEM_SH, MEM_SW                   |
+
+### Store
+
+1. byte_en
+
+`byte_en[3:0]`：用于描述 D-Memory 写入时，那些 Byte 被写入
+
+| byte_en | mem_type        | addr[1:0] |
+| ------- | --------------- | --------- |
+| 0001    | MEM_SB, MEM_SBU | 00        |
+| 0010    | MEM_SB, MEM_SBU | 01        |
+| 0100    | MEM_SB, MEM_SBU | 10        |
+| 1000    | MEM_SB, MEM_SBU | 11        |
+| 0011    | MEM_SH, MEM_SHU | 0x        |
+| 1100    | MEM_SH, MEM_SHU | 1x        |
+| 1111    | MEM_SW          | xx        |
+
+2.  DMEM_wr_data_o
+
+`write_data[31:0]`是写入到 D-Memory 中的数据, `wr_data` 是 EXE Stage 输入的代写入到 D-Memory 的数据
+
+| write_data                                | mem_type        | addr[1:0] |
+| ----------------------------------------- | --------------- | --------- |
+| { {24{1'b0}}, wr_data[7:0] };             | MEM_SB, MEM_SBU | 00        |
+| { {16{1'b0}}, wr_data[7:0], { 8{1'b0}} }; | MEM_SB, MEM_SBU | 01        |
+| { {8{1'b0}}, wr_data[7:0], {16{1'b0}} };  | MEM_SB, MEM_SBU | 10        |
+| { wr_data[7:0], {24{1'b0}} };             | MEM_SB, MEM_SBU | 11        |
+| { {16{1'b0}}, wr_data[15:0] };            | MEM_SH, MEM_SHU | 0x        |
+| { wr_data[15:0], {16{1'b0}} };            | MEM_SH, MEM_SHU | 1x        |
+| wr_data                                   | MEM_SW          | xx        |
+
+### Load 指令
