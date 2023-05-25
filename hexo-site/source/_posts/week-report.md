@@ -1,5 +1,156 @@
 [TOC]
 
+## 带压缩指令时取指部分设计
+
+**支持压缩指令时，IF Stage 设计需要考虑的要点**：
+
+1. 当压缩指令跟整数指令混合存放的时候，如何处理整数指令取指问题？
+   > 由于 RISC-V 在支持压缩指令的情况下，16bits 的压缩指令跟 32bits 的整数指令，是混合存储的，
+   > 因此整数指令可能不是按照 4B 对齐的，微架构需要对整数指令不对齐的情况做处理。
+2. 存在压缩指令的时候，如何将 ID Stage 的指令跟指令对应的 PC 相匹配?
+   > 因为 SBP 计算 redirection_pc 的时候，需要用到 pc
+   > pc 其实是建立的对压缩、整数指令的判断的基础上的
+3. 存在压缩指令的时候，IF 顺序取指的时候如何增加 pc?
+   > 取到压缩指令的时候，pc+=2；取到整数指令的时候 pc+=4
+4. SBP 预测跳转，ALU 验证不跳转的时候，EXE 如何获得正确的 `pc_next_next` 发送给 IF？
+
+   1. ID Stage 的 SBP 预测跳转时，会将 IF 的取指地址修改为 prediction_addr
+   2. EXE Stage 的 ALU 如果判断不跳转，需要将 IF 的取指地址更改为 pc_next_next,
+      并且冲刷到 prediction_addr 取出的指令
+
+   ![sbp taken, alu not taken](/Users/fujie/Pictures/typora/IF/sbtTaluN.svg)
+
+### 方案 1
+
+**核心思想**：采用 32 位宽的 SRAM，每次取指 4B 的数据，采用 leftover buffer 存储上次取指的高 16bits，用于判断指令是否是压缩指令、完成 32bits 指令的拼接
+
+> 参考了蜂鸟的设计、以及论文《用于计量的嵌入式 RISC-V 处理器设计及 MCU 实现》
+
+![压缩指令与整数指令存储组合](https://s2.loli.net/2023/05/23/OSDrPmAwNLc5iF7.png)
+![压缩指令译码器指令判别流程图](https://s2.loli.net/2023/05/23/XS4AhVs71Wmwl6r.png)
+
+1. leftover buffer 的作用：
+
+   1. 存储 32bits 指令的低 16bits 数据
+   2. 判断压缩指令和整数指令的标志
+
+2. 该方案的优点：顺序取指的时候，PC+=4 即可; 取指单位 4B，PC 最后两位取指的时候直接当`00`来处理
+3. 该方案的缺点：
+   1. 压缩指令跟整数指令的组合一共有 5 种，每次取 4B 数据之后，都需要经过复杂的判断才可以判断出指令的种类
+   2. 32bits 指令不对齐的情况下，需要跟 leftover buffer 中的数据拼接才可以得到真正的整数指令
+   3. 将指令与其对应的 pc 对应不方便（因为指令可能不是直接按照 pc 从 SRAM 中取出来的，而是跟 leftover buffer 拼接而成的）
+   4. 地址重定向发生的时候，如果重定向地址不是 4B 对齐的，需要 2 次访问 SRAM 才可以拼成一个整数指令
+
+### 方案 2
+
+**核心思想**：在方案 1 的基础上，将 32bits 的 SRAM 拆分成 2 块 16bits 的 SRAM，这样取指的粒度从 4B 变成了 2B
+
+![](/Users/fujie/Pictures/typora/IF/method2.svg)
+
+1. 整数指令对齐：利用 2 back SRAM 来处理非对齐地址，取指的时候，根据 addr 是否 4B 对齐，分为两种情况
+   1. addr 是 4B 对齐：`instr={Left[addr>>2], Right[addr>>2]}`, 如图 pc==8 的情况
+   2. addr 是 2B 对齐：`instr={Left[Right[addr>>2+1], Left[addr>>2]}`，如图 pc==2 的情况
+      ![](/Users/fujie/Pictures/typora/IF/method2Sram.svg)
+2. 压缩指令判断，由于不存在 leftover buffer，判断压缩指令与整数指令，只需要看 instr[1:0]即可,
+   上图中红色部分就是在 ID 阶段通过比较指令最低 2bits 来判断指令是否是压缩指令
+
+   1. `instr[1:0]==11`: pc+=4
+   2. `instr[1:0]!=11`: pc+=2
+
+   取出的指令`instr`可能的情况一共有 3 种：`I`, `C+C`, `I+C`,
+   针对 `C+C` 的情况，当作 `I+C` 处理，以简化流水线冲刷的逻辑(代价是 `C+C` 本可以只访问一次 SRAM 的)。
+
+   > 32bits 的压缩指令，不管是`C+C`还是`I+C`，送到 ID 的 extending unit(EU)之后，EU 都会将其低 16bits 压缩指令部分扩展成对应的 32bits 整数指令
+
+3. 如何匹配每条指令和对应的 pc:  
+   在 IF Stage 取指的时候，每条指令都是按照 pc_sel 取指的，因此每条指令都对应 pc_sel 的值
+4. pc_next_next 如何计算：
+   由于压缩指令、整数指令混合存储，因此 pc_next_next 的值依赖于当前指令以及后续那条指令的类型，
+   假设指令序列为 3->2->1，令指令 1 对应的地址为 pc
+
+   1. 计算 pc_next:
+      - 指令 1 是压缩指令：pc_next=pc+2
+      - 指令 1 不是压缩指令：pc_next=pc+4
+   2. 计算 pc_next_next:
+      - 指令 2 是压缩指令：pc_next_next=pc_next+2
+      - 指令 2 不是压缩指令：pc_next_next=pc_next+4
+
+5. 该方案的优点：
+   1. 没有 leftover buffer，压缩指令判读变得简单、32bits 指令也不需要拼接
+   2. 将指令跟 PC 对应很简单，指令对应的 PC 一定是 pc_sel
+   3. 地址重定向发生的时候，即使 PC 不是 4B 对齐，也可以一个 cycle 就从 SRAM 中取出指令
+6. 该方案的缺点：
+   1. IF 阶段计算 pc_next 的逻辑依赖于**对取出的指令的判断**，从而判断 pc_next 等于 pc+4 还是 pc+2
+   2. 两个相邻的压缩指令(`C+C`类型)，明明可以访问 1 次 SRAM，但是却需要访问 2 次
+
+### 方案 3
+
+**核心思想**：在方案 2 的基础上，将取出的指令 instr 放到 FIFO 中，节约`C+C`类型指令存储的访问 SRAM
+
+> Q: 是否 4\*16 的 FIFO 也能保证没有 overflow?
+
+![](/Users/fujie/Pictures/typora/IF/method3.svg)
+
+1. 整数指令对齐：取指逻辑跟方案 2 相同，差别在于：
+   1. 取出的指令放到 FIFO 中，而不是放到 IF/ID pipeline register 中
+   2. FIFO 没有空间的时候，不会从 I-Memory 中取指令放到 FIFO 中
+2. 压缩指令判断：从 FIFO 头部取出 32bits 的指令送到 ID，有 ID Stage 比较指令最低 2bits 来判断是否是压缩指令
+   1. 如果是压缩指令，则 FIFO 将头部 16bits 指令 pop，FIFO 容量-1
+   2. 如果是整数指令，则 FIFO 将头部 32bits 指令 pop，FIFO 容量-2
+3. 如何匹配每条指令和对应的 pc:
+   1. 方案 3 中，取指的 pc 跟每条指令的 pc 不是一一对应关系，取指 pc 只负责在 FIFO 有空间的时候，
+      顺序的取指放入到 FIFO 中
+   2. 方案 3 中每条指令对应的 PC 在 ID Stage 中维护，ID Stage 只会在 reset 或者重定向发生的时候，
+      才会从 IF 得到 pc
+4. pc_next_next 如何计算？跟方案 2 不同处有：
+   1. 方案 3 在 ID Stage 再判断是否是压缩指令，所以 pc_next 在 ID Stage 计算得到
+   2. pc_next_next 在 EXE Stage 计算得到
+5. 该方案的优点：
+   1. 取指的 pc 不需要判断指令是否是压缩指令，默认+4 即可
+   2. 针对`C+C`类型的指令，只用访问 SRAM 一次
+6. 该方案的缺点：
+   1. 指令跟取指 pc 对应逻辑比较复杂
+   2. 相比于方案 2，计算 pc_next_next 需要额外在 EXE Stage 多引入一个加法器
+   3. IF Stage 引入了 FIFO，增加了复杂度
+
+### 三种方案对比
+
+1. 方案 1 的设计是最简单的，其明显的缺点在于：
+   1. 压缩指令跟整数指令的组合复杂，因此判断逻辑也很复杂
+   2. 重定向发生的时候，如果 redirection_pc 不是 4B 对齐的，需要 2 次访存才可以取到整数指令
+2. 方案 2 在方案 1 的基础上将 1 bank sram 改进为 2 bank sram
+   1. 解决了方案 1 中明显的缺点
+   2. 仍然存在的问题在于：取指 pc 的计算，需要判断从 I-Memory 中取出的指令是否是压缩指令
+3. 方案 3 在方案 2 的基础上，引入了 FIFO，并且将压缩指令的判断推迟到了 ID Stage
+   1. 取指 pc 不用依赖于指令的类型
+   2. 付出的代价是
+      1. FIFO 带来的复杂度
+      2. 指令跟 pc 的对应关系，变得比方案 2 复杂
+      3. 需要在 EXE 阶段增加额外的加法器来计算 pc_next_next
+
+> 综上：如果暂时没有更好的解决方案，我们可以在方案 2、3 之间选择一个
+
+### 取指时可能更新的 PC 值
+
+![redirectionSrc](/Users/fujie/Pictures/typora/IF/redirectionSrc.svg)
+
+IF Stage 可能的取指地址有如下一些情况，其优先级：`TOP > EXE > ID > IF`
+
+1. TOP: reset_addr 可以由 TOP 传给 IF Stage，也可以在 IF Stage 里默认一个 reset_addr
+2. IF Stage: pc_register 的输出
+3. ID Stage: SBP 判断跳转发生时，对应的跳转地址
+4. EXE Stage:
+
+   - ALU 判断 SBP 预测错误时，需要给出 redirection_pc
+   - CSR
+
+     1. mret 指令，需要将 epc 的地址作为下一条指令的地址
+     2. 非法指令，需要跳转到 trap_vector 地址
+     3. 外部中断发生时，需要跳转到 trap_vector 地址
+     4. debug 发生时，需要跳到 debug 对应地址
+
+     > PS: 根据 CSR 设计不同，上述四个 addr 可能会存在相同的情况
+
 ## 访存级 Load/Store 指令设计
 
 ### 信号定义

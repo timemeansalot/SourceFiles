@@ -133,7 +133,7 @@ _如果指令不需要访问 D-Memory，可以令 RW=1, dmem_write_mask=0000_
    | dmem_type_e_i[3:0]     | D-Memory 的访存类型(wire)                      |
    | alu_result_e_i[31:0]   | ALU 计算的结果(wire)                           |
    | extended_imm_e_i[31:0] | 拓展为 32bits 的立即数部分，LUI 指令的写回数据 |
-   | pc_plus4_e_i[31:0]     | pc+4 的数据，JAL, JALR 指令的写回数据          |
+   | pc_plus_e_i[31:0]      | next pc 的数据，JAL, JALR 指令的写回数据       |
    | result_src_e_i[1:0]    | 寄存器写回数据来源选择信号                     |
    | rd_idx_e_i[4:0]        | 被写回的寄存器的下标                           |
    | reg_write_en_e_i       | 寄存器写回使能                                 |
@@ -146,7 +146,7 @@ _如果指令不需要访问 D-Memory，可以令 RW=1, dmem_write_mask=0000_
    | ------------------------- | ---------------------------------------------------- |
    | alu_result_m_o[31:0]      | ALU 计算的结果(wire), alu_result_e_i 寄存 2 拍的结果 |
    | extended_imm_m_o[31:0]    | 拓展为 32bits 的立即数部分，LUI 指令的写回数据       |
-   | pc_plus4_m_o[31:0]        | pc+4 的数据，JAL, JALR 指令的写回数据                |
+   | pc_plus_m_o[31:0]         | next pc 的数据，JAL, JALR 指令的写回数据             |
    | 🌟mem_read_data_m_o[31:0] | 从 D-Memory 中读出的数据，Load 指令的写回数据        |
    | result_src_m_o[1:0]       | 寄存器写回数据来源选择信号                           |
    | rd_idx_m_o[4:0]           | 被写回的寄存器的下标                                 |
