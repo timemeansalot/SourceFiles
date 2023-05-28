@@ -134,7 +134,7 @@ tags: CA
    - <u>differential pair</u>: in DRAM, one row only attaches to one bit line of sense-amplifier, either B or B'
    - in pre-charge, detach inverter of sense-amplifier, charge B to VDD, open G, then B and B' will both become VDD/2
    - connect inverter of sense-amplifier, turn on one row, sense-amplifier can read the stored data,  
-     Example: suppose A is 1, then B will be charged to higher than VDD/2, which is eventually VDD,   
+     Example: suppose A is 1, then B will be charged to higher than VDD/2, which is eventually VDD,  
      and B' is eventually 0, because B is 1 and the bottom inverter will drive B' to 0
    - besides, because B' is not connected to any store cell at this time, it will not influence other store cell
 
@@ -181,3 +181,15 @@ tags: CA
 5. virtual memory space is much larger than physical memory space.
 6. trashing: if physical memory is too small, then some virtual memory page must be swap in and out,
    this will degrade system performance much
+
+## flash
+
+1. nand flash: if you need big capacity(Gb, etc), nand is better
+
+   - less reliability, need high voltage to write into;
+   - **cell will broken** if you write to one cell to often. <- use ECC code to handle this problem
+   - ECC correction wastes time
+
+2. nor flash: if you need small capacity(Mb, etc), nand is better
+   - less density than nand flash
+   - don't need to do ECC

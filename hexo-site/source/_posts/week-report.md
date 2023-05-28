@@ -1,6 +1,6 @@
 [TOC]
 
-## 带压缩指令时取指部分设计
+# 带压缩指令时取指部分设计
 
 **支持压缩指令时，IF Stage 设计需要考虑的要点**：
 
@@ -20,7 +20,7 @@
 
    ![sbp taken, alu not taken](/Users/fujie/Pictures/typora/IF/sbtTaluN.svg)
 
-### 方案 1
+## 方案 1
 
 **核心思想**：采用 32 位宽的 SRAM，每次取指 4B 的数据，采用 leftover buffer 存储上次取指的高 16bits，用于判断指令是否是压缩指令、完成 32bits 指令的拼接
 
@@ -41,7 +41,7 @@
    3. 将指令与其对应的 pc 对应不方便（因为指令可能不是直接按照 pc 从 SRAM 中取出来的，而是跟 leftover buffer 拼接而成的）
    4. 地址重定向发生的时候，如果重定向地址不是 4B 对齐的，需要 2 次访问 SRAM 才可以拼成一个整数指令
 
-### 方案 2
+## 方案 2
 
 **核心思想**：在方案 1 的基础上，将 32bits 的 SRAM 拆分成 2 块 16bits 的 SRAM，这样取指的粒度从 4B 变成了 2B
 
@@ -83,7 +83,7 @@
    1. IF 阶段计算 pc_next 的逻辑依赖于**对取出的指令的判断**，从而判断 pc_next 等于 pc+4 还是 pc+2
    2. 两个相邻的压缩指令(`C+C`类型)，明明可以访问 1 次 SRAM，但是却需要访问 2 次
 
-### 方案 3
+## 方案 3
 
 **核心思想**：在方案 2 的基础上，将取出的指令 instr 放到 FIFO 中，节约`C+C`类型指令存储的访问 SRAM
 
@@ -94,26 +94,29 @@
 1. 整数指令对齐：取指逻辑跟方案 2 相同，差别在于：
    1. 取出的指令放到 FIFO 中，而不是放到 IF/ID pipeline register 中
    2. FIFO 没有空间的时候，不会从 I-Memory 中取指令放到 FIFO 中
-2. 压缩指令判断：从 FIFO 头部取出 32bits 的指令送到 ID，有 ID Stage 比较指令最低 2bits 来判断是否是压缩指令
+2. FIFO 逻辑(Question -> FIFO 容量为 4 能否满足需求？)
+   1. 避免 underflow：由于 ID 一次最多取走 32bits 的数据，因此 FIFO $count \le 2$ 的时候，FIFO 允许写入
+   2. 避免 overflow：若令 FIFO 总容量为 4，则 FIFO $count\ge3$ 时，FIFO 不能写入
+3. 压缩指令判断：从 FIFO 头部取出 32bits 的指令送到 ID，有 ID Stage 比较指令最低 2bits 来判断是否是压缩指令
    1. 如果是压缩指令，则 FIFO 将头部 16bits 指令 pop，FIFO 容量-1
    2. 如果是整数指令，则 FIFO 将头部 32bits 指令 pop，FIFO 容量-2
-3. 如何匹配每条指令和对应的 pc:
+4. 如何匹配每条指令和对应的 pc:
    1. 方案 3 中，取指的 pc 跟每条指令的 pc 不是一一对应关系，取指 pc 只负责在 FIFO 有空间的时候，
       顺序的取指放入到 FIFO 中
    2. 方案 3 中每条指令对应的 PC 在 ID Stage 中维护，ID Stage 只会在 reset 或者重定向发生的时候，
       才会从 IF 得到 pc
-4. pc_next_next 如何计算？跟方案 2 不同处有：
+5. pc_next_next 如何计算？跟方案 2 不同处有：
    1. 方案 3 在 ID Stage 再判断是否是压缩指令，所以 pc_next 在 ID Stage 计算得到
    2. pc_next_next 在 EXE Stage 计算得到
-5. 该方案的优点：
+6. 该方案的优点：
    1. 取指的 pc 不需要判断指令是否是压缩指令，默认+4 即可
    2. 针对`C+C`类型的指令，只用访问 SRAM 一次
-6. 该方案的缺点：
+7. 该方案的缺点：
    1. 指令跟取指 pc 对应逻辑比较复杂
    2. 相比于方案 2，计算 pc_next_next 需要额外在 EXE Stage 多引入一个加法器
    3. IF Stage 引入了 FIFO，增加了复杂度
 
-### 三种方案对比
+## 三种方案对比
 
 1. 方案 1 的设计是最简单的，其明显的缺点在于：
    1. 压缩指令跟整数指令的组合复杂，因此判断逻辑也很复杂
@@ -130,7 +133,7 @@
 
 > 综上：如果暂时没有更好的解决方案，我们可以在方案 2、3 之间选择一个
 
-### 取指时可能更新的 PC 值
+## 取指时可能更新的 PC 值
 
 ![redirectionSrc](/Users/fujie/Pictures/typora/IF/redirectionSrc.svg)
 
@@ -151,9 +154,9 @@ IF Stage 可能的取指地址有如下一些情况，其优先级：`TOP > EXE 
 
      > PS: 根据 CSR 设计不同，上述四个 addr 可能会存在相同的情况
 
-## 访存级 Load/Store 指令设计
+# 访存级 Load/Store 指令设计
 
-### 信号定义
+## 信号定义
 
 1. 输入到 D-Memory 的信号
 
@@ -215,7 +218,7 @@ _如果指令不需要访问 D-Memory，可以令 RW=1, dmem_write_mask=0000_
 
    **alu_result_e_i 作为写回数据的时候，需要多暂存一拍以跟其他写回信号同步**
 
-### 访存逻辑
+## 访存逻辑
 
 本部分主要介绍 Load/Store 指令在 MEM Stage 具体的实现逻辑。
 
@@ -226,7 +229,7 @@ _如果指令不需要访问 D-Memory，可以令 RW=1, dmem_write_mask=0000_
 2. LH, LHU, SH 指令，`addr[0]!=0`时，会出现 address misaligned exception
 3. LW, SW 指令，`addr[1:0]!=00`时，会出现 address misaligned exception
 
-#### Load 指令
+### Load 指令
 
 1.  涉及到的指令：`LB, LBU, LH, LHU, LW`
 2.  D-Memory 写入地址：dmem_addr = alu_result_e_i;
@@ -251,7 +254,7 @@ _如果指令不需要访问 D-Memory，可以令 RW=1, dmem_write_mask=0000_
     | {{16{1'b0}, dmem_read_data[31:16]}                | MEM_LHU  | 10        |
     | dmem_read_data                                    | MEM_LW   | 00        |
 
-#### Store 指令
+### Store 指令
 
 1. 涉及到的指令：`SB, SH, SW`
 2. D-Memory 写入地址：dmem_addr = alu_result_e_i;
@@ -285,7 +288,75 @@ _如果指令不需要访问 D-Memory，可以令 RW=1, dmem_write_mask=0000_
    | { rs1_e_i[15:0], {16{1'b0}} };            | MEM_SH   | 1x        |
    | rs1_e_i                                   | MEM_SW   | xx        |
 
-#### 非访存指令
+### 非访存指令
 
 1. 读写类型：dmem_rw = 1'b1;
 2. 写入掩码: dmem_write_mask=4'b0000;
+
+# riscv-tests 环境搭建
+
+1. 验证目录
+
+   ```bash
+    src
+    ├── rtl
+    │   ├── top.v
+    │   ├── ...
+    │   ├── ...
+    │   ├── top_tb.v
+    └── verification
+        ├── Makefile
+        ├── asm
+        └── rtl
+   ```
+
+   1. 目前所有的源文件都在项目的`src`文件下
+   2. `src/rtl`存档 MCU 的 verilog 代码
+   3. `src/verification`是使用 riscv-tests 对 rtl 代码进行验证的目录
+      1. `asm`：存放所有的 riscv-tests 的汇编测试文件
+      2. `rtl`：存放所有的带测试的 verilog 源文件
+      3. `Makefile`：存放所有验证时需要的一些命令，如“编译 verilog”、“编译汇编文件”、“仿真”等
+
+2. Makefile 内容
+
+   ```Makefile
+   .DEFAULT_GOAL := wave
+   # compile asm source file to get test cases for MCU
+   asmCode:
+   	@(cd asm && ./clean.sh && ./regen.sh && cd ..)
+   # copy source file before compile
+   copy:
+   	@(rm -rf rtl/*.v && cp ../rtl/*.v rtl)
+   # simulate DUT, you'd better `make asmCode` first to generated machine code
+   sim:
+   	@(cd rtl && make sim)
+   # show waveform
+   wave:
+   	@(cd rtl && make waveform)
+
+   # regression test
+   # TODO: implement in the future.
+   # Because MCU can't pass even one test file in riscv-tests now!
+   # So we don't need to test the whole riscv-tests now.
+   clean:
+   	@(cd asm && ./clean.sh && cd ../rtl/ && make clean)
+   # declare phone target
+   PHONY: clean wave sim copy asmCode
+   ```
+
+   1. asmCode: 会进入到 asm 文件夹，并且调用脚本`regen.sh`编译所有的 riscv-tests 文件，并且得到机器码;  
+      testbench 会从得到的机器码文件中，加载指令到 I-Memory 中
+   2. copy：用`src/rtl`下复制所有的`.v`文件替换`verification/rtl`目录下的所有`.v`文件
+   3. sim：会进入`verification/rtl`目录下，并且使用 make sim 命令，
+      该命令会编译 rtl 文件，再执行 rtl 仿真
+   4. wave：使用 gtkWave 查看仿真生成的波形
+   5. regression test: 使用所有的 riscv-tests 测试用例测试 MCU，
+      如果都通过了则说明 MCU 通过了 riscv-tests 测试;  
+      但是现在的 MCU 一个测试都无法通过，所以目前暂时不支持 regression test.
+
+3. 仿真结果
+   riscv-tests 汇编文件，默认测试通过的时候，x3 的值为 1，所以每一轮仿真结束之后，我们在 testbench 里检查
+   x3 的值就可以判断测试是否通过
+
+   ![sim fail](https://s2.loli.net/2023/05/25/TcrkZPS9DbLeV8h.png)
+

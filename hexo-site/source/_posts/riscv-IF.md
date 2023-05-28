@@ -273,10 +273,13 @@ ITCM 占 64kB
 1. 整数指令对齐：取指逻辑跟方案 2 相同，差别在于：
    1. 取出的指令放到 FIFO 中，而不是放到 IF/ID pipeline register 中
    2. FIFO 没有空间的时候，不会从 I-Memory 中取指令放到 FIFO 中
-2. 压缩指令判断：从 FIFO 头部取出 32bits 的指令送到 ID，有 ID Stage 比较指令最低 2bits 来判断是否是压缩指令
+2. FIFO 逻辑(Question -> FIFO容量为4能否满足需求？)
+   1. 避免 underflow：由于 ID 一次最多取走 32bits 的数据，因此 FIFO $count \le 2$ 的时候，FIFO 允许写入
+   2. 避免 overflow：若令 FIFO 总容量为 4，则 FIFO $count\ge3$ 时，FIFO 不能写入
+3. 压缩指令判断：从 FIFO 头部取出 32bits 的指令送到 ID，有 ID Stage 比较指令最低 2bits 来判断是否是压缩指令
    1. 如果是压缩指令，则 FIFO 将头部 16bits 指令 pop，FIFO 容量-1
    2. 如果是整数指令，则 FIFO 将头部 32bits 指令 pop，FIFO 容量-2
-3. 如何匹配每条指令和对应的 pc:
+4. 如何匹配每条指令和对应的 pc:
    1. 方案 3 中，取指的 pc 跟每条指令的 pc 不是一一对应关系，取指 pc 只负责在 FIFO 有空间的时候，
       顺序的取指放入到 FIFO 中
    2. 方案 3 中每条指令对应的 PC 在 ID Stage 中维护，ID Stage 只会在 reset 或者重定向发生的时候，

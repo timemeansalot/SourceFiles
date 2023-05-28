@@ -5,9 +5,11 @@ tags: RISC-V
 ---
 
 RISC-V 处理器验证
+
 <!--more-->
 
 [TOC]
+
 ## 处理器核验证的方法
 
 1. 验证目标：验证处理器微架构设计，是否符合 RISC-V 手册的规范，保证处理器的行为符合 RISC-V 定义
@@ -408,10 +410,76 @@ RISC-V 处理器验证
 
 通过 DC 工具综合后可以得到 MCU 在时序、面积、功耗的报告
 
+## riscv-tests 环境搭建
+
+1. 验证目录
+
+   ```bash
+    src
+    ├── rtl
+    │   ├── top.v
+    │   ├── ...
+    │   ├── ...
+    │   ├── top_tb.v
+    └── verification
+        ├── Makefile
+        ├── asm
+        └── rtl
+   ```
+
+   1. 目前所有的源文件都在项目的`src`文件下
+   2. `src/rtl`存档 MCU 的 verilog 代码
+   3. `src/verification`是使用 riscv-tests 对 rtl 代码进行验证的目录
+      1. `asm`：存放所有的 riscv-tests 的汇编测试文件
+      2. `rtl`：存放所有的带测试的 verilog 源文件
+      3. `Makefile`：存放所有验证时需要的一些命令，如“编译 verilog”、“编译汇编文件”、“仿真”等
+
+2. Makefile 内容
+
+   ```Makefile
+   .DEFAULT_GOAL := wave
+   # compile asm source file to get test cases for MCU
+   asmCode:
+   	@(cd asm && ./clean.sh && ./regen.sh && cd ..)
+   # copy source file before compile
+   copy:
+   	@(rm -rf rtl/*.v && cp ../rtl/*.v rtl)
+   # simulate DUT, you'd better `make asmCode` first to generated machine code
+   sim:
+   	@(cd rtl && make sim)
+   # show waveform
+   wave:
+   	@(cd rtl && make waveform)
+
+   # regression test
+   # TODO: implement in the future.
+   # Because MCU can't pass even one test file in riscv-tests now!
+   # So we don't need to test the whole riscv-tests now.
+   clean:
+   	@(cd asm && ./clean.sh && cd ../rtl/ && make clean)
+   # declare phone target
+   PHONY: clean wave sim copy asmCode
+   ```
+
+   1. asmCode: 会进入到 asm 文件夹，并且调用脚本`regen.sh`编译所有的 riscv-tests 文件，并且得到机器码;  
+      testbench 会从得到的机器码文件中，加载指令到 I-Memory 中
+   2. copy：用`src/rtl`下复制所有的`.v`文件替换`verification/rtl`目录下的所有`.v`文件
+   3. sim：会进入`verification/rtl`目录下，并且使用 make sim 命令，
+      该命令会编译 rtl 文件，再执行 rtl 仿真
+   4. wave：使用 gtkWave 查看仿真生成的波形
+   5. regression test: 使用所有的 riscv-tests 测试用例测试 MCU，
+      如果都通过了则说明 MCU 通过了 riscv-tests 测试;  
+      但是现在的 MCU 一个测试都无法通过，所以目前暂时不支持 regression test.
+
+3. 仿真结果
+   riscv-tests 汇编文件，默认测试通过的时候，x3 的值为 1，所以每一轮仿真结束之后，我们在 testbench 里检查
+   x3 的值就可以判断测试是否通过
+
+   ![sim fail](https://s2.loli.net/2023/05/25/TcrkZPS9DbLeV8h.png)
+
 ## References
 
 1. [RISC-V 及 RISC-V core compliance test 简析](https://zhuanlan.zhihu.com/p/232088281)
 2. [RISC-V Compliance Tests](https://github.com/lowRISC/riscv-compliance/blob/master/doc/README.adocintroduction)
 3. [Imperas Test Suit](https://github.com/riscv-ovpsim/imperas-riscv-tests)
 4. [riscv-arch-test](https://github.com/riscv-non-isa/riscv-arch-test)
-
