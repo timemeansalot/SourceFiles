@@ -238,21 +238,21 @@ _如果指令不需要访问 D-Memory，可以令 RW=1, dmem_write_mask=0000_
 
     > 根据 Load 指令的类型及访存地址最后两位的地址，扩展 D-Memory 的输出数据，如下表所示：
 
-    | mem_read_data_m_o                                 | mem_type | addr[1:0] |
-    | ------------------------------------------------- | -------- | --------- |
-    | {{24{dmem_read_data[ 7]}}, dmem_read_data[7:0]}   | MEM_LB   | 00        |
-    | {{24{dmem_read_data[15]}},dmem_read_data[15:8]}   | MEM_LB   | 01        |
-    | {{24{dmem_read_data[23]}},dmem_read_data[23:16]}  | MEM_LB   | 10        |
-    | {{24{dmem_read_data[31]}},dmem_read_data[31:24]}  | MEM_LB   | 11        |
-    | {{24{1'b0} ,dmem_read_data[7: 0]}                 | MEM_LBU  | 00        |
-    | {{24{1'b0} ,dmem_read_data[15:8]}                 | MEM_LBU  | 01        |
-    | {{24{1'b0} ,dmem_read_data[23:16]}                | MEM_LBU  | 10        |
-    | {{24{1'b0} ,dmem_read_data[31:24]}                | MEM_LBU  | 11        |
-    | {{16{dmem_read_data[15]}}, dmem_read_data[15: 0]} | MEM_LH   | 00        |
-    | {{16{dmem_read_data[31]}}, dmem_read_data[31:16]} | MEM_LH   | 10        |
-    | {{16{1'b0}, dmem_read_data[15: 0]}                | MEM_LHU  | 00        |
-    | {{16{1'b0}, dmem_read_data[31:16]}                | MEM_LHU  | 10        |
-    | dmem_read_data                                    | MEM_LW   | 00        |
+    | mem_read_data_m_o                                   | mem_type | addr[1:0] |
+    | --------------------------------------------------- | -------- | --------- |
+    | `{{24{dmem_read_data[7]}}, dmem_read_data[7:0]}`    | MEM_LB   | 00        |
+    | `{{24{dmem_read_data[15]}},dmem_read_data[15:8]}`   | MEM_LB   | 01        |
+    | `{{24{dmem_read_data[23]}},dmem_read_data[23:16]}`  | MEM_LB   | 10        |
+    | `{{24{dmem_read_data[31]}},dmem_read_data[31:24]}`  | MEM_LB   | 11        |
+    | `{{24{1'b0} ,dmem_read_data[7:0]}`                  | MEM_LBU  | 00        |
+    | `{{24{1'b0} ,dmem_read_data[15:8]}`                 | MEM_LBU  | 01        |
+    | `{{24{1'b0} ,dmem_read_data[23:16]}`                | MEM_LBU  | 10        |
+    | `{{24{1'b0} ,dmem_read_data[31:24]}`                | MEM_LBU  | 11        |
+    | `{{16{dmem_read_data[15]}}, dmem_read_data[15: 0]}` | MEM_LH   | 00        |
+    | `{{16{dmem_read_data[31]}}, dmem_read_data[31:16]}` | MEM_LH   | 10        |
+    | `{{16{1'b0}, dmem_read_data[15:0]}`                 | MEM_LHU  | 00        |
+    | `{{16{1'b0}, dmem_read_data[31:16]}`                | MEM_LHU  | 10        |
+    | dmem_read_data                                      | MEM_LW   | 00        |
 
 ### Store 指令
 
@@ -278,15 +278,15 @@ _如果指令不需要访问 D-Memory，可以令 RW=1, dmem_write_mask=0000_
 
    `dmem_write_data[31:0]`是写入到 D-Memory 中的数据, `rs1_e_i` 是 EXE Stage 输入的代写入到 D-Memory 的数据
 
-   | dmem_write_data                           | mem_type | addr[1:0] |
-   | ----------------------------------------- | -------- | --------- |
-   | { {24{1'b0}}, rs1_e_i[7:0] };             | MEM_SB   | 00        |
-   | { {16{1'b0}}, rs1_e_i[7:0], { 8{1'b0}} }; | MEM_SB   | 01        |
-   | { {8{1'b0}}, rs1_e_i[7:0], {16{1'b0}} };  | MEM_SB   | 10        |
-   | { rs1_e_i[7:0], {24{1'b0}} };             | MEM_SB   | 11        |
-   | { {16{1'b0}}, rs1_e_i[15:0] };            | MEM_SH   | 0x        |
-   | { rs1_e_i[15:0], {16{1'b0}} };            | MEM_SH   | 1x        |
-   | rs1_e_i                                   | MEM_SW   | xx        |
+   | dmem_write_data                         | mem_type | addr[1:0] |
+   | --------------------------------------- | -------- | --------- |
+   | `{{24{1'b0}}, rs1_e_i[7:0]}`            | MEM_SB   | 00        |
+   | `{{16{1'b0}}, rs1_e_i[7:0], {8{1'b0}}}` | MEM_SB   | 01        |
+   | `{{8{1'b0}}, rs1_e_i[7:0], {16{1'b0}}}` | MEM_SB   | 10        |
+   | `{rs1_e_i[7:0], {24{1'b0}}}`            | MEM_SB   | 11        |
+   | `{{16{1'b0}}, rs1_e_i[15:0]}`           | MEM_SH   | 0x        |
+   | `{rs1_e_i[15:0], {16{1'b0}}}`           | MEM_SH   | 1x        |
+   | rs1_e_i                                 | MEM_SW   | xx        |
 
 ### 非访存指令
 
@@ -359,4 +359,3 @@ _如果指令不需要访问 D-Memory，可以令 RW=1, dmem_write_mask=0000_
    x3 的值就可以判断测试是否通过
 
    ![sim fail](https://s2.loli.net/2023/05/25/TcrkZPS9DbLeV8h.png)
-
