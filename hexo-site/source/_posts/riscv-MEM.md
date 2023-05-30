@@ -228,3 +228,6 @@ _如果指令不需要访问 D-Memory，可以令 RW=1, dmem_write_mask=0000_
 
 1. 读写类型：dmem_rw = 1'b1;
 2. 写入掩码: dmem_write_mask=4'b0000;
+
+
+![simluation](https://s2.loli.net/2023/05/30/Y4i5UHZsV3umnOR.png)
