@@ -273,7 +273,7 @@ ITCM 占 64kB
 1. 整数指令对齐：取指逻辑跟方案 2 相同，差别在于：
    1. 取出的指令放到 FIFO 中，而不是放到 IF/ID pipeline register 中
    2. FIFO 没有空间的时候，不会从 I-Memory 中取指令放到 FIFO 中
-2. FIFO 逻辑(Question -> FIFO容量为4能否满足需求？)
+2. FIFO 逻辑(Question -> FIFO 容量为 4 能否满足需求？)
    1. 避免 underflow：由于 ID 一次最多取走 32bits 的数据，因此 FIFO $count \le 2$ 的时候，FIFO 允许写入
    2. 避免 overflow：若令 FIFO 总容量为 4，则 FIFO $count\ge3$ 时，FIFO 不能写入
 3. 压缩指令判断：从 FIFO 头部取出 32bits 的指令送到 ID，有 ID Stage 比较指令最低 2bits 来判断是否是压缩指令
@@ -284,13 +284,13 @@ ITCM 占 64kB
       顺序的取指放入到 FIFO 中
    2. 方案 3 中每条指令对应的 PC 在 ID Stage 中维护，ID Stage 只会在 reset 或者重定向发生的时候，
       才会从 IF 得到 pc
-4. pc_next_next 如何计算？跟方案 2 不同处有：
+5. pc_next_next 如何计算？跟方案 2 不同处有：
    1. 方案 3 在 ID Stage 再判断是否是压缩指令，所以 pc_next 在 ID Stage 计算得到
    2. pc_next_next 在 EXE Stage 计算得到
-5. 该方案的优点：
+6. 该方案的优点：
    1. 取指的 pc 不需要判断指令是否是压缩指令，默认+4 即可
    2. 针对`C+C`类型的指令，只用访问 SRAM 一次
-6. 该方案的缺点：
+7. 该方案的缺点：
    1. 指令跟取指 pc 对应逻辑比较复杂
    2. 相比于方案 2，计算 pc_next_next 需要额外在 EXE Stage 多引入一个加法器
    3. IF Stage 引入了 FIFO，增加了复杂度
@@ -332,3 +332,17 @@ IF Stage 可能的取指地址有如下一些情况，其优先级：`TOP > EXE 
      4. debug 发生时，需要跳到 debug 对应地址
 
      > PS: 根据 CSR 设计不同，上述四个 addr 可能会存在相同的情况
+
+![](/Users/fujie/Pictures/typora/IF/compress_with_pc.svg)
+
+
+![verification](https://s2.loli.net/2023/06/01/NrQDle4aohYsRmc.png)
+测试的情况有：
+
+- [x] 地址 4B 对齐，顺序取指
+- [x] 地址非 4B 对齐，顺序取指
+- [x] 地址重定向发生后两个周期，顺利取出指令到 IR(Instruction Register)
+- [x] 顺序取指时：
+  - [x] ID 读取压缩指令（16bits)
+  - [x] ID 读取整数指令（32bits）
+  - [x] 流水线 stall（0bits）
