@@ -29,18 +29,20 @@
 
 ![simluation](https://s2.loli.net/2023/05/30/Y4i5UHZsV3umnOR.png)
 
+[相关的代码](https://github.com/ChipDesign/FAST_INTR_CPU/tree/main/src/rtl)：
+```bash
+    rtl
+    ├── sram_1p_32x816.v           
+    ├── memory_block.v              
+    ├── fifo5x16.v                  
+    ├── imemory.v                   
+    ├── pipelineIF_withFIFO.v       
+    ├── dmemory.v                   
+    ├── pipelineMEM_withloadstore.v 
+```
 # 流水线其余待修改部分
 
 > 由于目前流水线正在测试 Hazard、Flush、Stall 等功能，因此各级流水线接口不宜修改,
 > 待测试稳定之后，再修改各级流水线以支持压缩指令
 
 为了支持压缩指令执行，流水线各级需要修改的地方有：
-
-1. ID Stage
-   - [ ] 根据指令长度，计算`pc_next=pc+4`或者`pc_next=pc+2`
-   - [ ] 根据指令长度，返回`drain_cnt`给 IF Stage，IF Stage 需要根据`drain_cnt`决定
-         FIFO pop 的长度
-   - [ ] 增加`instru_pc`寄存器，用来匹配当前指令跟其对应的 pc
-   - [ ] 增加`mux`用于处理重定向发生、reset 发生时，pc 的选择
-2. EXE Stage
-   - [ ] 增加`pc_next_next`的计算，在分支预测错误的时候返回给 ID

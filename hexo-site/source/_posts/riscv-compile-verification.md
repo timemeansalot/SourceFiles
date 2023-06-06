@@ -4,10 +4,13 @@ date: 2023-05-22 11:42:06
 tags: RISC-V
 ---
 
+riscv-tests 和 verification
+
 <!--more-->
 
 ## TODO:
-- [ ] 避免名词错误，写完检查一遍
+
+- [x] 避免名词错误，写完检查一遍
 
 ## Compile
 
@@ -33,9 +36,3 @@ tags: RISC-V
 2. 编译 RTL 文件(compile RTL DUT)
 3. 单个测试
 4. 回归测试
-
-- [ ] TODO: 给出Makefile的Github地址，由GitHub展示Makefile 
-
-
-## Test Demo
-- [ ] TODO: write my only demo for pass and fail

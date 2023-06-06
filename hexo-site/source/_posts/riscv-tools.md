@@ -174,6 +174,115 @@ endmodule
 3. readelf: show elf file info, eg: `riscv64-unknown-elf-readelf -SW hello.o`
 4. hexdump: convert binary to hex, eg: `hexdump -C hello.bin`
 
+# Difftest
+
+1. 两种 bug
+
+   1. coding 错误：例如数组越界等
+   2. 需求理解错误：没有正确的看手册，导致错误调试很久都不能发现
+
+   > 第二种错误很常见、很耗时，因此写代码和调试的时候，**都要多看“手册”**，避免自己误解了需求
+
+2. bug 传播路径：需求->设计->代码->Fault->Error->Failure
+
+   1. Fault: 有 bug 的代码，例如数组访问越界（不一定能观测到，如果不跑到该部分代码，实际上是看不到这个 bug 的）
+   2. Error：程序运行时的非预期状态，例如错误的修改了某个内存值（不一定能观测到，如果我们不去打印这个内存值，我们也不知道这个内存被错误修改了）
+   3. Failure：**可观测的错误结果**，例如输出乱码、assert 失败等（我们调试的时候，能观测到的错误，就是 Failure）
+
+   > 调试的过程就是从 Failure 反推，找到 Fault 的过程，二者距离越远，调试越困难。
+
+   ![avoid bug](https://s2.loli.net/2023/06/06/QUtPrumFYkJHR5g.png)
+
+3. 测试
+   1. 测试需要各种测试用例
+      - 单元测试：与具体模块相关，例如 decoder 模块，一般由开发者自行编写
+      - 集成测试：AM(abstract machine)上的各种应用，riscv-tests
+      - 系统测试：跑一个 RT-Thread
+   2. 随机测试
+      - 好处：不用自己写测试用例
+      - 缺点：对于边界情况的覆盖情况不好，需要添加一些规则进行指导
+      - riscv-torture: 产生随机的 riscv 指令序列
+        1. <u>离线</u>程序级验证：比较程序运行得到的 signature
+        2. 从 Failure 回溯到 Error 还是比较困难
+        3. 若程序不能结束，则不能比较
+4. Difftest: 在线指令级行为验证方法
+
+   - 在线：边跑程序边验证，能够立即知道错误，从而避免错误传播成一个很难定位的 Failure
+   - **指令级**：执行的每条指令都验证
+   - 优点：
+     1. 任意程序都能进行指令级测试
+     2. 支持不会结束的程序，例如 OS
+     3. 无需提前知道程序的结果
+
+   > 调试处理器最大的挑战：如何回溯到**第一次触发 Error 的指令**?
+
+   1. 想法：在每一条指令执行之后，都插入一条`assert`指令，这样每条指令
+      如果出错，我们都可以在第一时间定位到它
+   2. Q：这个 assert 指令需要检测什么东西？
+      A：CPU 是一个巨大的状态机，我们可以检查它的：寄存器、pc、内存
+   3. Q：如何知道 CPU 的状态是否正确？
+      A：利用 difftest，跟一个 golden model 比较
+
+      > Difftest(differential testing)是来自于软件工程领域的概念，
+      > 其核心思想是：对于根据同一规范的两种实现，给定相同的输入，
+      > 它们的行为应该一致。
+
+   4. 跟模拟器实现 difftest 的四个步骤：
+      1. 选择一个简单的模拟器，例如：QEMU, Spike, NEMU
+      2. 为模拟器添加如下 API：
+         ![](https://s2.loli.net/2023/06/06/dmwKocPQqMvzy92.png)
+      3. 让仿真框架可以获得 CPU 的寄存器状态
+         ![](https://s2.loli.net/2023/06/06/ZglX2D8QuBL6xWV.png)
+      4. 在仿真框架中执行 difftest
+
+5. 香山中的 difftest 举例
+
+   1. difftest 在指令**提交 commit**的时候进行检查
+   2. 验证一条普通指令的执行
+
+      1. 处理器将<u>提交指令数、寄存器堆状态、pc</u>提交给 Difftest
+
+         > 香山使用 DPI-C 将处理器的指令结果传递给 difftest 框架
+
+      2. 模拟器执行相同数量的指令（一般都是 1）
+      3. 比较二者的寄存器堆状态、pc
+
+   3. 特殊情况的处理
+
+      1. 模拟器无法依靠自己在一些情况上跟处理器对齐，一方面是由于模拟器跟微处理器在微架构的差异、
+         另一方面是因为一些外部事件无法预料
+         ![](https://s2.loli.net/2023/06/06/JIruyqXk6fBtZ3A.png)
+      2. 处理特殊情况: 处理器向模拟器传递状态，更新模拟器状态
+         1. 在 dut 中识别特殊情况的发生
+         2. 将 dut 的结果拷贝到模拟器中
+         3. 跳过特殊指令的对比（difftest 中只对普通指令进行对比）
+
+      ![](https://s2.loli.net/2023/06/06/LyQlEhBPs9IUZAY.png)
+
+      3. difftest 需要处理的其他情况
+         1. 第一条指令的情况（处理器 reset 的情况不同）
+         2. 判断仿真终止：
+            - 处理器卡死
+            - 程序执行完成
+            - 处理器运行了指定的周期数
+         3. 记录必要的信息来辅助调试
+
+6. 香山中的 difftest 仿真框架
+
+   1. 香山 difftest 框架包含一个写好的 verilator 仿真的顶层
+   2. 用户只需要提供一个按要求修改好的 Verilog.v 文件
+      下面将以使用 Chisel 的设计为例，介绍如何将一个新的设计接入这个框架
+      ![](https://s2.loli.net/2023/06/06/ewt5DJqujacovfB.png)
+   3. 香山的 difftest 采用**DPI-C**来将仿真中的信号传递到 difftest 框架中，
+      在仿真程序执行的时候，会调用 DPI-C 函数.  
+      Difftest 框架提供了很多 DPI-C 函数，使用的时候可以进行选择，一般需要选择 RF, CSR, instrCommit 等子集
+
+7. 为什么不自行维护模拟器，而是使用通用的模拟器？
+   1. 现如今，处理器设计时更新迭代十分的迅速，在这种情况下要维护每一版处理器微架构对应的模拟器，
+      一方面代码工作量很大、另一方面不满足敏捷开发的需求。
+   2. 因此，如果要求处理器设计满足 riscv 手册的规范，我们只需要保证处理器跟模拟器在指令级层面的一致性即可，
+      具体表现就是每一条指令执行之后，对应的“RF, CSR, PC 和内存”都一致。
+
 # Referrences
 
 1. [RISC-V Tutorial on Youtube by Derry Pratama](https://www.youtube.com/watch?v=zZUtTplVHwE&list=PLgzAvj2cYr3qGvecT_PSnKzl5SxECZmI3)
