@@ -3,6 +3,7 @@ title: 周报-20230610
 date: 2023-03-08 14:45:34
 tags: RISC-V
 ---
+
 [TOC]
 
 <!--more-->
@@ -148,7 +149,7 @@ tags: RISC-V
     2. 运行速度快
        ![](https://s2.loli.net/2023/06/07/EOIRelTfqA2MtWQ.png)
     3. 接口 API 提供
-11. Difftest验证通过的标志
+11. Difftest 验证通过的标志
     1. 通过 Difftest 框架，能够运行结束指定的程序，不报错
     2. 通过 Difftest 框架，执行相当数量的随机指令流（几亿条）、或者执行不会结束的程序一段足够长的时间
 
@@ -171,7 +172,7 @@ tags: RISC-V
    ```scala
    import Difftest._
     // ......
-   
+
     class WBU {
       if (!env.FPGAPlatform) { // 只有在仿真时才需要 Difftest 的 module
         val Difftest = Module(new DifftestArchEvent)
@@ -186,6 +187,21 @@ tags: RISC-V
    4. 运行仿真，在线验证: `./build/emu -b 0 -e 0 -i ./ready-to-run/coremark-2-iteration.bin`
       ![](https://s2.loli.net/2023/06/07/RPvWopz4nrOIJ2V.png)
 
+## 目前测试环境搭建情况
+
+1. riscv-tests: 基本完成了 riscv-tests 的测试环境搭建
+   - 克隆了官方的测试仓库，得到了对应的测试汇编代码
+   - 能够选择官方的测试文件、自己写的测试文件，进行编译得到机器码、反汇编文件
+   - 对流水线中跟压缩指令相关的模块进行了更改，在 top.v 中对更改后的流水线进行了连线、测试通过(目前流水线支持压缩指令)
+   - top_tb 里面已经配置好了读入机器码的接口，可以直接加载到 IF 的 I-Memory 中
+   - 可以由 Makefile 完成汇编文件的编译、rtl 文件的编译、仿真、波形的展示
+2. difftest：主要完成了相关原理的调研，具体如何使用还没有掌握
+   - verilator：difftest 使用 verilator 作为编译仿真的工具，其 testbench 不是 verilog 文件，而是 C++文件
+   - nemu：difftest 使用的模拟器是南大提供的 nemu，目前对于其如何使用、其开放的 API 还不懂
+   - difftest 框架：官方文档里说了 difftest 可以支持 Chisel 和 Verilog 语言，但是在其 GitHub 里，只找到 Chisel 相关的源码
+   
+![Ask the senior questions](https://s2.loli.net/2023/06/08/ujJQh4XOVsqlGzx.png)
+
 # 参考资料
 
 1. [Difftest: detailed usage (Chinese)](https://github.com/OpenXiangShan/Difftest/blob/master/doc/usage.md)
@@ -193,10 +209,6 @@ tags: RISC-V
 3. [Example: Difftest in NutShell project (Chinese)](https://github.com/OpenXiangShan/Difftest/blob/master/doc/example-nutshell.md)
 4. [crvf2019: The First China RISC-V Forum](https://github.com/crvf2019/crvf2019.github.io)
 5. [香山的官方文档仓库](https://github.com/OpenXiangShan/XiangShan-doc)
-
-
-
-
 
 <div STYLE="page-break-after: always;"></div>
 
