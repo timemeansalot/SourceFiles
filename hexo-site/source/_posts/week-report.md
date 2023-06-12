@@ -172,7 +172,7 @@ tags: RISC-V
    ```scala
    import Difftest._
     // ......
-
+   
     class WBU {
       if (!env.FPGAPlatform) { // 只有在仿真时才需要 Difftest 的 module
         val Difftest = Module(new DifftestArchEvent)
@@ -200,6 +200,7 @@ tags: RISC-V
    - nemu：difftest 使用的模拟器是南大提供的 nemu，目前对于其如何使用、其开放的 API 还不懂
    - difftest 框架：官方文档里说了 difftest 可以支持 Chisel 和 Verilog 语言，但是在其 GitHub 里，只找到 Chisel 相关的源码
    
+
 ![Ask the senior questions](https://s2.loli.net/2023/06/08/ujJQh4XOVsqlGzx.png)
 
 # 参考资料
