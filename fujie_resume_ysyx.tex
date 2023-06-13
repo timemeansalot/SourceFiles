@@ -1,0 +1,96 @@
+% !TeX TS-program = xelatex
+
+\documentclass{resume}
+\ResumeName{付杰}
+
+\begin{document}
+
+\ResumeContacts{
+  (+86) 151-6213-3916,%
+  \ResumeUrl{mailto:timemeansalot@gmail.com}{timemeansalot@gmail.com},%
+  \ResumeUrl{https://timemeansalot.github.io/}{付杰的个人博客}
+  \footnote{下划线内容包含超链接。},%
+  \ResumeUrl{https://github.com/timemeansalot}{Github主页}%
+}
+
+\ResumeTitle
+
+\section{教育经历}
+\ResumeItem
+{上海科技大学与中科院计算所联合培养}
+[\textnormal{计算机科学与技术}  学术型硕士研究生]
+[2021.09—2024.06]
+% [2021.09—2024.06（预计）]
+
+\textbf{GPA: 3.02/4.0}，主要研究方向为\textbf{芯片设计、计算机体系结构}，
+\textbf{2024年应届生}，校级奖学金(3次)
+
+\ResumeItem
+[中国矿业大学|本科生]
+{中国矿业大学}
+[\textnormal{计算机科学与技术，计算机学院|} 工学学士]
+[2016.09—2020.06]
+\textbf{GPA: 3.4/4.0}，校级奖学金(1次)，院级奖学金(1次)，优秀新生奖学金(1次)。
+
+\section{技术能力}
+\begin{itemize}
+  \item \textbf{语言}: 编程不受特定语言限制。
+      常用 Verilog, Python，C； 熟悉C++, Chisel；了解\GrayText{Scala, LaTeX}。
+      \footnote{与求职岗位无关的技能省略或用灰色表示。}
+  \item \textbf{工作流}: Linux, Makefile, (Neo)Vim, Git, Tmux.
+  \item \textbf{其他}: 熟悉RISC-V指令集、Toolchain，了解开源的RISC-V处理器项目。
+\end{itemize}
+
+\section{实习经历}
+
+\ResumeItem{中国科学院计算技术研究所}
+[芯片设计实习生]
+[2022.06—至今] 
+\begin{itemize}
+    \item 实习的主要内容是为\textbf{5G基带芯片中的加速器调度问题设计MCU}，
+        作为项目主要负责人，\textbf{研究了RISC-V 32IMC指令集及RISC-V Toolchain};
+        研究了基带芯片的架构设计、以及开源的RISC-V处理器设计。
+    \item 在此基础上\textbf{设计了MCU的五级流水线架构，编写了MCU主要功能部件的RTL代码}。
+\end{itemize}
+\ResumeItem{深圳无限数科技有限公司}
+[架构模型验证]
+[2021.01—2021.06] 
+\begin{itemize}
+  \item 所在项目负责设计一款路由芯片，
+      芯片的架构设计首先由C语言编写C模型。
+      我主要的工作是\textbf{负责根据项目的设计文档验证C模型的功能是否正确、
+      找出C模型的Bug、修复Bug}。测试的时候使用到了Google Test框架。
+\end{itemize}
+
+\section{项目经历}
+
+\ResumeItem{RISC-V低功耗快速响应MCU}
+\begin{itemize}
+    \item 该MCU是基于RISC-V的顺序单发射五级流水线处理器、支持RV-32IMC指令集，其架构设计参考了蜂鸟、果壳和经典五级流水线。
+    \item 在\textit{IF Stage}设计了指令预取跟指令FIFO用于处理指令对齐问题；在\textit{ID Stage}设计了译码器、分支预测器、压缩指令扩展、立即数拓展单元；
+        在\textit{EXE Stage}支持RV-32IM相关的计算、并且会对分支指令的预测进行验证；在\textit{MEM Stage}和IF Stage，设计了紧耦合存储器来避免Cache Miss
+        导致的不确定延时；\textit{WB Stage}会根据指令类型选择数据源写回到通用寄存器组；此外设计了\textit{Hazard Unit}来控制流水线的刷新(flush)和暂停(stall)。
+    \item 项目目前使用Verilog语言，目前处理器除了CSR单元外，其余部分代码已经编写完成，处于验证阶段(采用iverilog跟gtkwave)；
+        验证计划通过riscv-tests，并且正在研究采用difftest框架来辅助验证过程。
+\end{itemize}
+
+\section{我为什么想参加实习}
+一方面是想加入专业的团队，从而可以学习到更专业的解决问题的方法；
+另一方面是想要做一些开源的工作，让自己的工作更有意义。
+\begin{itemize}
+    \item 在做我们自己的MCU时，大多数的问题我们都能找到相关的资料，但是涉及到实现细节的时候需要花很多时间去揣摩，
+        尤其是搭建环境的时候。所以我很希望能够加入团队，这样很多类似的问题都可以找到有经验的人咨询。
+    \item 我感觉ysyx的项目，对于推动开源芯片的发展很有意义。ysyx提供的文档、视频、工具等资源，对于我们设计MCU都
+        提供了很大的帮助；我认为只有采用开源的方法，才能够将处理器设计的难度和成本降低下来，如果我们能够抓住RISC-V
+        这个机遇，将开源芯片设计的思想推广出去，芯片设计真的有望像软件设计那样低成本、快速迭代。
+\end{itemize}
+
+\section{个人总结}
+\begin{itemize}
+    \item 本人乐观开朗、在校成绩优异、自驱能力强、当过助教，具有良好的沟通能力和团队合作精神。
+    \item 可以使用英语进行工作交流（六级成绩551），平时有阅读英文论文和口语练习的习惯。
+    \item 对Linux下工具熟悉，日常使用tmux, nvim, git；能编写shell, Makefile等
+    \item 热爱开源，喜欢分享自己的技术博客，持续关注处理器技术、体系结构技术发展。
+\end{itemize}
+
+\end{document}
