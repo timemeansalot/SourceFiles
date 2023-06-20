@@ -477,9 +477,19 @@ RISC-V 处理器验证
 
    ![sim fail](https://s2.loli.net/2023/05/25/TcrkZPS9DbLeV8h.png)
 
+
 ## References
 
 1. [RISC-V 及 RISC-V core compliance test 简析](https://zhuanlan.zhihu.com/p/232088281)
 2. [RISC-V Compliance Tests](https://github.com/lowRISC/riscv-compliance/blob/master/doc/README.adocintroduction)
 3. [Imperas Test Suit](https://github.com/riscv-ovpsim/imperas-riscv-tests)
 4. [riscv-arch-test](https://github.com/riscv-non-isa/riscv-arch-test)
+5. [mill配置教程](https://alvinalexander.com/scala/mill-build-tool/step-1-hello-world/)
+6. [chisel3基础知识](https://inst.eecs.berkeley.edu/~cs250/sp17/handouts/chisel-tutorial.pdf)
+7. [chisel3高级语法](https://inst.eecs.berkeley.edu/~cs250/sp17/handouts/advanced-chisel.pdf)
+8. [🌟Verilog代码接入到Difftest](https://github.com/OSCPU/ysyx/issues/9)
+9. [🌟Chisel接入difftest的几个主要步骤](https://github.com/OSCPU/ysyx/issues/8)
+10. [🌟Difftest 使用指南](https://github.com/OpenXiangShan/difftest/blob/master/doc/usage.md)
+11. [difftest访存踩坑分享](https://github.com/OSCPU/ysyx/issues/10)
+12. [Difftest 和 NEMU 的版本对应关系](https://github.com/OSCPU/ysyx/issues/13)
+13. [chiplab's documentation](https://chiplab.readthedocs.io/zh/latest/)
