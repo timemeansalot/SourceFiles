@@ -4,8 +4,9 @@ date: 2023-06-20 22:13:57
 tags: Tools
 ---
 
-MacOS下搭建开发环境如：Python, Scala, Verilog, etc;
+MacOS 下搭建开发环境如：Python, Scala, Verilog, etc;
 学习环境如：LaTex, WPS and other mac handy tools
+
 <!--more-->
 
 # Step by step guide to setup your Macbook for coding and study
@@ -149,7 +150,7 @@ Follow this [guid](https://www.josean.com/posts/tmux-setup) to config tmux.
 
 1. install nvm: nvm is nodejs version manager, use `brew install nvm` to install it.  
    After installation, make sure to add nvm to your PATH variable and source `.bashrc` or `.zshrc` file
-2. *Optional*: you may need to change nvm source to China if you are in China and want to boot up the download speed:
+2. _Optional_: you may need to change nvm source to China if you are in China and want to boot up the download speed:
    ```bash
     export NVM_NODEJS_ORG_MIRROR=http://npm.taobao.org/mirrors/node
     export NVM_IOJS_ORG_MIRROR=http://npm.taobao.org/mirrors/iojs
@@ -157,14 +158,15 @@ Follow this [guid](https://www.josean.com/posts/tmux-setup) to config tmux.
 3. install nodejs:
    - search all available nodejs: `nvm ls-remote`
    - install nodejs: `nvm install 18`, this command will install nodejs 18 on your Mac
-4. *Optional*: config nodejs to use source in China, see the current source of nodejs: `npm config get registry`
+4. _Optional_: config nodejs to use source in China, see the current source of nodejs: `npm config get registry`
    type the following command in your terminal: `npm config set registry https://registry.npm.taobao.org`
 5. test nodejs by setting up **hexo website**
-    ```bash
-    npm install hexo -g # install hexo
-    hexo s -g           # render the blog page locally
-    brew install pandoc # optional: if blog render step fail
-    ```
+   ```bash
+   npm install hexo -g # install hexo
+   hexo s -g           # render the blog page locally
+   brew install pandoc # optional: if blog render step fail
+   ```
+
 ## Config for Verilog
 
 1. gtkwave: go to [thie website](https://gtkwave.sourceforge.net/), clike **Download** the sourcecode tar.gz file, unzip the file, copy it to Application folder in your Macbook
@@ -187,9 +189,12 @@ Follow this [guid](https://www.josean.com/posts/tmux-setup) to config tmux.
 
    - this will install scala related stuff and **<u>sbt</u>**(scala build tool)
    - however, you still have to install **Java Runtime** to run scala, using `brew install openjdk`
-     Test installation: `scala -version`
+     Test installation: `scala -version`  
+     **😭NOTES**: make sure you have correctly set `JAVA_HOME` to the right directory, otherwise `sbt` or `mill` will fail to run.
+     In MacOS, you can use `/usr/libexec/java_home` command to show the correct `JAVA_HOME` path.
 
-2. mill: Chisel build tool, faster than sbt, but takes more disk space, using `brew install mill` to install mill.
+2. mill: Chisel build tool, faster than sbt, but takes more disk space, using `brew install mill` to install mill.  
+   After installation, you can use `mill version` to check if mill is correctly installed.
 
 3. follow [chisel-bootcamp guide](https://github.com/freechipsproject/chisel-bootcamp/blob/master/Install.md) to install jupyter and scala kernel for python.
 
