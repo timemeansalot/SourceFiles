@@ -183,6 +183,10 @@ Follow this [guid](https://www.josean.com/posts/tmux-setup) to config tmux.
 
 1. install scala on mac:
 
+   **Don't install scala manually, Don't install scala manually, Don't install scala manually!!!**, <u>Skip this step, Skip this step, Skip this step</u>
+
+   Because we will use `mill` to manage scala, we don't have to install scala by ourself!!!! DON'T install it by yourself!!!
+
    `curl -fL https://github.com/VirtusLab/coursier-m1/releases/latest/download/cs-aarch64-apple-darwin.gz | gzip -d > cs && chmod +x cs && (xattr -d com.apple.quarantine cs || true) && ./cs setup`
 
    The above command is from [this website](https://www.scala-lang.org/download/) and it's for <u>Macbook with Apple silicon</u>.
@@ -194,7 +198,10 @@ Follow this [guid](https://www.josean.com/posts/tmux-setup) to config tmux.
      In MacOS, you can use `/usr/libexec/java_home` command to show the correct `JAVA_HOME` path.
 
 2. mill: Chisel build tool, faster than sbt, but takes more disk space, using `brew install mill` to install mill.  
-   After installation, you can use `mill version` to check if mill is correctly installed.
+   After installation, you can use `mill version` to check if mill is correctly installed. There are many ways to install mill on mac.
+   - `brew install mill`, this will install the latest version of mill
+   - `sh -c "curl -L https://github.com/com-lihaoyi/mill/releases/download/0.9.8/0.9.8 > /usr/local/bin/mill && chmod +x /usr/local/bin/mill"`, 
+      this will install mill version 0.9.8, it's the mill version used by **XiangShan** group.
 
 3. follow [chisel-bootcamp guide](https://github.com/freechipsproject/chisel-bootcamp/blob/master/Install.md) to install jupyter and scala kernel for python.
 
