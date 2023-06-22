@@ -477,6 +477,66 @@ RISC-V 处理器验证
 
    ![sim fail](https://s2.loli.net/2023/05/25/TcrkZPS9DbLeV8h.png)
 
+## 用 Verilog 编写的 RISC-V 处理器接入到 Difftest 框架
+
+1. 项目的框架如下:
+
+   ```bash
+        DifftestFramework
+        ├── bin
+        ├── nemu
+        └── NOOP
+            ├── difftest
+            └── CPU
+               ├── Core.v
+               ├── Decode.v
+               ├── Execution.v
+               ├── InstFetch.v
+               ├── Instructions.v
+               ├── Ram.v
+               ├── RegFile.v
+               └── SimTop.v
+   ```
+
+   - bin: 测试文件
+   - nemu: 指令集模拟器，用于作为比较的 golden model
+   - difftest: 香山团队提供的 difftest 框架
+   - CPU: 存放 MCU_core 实现及 SimTop
+     - Core.v: MCU_core 文件，该文件里例化了各个流水线部件、**difftest 里的组件**(将对应的信号传递给 difftest)
+     - SimTop.v：difftest 框架默认的顶层文件，在这个文件里需要例化 MCU_core
+
+2. 测试流程：
+   - 在系统环境里指明`NEMU_HOME`跟`NOOP_HOME`，二者分别应该被设置为`NEMU`跟`NOOP`的绝对路径，如上表所示
+   - 克隆 difftest 需要用到的子模块，difftest 是从 GitHub 上克隆的仓库，其本身包含了一些其他的仓库，具体如下所示：
+     进入到 difftest 目录下，使用命令`git submodule update --init recursive`来克隆所有需要的子仓库
+     ```bash
+        [submodule "rocket-chip"]
+            path = rocket-chip
+            url = https://github.com/RISCVERS/rocket-chip.git
+        [submodule "block-inclusivecache-sifive"]
+            path = block-inclusivecache-sifive
+            url = https://github.com/RISCVERS/block-inclusivecache-sifive.git
+        [submodule "chiseltest"]
+            path = chiseltest
+            url = https://github.com/ucb-bar/chisel-testers2.git
+        [submodule "api-config-chipsalliance"]
+            path = api-config-chipsalliance
+            url = https://github.com/chipsalliance/api-config-chipsalliance
+        [submodule "berkeley-hardfloat"]
+            path = berkeley-hardfloat
+            url = https://github.com/RISCVERS/berkeley-hardfloat.git
+        [submodule "timingScripts"]
+            path = timingScripts
+            url = https://github.com/RISCVERS/timingScripts.git
+     ```
+3. 在 SimTop.v 文件中，例化 MCU_core
+4. 在 NOOP 目录下，使用指令`make -C difftest emu`来编译所有的 Verilog 跟 Scala 文件，得到可运行的仿真程序。
+   该仿真程序就是**支持将 MCU 跟 NEMU 进行比较的程序**。
+
+   > PS: 编译仿真程序至少需要 32G 的内存，否则会报错说内存不够; 在服务器上编译了 68 分钟.
+
+5. 编译测试文件：使用 riscv-tools 编译测试文件，得到二进制程序
+6. 用测试二进制程序作为输入，进行 difftest。仿真程序会在匹配失败的时候，报错并且给出报错的信息。
 
 ## References
 
@@ -484,12 +544,13 @@ RISC-V 处理器验证
 2. [RISC-V Compliance Tests](https://github.com/lowRISC/riscv-compliance/blob/master/doc/README.adocintroduction)
 3. [Imperas Test Suit](https://github.com/riscv-ovpsim/imperas-riscv-tests)
 4. [riscv-arch-test](https://github.com/riscv-non-isa/riscv-arch-test)
-5. [mill配置教程](https://alvinalexander.com/scala/mill-build-tool/step-1-hello-world/)
-6. [chisel3基础知识](https://inst.eecs.berkeley.edu/~cs250/sp17/handouts/chisel-tutorial.pdf)
-7. [chisel3高级语法](https://inst.eecs.berkeley.edu/~cs250/sp17/handouts/advanced-chisel.pdf)
-8. [🌟Verilog代码接入到Difftest](https://github.com/OSCPU/ysyx/issues/9)
-9. [🌟Chisel接入difftest的几个主要步骤](https://github.com/OSCPU/ysyx/issues/8)
-10. [🌟Difftest 使用指南](https://github.com/OpenXiangShan/difftest/blob/master/doc/usage.md)
-11. [difftest访存踩坑分享](https://github.com/OSCPU/ysyx/issues/10)
-12. [Difftest 和 NEMU 的版本对应关系](https://github.com/OSCPU/ysyx/issues/13)
-13. [chiplab's documentation](https://chiplab.readthedocs.io/zh/latest/)
+5. [mill 配置教程](https://alvinalexander.com/scala/mill-build-tool/step-1-hello-world/)
+6. [chisel3 基础知识](https://inst.eecs.berkeley.edu/~cs250/sp17/handouts/chisel-tutorial.pdf)
+7. [chisel3 高级语法](https://inst.eecs.berkeley.edu/~cs250/sp17/handouts/advanced-chisel.pdf)
+8. [🌟Difftest 踩坑笔记(二)](http://www.icfgblog.com/index.php/software/341.html#comment-61)
+9. [🌟Verilog 代码接入到 Difftest](https://github.com/OSCPU/ysyx/issues/9)
+10. [🌟Chisel 接入 difftest 的几个主要步骤](https://github.com/OSCPU/ysyx/issues/8)
+11. [🌟Difftest 使用指南](https://github.com/OpenXiangShan/difftest/blob/master/doc/usage.md)
+12. [difftest 访存踩坑分享](https://github.com/OSCPU/ysyx/issues/10)
+13. [Difftest 和 NEMU 的版本对应关系](https://github.com/OSCPU/ysyx/issues/13)
+14. [🌟chiplab's documentation](https://chiplab.readthedocs.io/zh/latest/)
