@@ -60,14 +60,14 @@ RISC-V 支持的特权模式组合：
 | mtvec   | (trap vector base address): 表明 trap 发生的时候，PC 需要跳转的地址                                   | XLEN |
 | mie     | (interrupt enable): 用于进一步控制（打开和关闭）software interrupt/timer interrupt/external interrupt | XLEN |
 
-![mstatus](/Users/fujie/Pictures/typora/csr/mstatus.jpg)
+![image-20230627132133032](https://s2.loli.net/2023/06/27/OPh4UF7y2omE1eb.png)
 `mstatus`寄存器中的:
 
 - `xIE`字段用于控制全局中断使能；高级模式的中断关闭之后，比它等级低的中断都会关闭、低级模式的中断打开之后，比它等级高的中断都会打开
 - `xPIE`(previous interrupt enable)字段用于存储 trap 发上之前 hart 的中断使能
 - `xPP`(previous privilege)字段存储进入 trap 之前 hart 所处的特权模式
 
-![mtvec](/Users/fujie/Pictures/typora/csr/mtvec.jpg)
+![image-20230627132143581](https://s2.loli.net/2023/06/27/aXxWAZvdCMG27Jc.png)
 `mtvec`寄存器中的:
 
 - `BASE`字段必须是 4byte 对齐
@@ -80,8 +80,7 @@ RISC-V 支持的特权模式组合：
 
   > PS: RISC-V 中的指令都是 little endian
 
-![mie](/Users/fujie/Pictures/typora/csr/mie.jpg)
-![mie](/Users/fujie/Pictures/typora/csr/miestandard.jpg)
+![image-20230627132155502](https://s2.loli.net/2023/06/27/uPfw2QeCHzgtx9Y.png)
 `mie`(ie for interrupt enable)寄存器中的每 bit 指定 mcause 中的各种类型的 trap 是否打开
 
 #### Trap Handling:
@@ -98,11 +97,10 @@ RISC-V 支持的特权模式组合：
 | mip      | (interrupt pending): 它列出目前已发生等待处理的中断                           | XLEN |
 | mscratch | (scratch): 一般用于指向某 M 模式的上下文空间                                  | XLEN |
 
-![mip](/Users/fujie/Pictures/typora/csr/mip.jpg)
-![mipstandard](/Users/fujie/Pictures/typora/csr/mipstandard.jpg)
+![image-20230627132214997](https://s2.loli.net/2023/06/27/xqfVg12akrvCAZS.png)
 `mip`(ip for interrupt pending)寄存器中的每 bit 判断 mcause 中的各种类型的 trap 是否 pending
 
-![mcause](/Users/fujie/Pictures/typora/csr/mcause.jpg)
+![image-20230627132224817](https://s2.loli.net/2023/06/27/Y82P9EAnswXF5BV.png)
 `mcause`最高位=1，表明 trap 是 interrupt，否则 trap 是 exception
 
 #### Time/Counter
@@ -150,38 +148,38 @@ RISC-V 支持的特权模式组合：
 
 ### Trap 处理流程
 
-<img src="/Users/fujie/Pictures/typora/csr/trap_procedure.jpg" alt="trap_procedure" style="zoom:50%;" />
+![image-20230627132243657](https://s2.loli.net/2023/06/27/3ybHP1gahorA2I4.png)
 1. 初始化: 将trap_vector的地址存储到`mtvec`，这样当trap发生的时候，pc可以自动跳转到该地址去执行trap处理程序
     ```S
       trap_vector:
         # save context(registers).
         csrrw	t6, mscratch, t6	# swap t6 and mscratch
         reg_save t6
-
+    
         # Save the actual t6 register, which we swapped into
         # mscratch
         mv	t5, t6		# t5 points to the context of current task
         csrr	t6, mscratch	# read t6 back from mscratch
         sw	t6, 120(t5)	# save t6 with t5 as base
-
+    
         # Restore the context pointer into mscratch
         csrw	mscratch, t5
-
+    
         # call the C trap handler in trap.c
         csrr	a0, mepc
         csrr	a1, mcause
         call	trap_handler # call C functions to solve trap
-
+    
         # trap_handler will return the return address via a0.
         csrw	mepc, a0
-
+    
         # restore context(registers).
         csrr	t6, mscratch
         reg_restore t6
-
+    
         # return to whatever we were doing before trap.
         MRET
-
+    
     ```
 
 2. TOP Half, 一些硬件自动做的工作，更新 csr 的信息
@@ -236,9 +234,9 @@ RISC-V 支持的特权模式组合：
      - `mstatus.MIE=mstatus.MPIE, mstatus.MPIE=1`
      - <u>`pc=mepc`</u>
 
-![csr_demo](/Users/fujie/Pictures/typora/csr/csr_demo.jpg)
+![image-20230627132301742](https://s2.loli.net/2023/06/27/HEDia3btNIQVgoF.png)
 
-## Trap
+## Trap处理加速
 
 > 中断响应是嵌入式微控制器的关键特性之一。
 > 中断响应时间指的是从中断设备产生中断信号到处理器开始执行中断服务程序（Interrupt Service Routine, ISR） 中的第一条指令所花费的时间。

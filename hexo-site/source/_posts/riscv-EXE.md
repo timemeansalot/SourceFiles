@@ -196,7 +196,7 @@ stop:
 12. counter ==12: 按照 0x 000000000 从 I-Memory 取出指令`addi x5, x6, 4`
     从``counter==3`开始循环: `addi->addi->nop->nop->nop->jr`
 
-![image-20230512151143360](/Users/fujie/Pictures/typora/image-20230512151143360.png)
+
 
 ## jalr 不存在数据依赖
 
@@ -243,7 +243,7 @@ stop:
     - 从 I-Memory 取出指令`addi x5, x6, 4`
       从`counter==3`开始循环：`addi, addi, nop, nop, nop, jr`
 
-![image-20230512152204442](/Users/fujie/Pictures/typora/image-20230512152204442.png)
+
 
 ## B-Type 指令仿真
 
@@ -273,7 +273,7 @@ stop:
 
 期待运行过程：`addi, addi, nop, nop, nop, beq, addi, addi, addi, j`
 
-![image-20230512155556061](/Users/fujie/Pictures/typora/image-20230512155556061.png)
+
 
 ### sbp not taken, alu taken
 
@@ -301,7 +301,7 @@ stop:
 
 期待运行过程：`addi, addi, nop, nop, nop, bne, j`
 
-![image-20230512155913379](/Users/fujie/Pictures/typora/image-20230512155913379.png)
+
 
 ### sbp taken, alu not taken
 
@@ -330,7 +330,7 @@ stop:
 
 期待运行过程：`addi, addi, nop, nop, nop, bge, addi, addi, addi, j`
 
-![image-20230512160412862](/Users/fujie/Pictures/typora/image-20230512160412862.png)
+
 
 ### sbp taken, alu taken
 
@@ -358,7 +358,7 @@ stop:
 
 期待运行过程：`addi, addi, nop, nop, nop, bltu, addi, addi`
 
-### ![image-20230512160631459](/Users/fujie/Pictures/typora/image-20230512160631459.png)
+
 
 ## 混合指令
 
@@ -386,7 +386,7 @@ stop:
 
 期待运行过程：`addi, addi, nop, nop, nop, beq, bne, j, j, j`
 
-![image-20230512163723257](/Users/fujie/Pictures/typora/image-20230512163723257.png)
+
 
 # 流水线冲刷总结
 

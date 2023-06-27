@@ -11,7 +11,7 @@ RISC-V 译码级设计
 
 ## RISCV ID Stage 各个功能部件设计
 
-![pipeline_ID](/Users/fujie/Pictures/typora/pipeline/pipeline_ID.svg)
+![image-20230627134737366](https://s2.loli.net/2023/06/27/3CeBNiWkn24PvUq.png)
 
 ### 压缩指令译码(compress decoder)
 
@@ -230,21 +230,21 @@ RISC-V 译码级设计
    5. IMM_S: `imm_o={{20{instr_i[31]}}, instr_i[31:25], instr_i[11:7]};`
    6. IMM_NO: no immediate ==> `imm_o = 32'h00000000;`
 
-~~### 4x1 Mux~~
-~~1. 输入接口~~
+### 4x1 Mux
+1. 输入接口
 
 ```
-~~   | Name            | Source    | Description                    |~~
-~~   | --------------- | --------- | ------------------------------ |~~
-~~   | rs1[31:0]       | RF        | 从 RF 读出的操作数 1           |~~
-~~   | RD2[31:0]       | RF        | 从 RF 读出的操作数 2           |~~
-~~   | exeBypass[31:0] | EXE stage | data forwarding from EXE stage |~~
-~~   | memBypass[31:0] | MEM stage | data forwarding from MEM stage |~~
-~~   | wbBypass[31:0]  | WB stage  | data forwarding from WB stage  |~~
-~~2. 输出接口~~
-~~   | Name       | Target          | Description           |~~
-~~   | ---------- | --------------- | --------------------- |~~
-~~   | rs1D[31:0] | ID/EXE pipeline | 送给 ALU 的 operand 1 |~~
-~~   | RD2D[31:0] | ID/EXE pipeline | 送给 ALU 的 operand 2 |~~
-~~3. 模块功能: 根据 forwarding 选择信号，选择合适的 forward 数据，将选择的数据输送到 EXE Stage~~
+   | Name            | Source    | Description                    |
+   | --------------- | --------- | ------------------------------ |
+   | rs1[31:0]       | RF        | 从 RF 读出的操作数 1           |
+   | RD2[31:0]       | RF        | 从 RF 读出的操作数 2           |
+   | exeBypass[31:0] | EXE stage | data forwarding from EXE stage |
+   | memBypass[31:0] | MEM stage | data forwarding from MEM stage |
+   | wbBypass[31:0]  | WB stage  | data forwarding from WB stage  |
+2. 输出接口
+   | Name       | Target          | Description           |
+   | ---------- | --------------- | --------------------- |
+   | rs1D[31:0] | ID/EXE pipeline | 送给 ALU 的 operand 1 |
+   | RD2D[31:0] | ID/EXE pipeline | 送给 ALU 的 operand 2 |
+3. 模块功能: 根据 forwarding 选择信号，选择合适的 forward 数据，将选择的数据输送到 EXE Stage
 ```

@@ -33,7 +33,6 @@ RISC-V 处理器验证
    - 涉及到的 DUT 内部变量、状态最少
    - 正确答案、错误过程：DUT 是错误的，但是得到了跟正确答案一样的结果
 4. Self Check 举例:
-   ![Self Check Example](/Users/fujie/Pictures/typora/image-20230518180223338.png)
 
 ### Signature Comparison
 
@@ -47,7 +46,6 @@ RISC-V 处理器验证
 3. 缺点：
    - 暴露的 DUT 内部信息、状态也是有限的
 4. Signature Comparison 举例:
-   ![Signature Comparison Example](/Users/fujie/Pictures/typora/image-20230518180427488.png)
 
 ### Trace Log Comparison
 
@@ -66,7 +64,6 @@ RISC-V 处理器验证
    - 仿真的 trace 文件会很大
    - 跑飞(runaway execution)
 4. Trace Log Comparison 举例:
-   ![Trace Log Comparison](/Users/fujie/Pictures/typora/image-20230518191123232.png)
 
 ### Sync/Async Step and Compare
 
@@ -478,6 +475,17 @@ RISC-V 处理器验证
    ![sim fail](https://s2.loli.net/2023/05/25/TcrkZPS9DbLeV8h.png)
 
 ## 用 Verilog 编写的 RISC-V 处理器接入到 Difftest 框架
+
+- [ ] 接入 Difftest 框架
+  - [ ] Difftest 框架使用了 AXI 和 UART 模块，如何忽略到这些模块
+  - [ ] 如何在 MCU_core 中例化 Difftest 模块，只关心通用寄存器的数值是否匹配
+  - [ ] 如何比较 MCU_core 跟 NEMU 中的 PC？因为采用了指令预取技术，MCU_core 并没有使用传统意义的 PC
+  - [ ] 如何解决 Difftest 要求的时序问题
+  - [ ] 如何具体测试 load/store 指令
+- [ ] 使用 Difftest 框架进行测试
+  - [ ] 如何根据 riscv-tests 生成测试用力加载到 MCU_core 以及 golden-model，NEMU 采用的是 1-bank, MCU_core 采用的是 2bank I-Memory
+  - [ ] 测试通过的 riscv-tests
+  - [ ] 测试发现的 bug、修改的 bug
 
 1. 项目的框架如下:
 

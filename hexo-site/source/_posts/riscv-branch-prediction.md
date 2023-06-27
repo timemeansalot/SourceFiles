@@ -160,10 +160,10 @@ $$
    - flush **ID Pipeline Register**
    - flush **EXE Pipeline Register**
 
-   ![Branch Prediction EXE Fail](/Users/fujie/Pictures/typora/riscv-micro-arch/bp/branch_prediction_exe_fail.svg)
+   ![image-20230627132542526](https://s2.loli.net/2023/06/27/wIE19XqW8dpJlLR.png)
 
 2. 在 EXE 判断分支预测**正确**
-   ![Branch Prediction EXE Success](/Users/fujie/Pictures/typora/riscv-micro-arch/bp/branch_prediction_exe_success.svg)
+   ![image-20230627132552894](https://s2.loli.net/2023/06/27/v5DHrlupi2XEIBh.png)
 
 ### ID 阶段静态分支预测
 
@@ -185,17 +185,17 @@ $$
 
 1. 针对 JAL 和 JALR 指令：其必定会发生跳转; 在 ID 阶段会计算到下一条指令真实的 target pc、会冲刷到此时 IF 阶段的指令  
    JAL, JALR 的 miss penalty 恒为 1 个 cycle
-   ![static_bp_jal](/Users/fujie/Pictures/typora/riscv-micro-arch/bp/static_bp_jal.svg)
+   ![image-20230627132608772](https://s2.loli.net/2023/06/27/2IErlj3aYTWyFKv.png)
 
 2. 针对条件分支 B-Type 指令，其流水线有如下四种情况：
    1. ID 预测跳转、EXE 判断 BP 正确(实际上跳转) -> flush掉instruction 2, penalty cycle = 1
-      ![static_bp_btype_success](/Users/fujie/Pictures/typora/riscv-micro-arch/bp/static_bp_btype_success.svg)
+      ![image-20230627132630807](https://s2.loli.net/2023/06/27/YCOLWG8Spw2zHTv.png)
    2. ID 预测跳转、EXE 判断 BP 错误(实际不跳转) -> flush掉instruction 3, penalty cycle = 1
-      ![static_bp_btype_fail](/Users/fujie/Pictures/typora/riscv-micro-arch/bp/static_bp_btype_fail.svg)
+      ![image-20230627132649447](https://s2.loli.net/2023/06/27/QZ6FcelEtxiVJAv.png)
    3. ID 预测不跳转、EXE 判断 BP 正确(实际不跳转) -> 不用flush流水线, penalty cycle = 0
-      ![static_bp_btype_ntaken_success](/Users/fujie/Pictures/typora/riscv-micro-arch/bp/static_bp_btype_ntaken_success.svg)
+      ![image-20230627132706336](https://s2.loli.net/2023/06/27/r4phIq7sXiFE2mT.png)
    4. ID 预测不跳转、EXE 判断 BP 错误(实际上跳转) -> flush掉instruction 2, 3, penalty cycle = 2
-      ![static_bp_btype_ntaken_fail](/Users/fujie/Pictures/typora/riscv-micro-arch/bp/static_bp_btype_ntaken_fail.svg)
+      ![image-20230627132720722](https://s2.loli.net/2023/06/27/iXs8NyMA2DLaecu.png)
 
 # 主流的分支预测器: 预测准确率和其对 CPI 的影响
 

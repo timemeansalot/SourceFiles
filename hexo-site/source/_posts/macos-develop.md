@@ -82,12 +82,12 @@ Make sure **you have good internet connection** before you want to config nvim, 
 3. install all plugins: `cd ~/.config/nvim/lua/user && nvim plugins.lua`
    <u>Save the file</u>, nvim will **auto install** all the plugins.
 4. in nvim, use `TSUpdateSync` to install treesitter plugins.
-5. **no need to do this** -> config markdown-preview: markdown-preview can let you see your markdown file **render** effect in neovim
+5. config markdown-preview: markdown-preview can let you see your markdown file **render** effect in neovim, 
+   make sure you have `node` and `yarn` installed.
    ```bash
     cd ~/.local/share/nvim/site/pack/packer/start/
     git clone https://github.com/iamcco/markdown-preview.nvim.git
     cd markdown-preview.nvim
-    brew install yarn # if you have yarn, you can skip this command
     yarn install
     yarn build
    ```

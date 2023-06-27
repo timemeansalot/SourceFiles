@@ -18,7 +18,7 @@ RISCV 5 级流水线“取指”部分设计
 
 ### 果壳
 
-![nutshell_if](/Users/fujie/Pictures/typora/IF/nutshell_if.jpg)
+![image-20230627130147655](https://s2.loli.net/2023/06/27/cVzHaL2BuUrMJQv.png)
 
 1. 取指
 
@@ -34,7 +34,7 @@ RISCV 5 级流水线“取指”部分设计
 
    1. 默认 PC+8
    2. BTB：512 entry，每个 entry 的数据如下图所示： -> JAL, JALR
-      <img src="/Users/fujie/Pictures/typora/image-20230329100629799.png" alt="image-20230329100629799" style="zoom:67%;" />
+      ![image-20230627130221058](https://s2.loli.net/2023/06/27/pP3GTXNriet15Ec.png)
    3. RAS：16 entry, 每个 entry 是 32bit 的 PC 地址 -> call, ret
    4. PHT: 512entry，每个 entry 是 2bit 预测器-> 处理条件分支指令(B-Type Instructions)
 
@@ -58,8 +58,6 @@ RISCV 5 级流水线“取指”部分设计
 
 ### 蜂鸟低功耗处理器核
 
-<img src="/Users/fujie/Pictures/typora/IF/EBirt2StagePipeline.jpg" alt="EBirt2StagePipeline" style="zoom:50%;" />
-
 ![e203 storage system](https://s2.loli.net/2023/04/06/EIQD1LbWTl7OvGy.png)
 
 1. 采用 ITCM
@@ -73,16 +71,16 @@ RISCV 5 级流水线“取指”部分设计
 
    - leftover buffer,  
      蜂鸟采用 leftover buffer 来实现指令对齐，存储指令的高 16bits 到 leftover buffer：连续取指的时候，1 个 cycle 可以解决指令不对齐问题；非连续取指的时候，必须 2 个 cycle 才可以解决指令不对齐问题
-     <img src="/Users/fujie/Pictures/typora/IF/leftover buffer.svg" alt="leftover buffer" style="zoom: 67%;" />
+     ![image-20230627130320584](https://s2.loli.net/2023/06/27/E5l3Lv1VtTP4cwI.png)
    - 2 bank SRAM
 
-     <img src="/Users/fujie/Pictures/typora/IF/2bankSram.svg" alt="2bankSram" style="zoom: 70%;" />
+     ![image-20230627130610648](https://s2.loli.net/2023/06/27/D5VAzyJ6pO49sd7.png)
 
 3. 蜂鸟支持 C 压缩指令集，因此它需要考虑指令对齐的问题(16bit 和 32bit 的指令混合存储在 I-memory 中)
    - RISCV 指令格式：32bit 的指令，其低 2bit 一定是 11；否则是 16bit 的指令
    - 如果只支持 32bits 的指令，则可以默认取指地址低 2bit 为 00（默认指令恒 4B 对齐）
 4. 蜂鸟 EXE 级在遇到<u>分支预测错误、trap</u>的时候，都会触发重定向，会返回给 IF
-   <img src="/Users/fujie/Pictures/typora/IF/ebirtCommit.jpg" alt="ebirtCommit" style="zoom:50%;" />
+   ![image-20230627130908630](https://s2.loli.net/2023/06/27/SiUlO7ZA83y2D5p.png)
 
    - BP 错误：条件跳转指令的结果由 EXE 级的 ALU 计算得到
    - CSR: 蜂鸟只支持机器模式、没有虚拟地址不存在 page 缺失相关的异常
@@ -94,7 +92,7 @@ RISCV 5 级流水线“取指”部分设计
 > 取指阶段主要需要解决的问题是：<u>PC 重定向、指令对齐</u>
 
 1. PC -> I-Memory -> Instruction: 一共有 2 个 cycle 的 delay，需要保证 PC 和 instruction 在流水线上是匹配的，在代码里使用了一个额外的`pc_delay`寄存器来提供额外一个 cycle 的 PC 延迟
-   ![if_id_sbp](/Users/fujie/Pictures/typora/IF/if_id_sbp.svg)
+   ![image-20230627131000094](https://s2.loli.net/2023/06/27/hsogZdXDfIykOTw.png)
 
 2. 当流水线刷新之后，新地址对应的指令在 2 个 cycle 之后送到 ID Stage ，因此其后续两个 cycle 的指令都是无效指令，看作 2 条 nop 指令
 
@@ -106,7 +104,6 @@ RISCV 5 级流水线“取指”部分设计
      							(taken_d_i == 1'b1) ? redirection_d_i : pc_register;
    ```
 
-   ![flushID](/Users/fujie/Pictures/typora/IF/flushID.svg)
 
 ### PC 重定向
 
@@ -128,17 +125,15 @@ RISCV 5 级流水线“取指”部分设计
 
 2. ID 采用静态分支预测，如果解码判断是分支指令，会计算 target PC  
    不会冲刷流水线
-   ![redirection_ID](/Users/fujie/Pictures/typora/IF/redirection_ID.svg)
+   ![image-20230627131128707](https://s2.loli.net/2023/06/27/B5KJ7oQVm4SY3a6.png)
 3. EXE 的 ALU 会对条件分支指令的结果进行判断，如果 ID 判断错误，EXE 会产生重定向 PC  
    冲刷 1 条流水线
-   ![redirection_EXE](/Users/fujie/Pictures/typora/IF/redirection_EXE.svg)
+   ![image-20230627131140165](https://s2.loli.net/2023/06/27/EUNcdCjw3Q12Mgh.png)
 4. MEM 的 CSR 单元会判断 trap 是否发生，如果发生 EXE 也会产生重定向 PC  
    冲刷 2 条流水线
-   ![redirection_MEM](/Users/fujie/Pictures/typora/IF/redirection_MEM.svg)
+   ![image-20230627131150989](https://s2.loli.net/2023/06/27/zmbJUyurotLqQiN.png)
 
 ### 指令对齐
-
-![pipeline_scratch](/Users/fujie/Pictures/typora/IF/pipeline_scratch.svg)
 
 ITCM 占 64kB
 
@@ -197,7 +192,7 @@ ITCM 占 64kB
    2. EXE Stage 的 ALU 如果判断不跳转，需要将 IF 的取指地址更改为 pc_next_next,
       并且冲刷到 prediction_addr 取出的指令
 
-   ![sbp taken, alu not taken](/Users/fujie/Pictures/typora/IF/sbtTaluN.svg)
+   ![image-20230627131305174](https://s2.loli.net/2023/06/27/Ob1fdTnopXZYVmF.png)
 
 ### 方案 1
 
@@ -224,12 +219,12 @@ ITCM 占 64kB
 
 **核心思想**：在方案 1 的基础上，将 32bits 的 SRAM 拆分成 2 块 16bits 的 SRAM，这样取指的粒度从 4B 变成了 2B
 
-![](/Users/fujie/Pictures/typora/IF/method2.svg)
+![image-20230627131329377](https://s2.loli.net/2023/06/27/3YviMgsdQ8Zx1fH.png)
 
 1. 整数指令对齐：利用 2 back SRAM 来处理非对齐地址，取指的时候，根据 addr 是否 4B 对齐，分为两种情况
    1. addr 是 4B 对齐：`instr={Left[addr>>2], Right[addr>>2]}`, 如图 pc==8 的情况
    2. addr 是 2B 对齐：`instr={Left[Right[addr>>2+1], Left[addr>>2]}`，如图 pc==2 的情况
-      ![](/Users/fujie/Pictures/typora/IF/method2Sram.svg)
+      ![image-20230627131344666](https://s2.loli.net/2023/06/27/K3c12ZuPn7vH9JX.png)
 2. 压缩指令判断，由于不存在 leftover buffer，判断压缩指令与整数指令，只需要看 instr[1:0]即可,
    上图中红色部分就是在 ID 阶段通过比较指令最低 2bits 来判断指令是否是压缩指令
 
@@ -268,7 +263,7 @@ ITCM 占 64kB
 
 > Q: 是否 4\*16 的 FIFO 也能保证没有 overflow?
 
-![](/Users/fujie/Pictures/typora/IF/method3.svg)
+![image-20230627131400942](https://s2.loli.net/2023/06/27/JaVN9chLMnCQklm.png)
 
 1. 整数指令对齐：取指逻辑跟方案 2 相同，差别在于：
    1. 取出的指令放到 FIFO 中，而不是放到 IF/ID pipeline register 中
@@ -314,7 +309,7 @@ ITCM 占 64kB
 
 ### 取指时可能更新的 PC 值
 
-![redirectionSrc](/Users/fujie/Pictures/typora/IF/redirectionSrc.svg)
+![image-20230627131422562](https://s2.loli.net/2023/06/27/sVIvNR3qoMp9TPy.png)
 
 IF Stage 可能的取指地址有如下一些情况，其优先级：`TOP > EXE > ID > IF`
 
@@ -332,8 +327,6 @@ IF Stage 可能的取指地址有如下一些情况，其优先级：`TOP > EXE 
      4. debug 发生时，需要跳到 debug 对应地址
 
      > PS: 根据 CSR 设计不同，上述四个 addr 可能会存在相同的情况
-
-![](/Users/fujie/Pictures/typora/IF/compress_with_pc.svg)
 
 
 ![verification](https://s2.loli.net/2023/06/01/NrQDle4aohYsRmc.png)
