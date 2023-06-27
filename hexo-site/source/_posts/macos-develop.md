@@ -94,6 +94,25 @@ Make sure **you have good internet connection** before you want to config nvim, 
 6. install picgo_core: picgo is a picture upload tool to easy upload your picture to image bed.
    nvim is configed to support picgo, we need to install picgo core to support picgo on sysetm,
    follow [this guide](https://github.com/askfiy/nvim-picgo) to install picgo_core.
+   ```bash
+    npm install picgo -g # install picgo-core
+    # set uploader
+    picgo set uploader
+   ```
+   the config file ins under `~/.picgo/config.json`, my config file is showing below:
+   ```json
+        {
+          "picBed": {
+            "uploader": "smms",
+            "current": "smms",
+            "smms": {
+              "token": "vPkuQrDtSvj0nXrKgRTQbJqRoxP1msR2",
+              "backupDomain": "smms.app"
+            }
+          },
+          "picgoPlugins": {}
+        }
+   ```
 7. formatter: markdown formatter need to start null-ls LSP, and null-ls need you to install prettier on you Mac:
    `brew install prettier`
 
