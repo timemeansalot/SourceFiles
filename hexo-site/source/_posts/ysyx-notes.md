@@ -82,9 +82,14 @@ _Finish Time: Wed Jun 28 17:43:42 CST 2023_.
    - [x] 系统监控 - jobs, ps, top, kill, free, dmesg, lsof
 5. 🌟 做 PA 以及通过 Git 记录自己的提交过程，请参考[YSYX 给的提交规范](https://ysyx.oscc.cc/docs/ics-pa/0.6.html)
 
+6. 根据[YSYX Getting Source Code for PAs](https://ysyx.oscc.cc/docs/ics-pa/0.6.html#getting-source-code)
+   从 Github 上克隆 PA 的仓库，并且开始 PA0
+
 ### PA1 学习记录
 
-PA1 的[YSYX 课程主页](https://ysyx.oscc.cc/docs/ics-pa/PA1.html)，个人认为 PA1 的主要内容如下所示：
+PA1 的[YSYX 课程主页](https://ysyx.oscc.cc/docs/ics-pa/PA1.html)，PA1 的最终目标是为了实现 NEMU，
+NEMU 是一个硬件模拟器，可以让其他程序在 NEMU 上运行。
+个人认为 PA1 的主要内容如下所示：
 
 1. 开始 PA1 之前保存 PA0 的 Git 记录:
    ```bash
@@ -93,6 +98,7 @@ PA1 的[YSYX 课程主页](https://ysyx.oscc.cc/docs/ics-pa/PA1.html)，个人�
    git merge pa0                                      # merge PA0
    git checkout -b pa1                                # 创建并且切换到新分支PA1
    ```
+2. 使用`make`编译程序、使用`ccache`来缓存编译的中间文件从而节省编译的时间
 
 ## 数字电路基础实验
 
