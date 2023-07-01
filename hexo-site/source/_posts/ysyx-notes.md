@@ -29,9 +29,10 @@ tags:
 
 - 安装 Linux，完成[PA0](https://ysyx.oscc.cc/docs/ics-pa/PA0.html), _[PA](https://ysyx.oscc.cc/docs/ics-pa/)
   是 programming assignment 的缩写_
-- 熟悉 Linux 的操作、基础命令
-- 配置 Veriloator 环境，为后续处理器开发做准备
-- 学习 C 语言、学习程序编译、链接、加载相关的知识
+- TBD: 熟悉 Linux 的操作、基础命令
+- TBD: 配置 Veriloator 环境，为后续处理器开发做准备
+- TBD: 学习 C 语言、学习程序编译、链接、加载相关的知识
+- TBD: 学习 GDB 使用，参考[ysyx: Learning to use basic tools](https://ysyx.oscc.cc/docs/ics-pa/0.5.html#learning-to-use-basic-tools)
 - 学习数字电路相关的基础知识，完成[PA1](https://ysyx.oscc.cc/docs/ics-pa/PA1.html)
 
 1. 学会提问, 安装 Linux: PASS

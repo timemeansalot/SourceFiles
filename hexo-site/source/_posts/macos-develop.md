@@ -82,7 +82,7 @@ Make sure **you have good internet connection** before you want to config nvim, 
 3. install all plugins: `cd ~/.config/nvim/lua/user && nvim plugins.lua`
    <u>Save the file</u>, nvim will **auto install** all the plugins.
 4. in nvim, use `TSUpdateSync` to install treesitter plugins.
-5. config markdown-preview: markdown-preview can let you see your markdown file **render** effect in neovim, 
+5. config markdown-preview: markdown-preview can let you see your markdown file **render** effect in neovim,
    make sure you have `node` and `yarn` installed.
    ```bash
     cd ~/.local/share/nvim/site/pack/packer/start/
@@ -101,17 +101,17 @@ Make sure **you have good internet connection** before you want to config nvim, 
    ```
    the config file ins under `~/.picgo/config.json`, my config file is showing below:
    ```json
-        {
-          "picBed": {
-            "uploader": "smms",
-            "current": "smms",
-            "smms": {
-              "token": "vPkuQrDtSvj0nXrKgRTQbJqRoxP1msR2",
-              "backupDomain": "smms.app"
-            }
-          },
-          "picgoPlugins": {}
-        }
+   {
+     "picBed": {
+       "uploader": "smms",
+       "current": "smms",
+       "smms": {
+         "token": "vPkuQrDtSvj0nXrKgRTQbJqRoxP1msR2",
+         "backupDomain": "smms.app"
+       }
+     },
+     "picgoPlugins": {}
+   }
    ```
 7. formatter: markdown formatter need to start null-ls LSP, and null-ls need you to install prettier on you Mac:
    `brew install prettier`
@@ -156,7 +156,8 @@ Follow this [guid](https://www.josean.com/posts/tmux-setup) to config tmux.
 
 ## IDE
 
-1. vscode
+1. vscode: to enable vim plugin `i,j,k,l` continue move in vscode, type this command in your terminal:
+   `defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool true`
 2. idea
 
 ## Config Python env using Miniconda
@@ -218,9 +219,10 @@ Follow this [guid](https://www.josean.com/posts/tmux-setup) to config tmux.
 
 2. mill: Chisel build tool, faster than sbt, but takes more disk space, using `brew install mill` to install mill.  
    After installation, you can use `mill version` to check if mill is correctly installed. There are many ways to install mill on mac.
+
    - `brew install mill`, this will install the latest version of mill
-   - `sh -c "curl -L https://github.com/com-lihaoyi/mill/releases/download/0.9.8/0.9.8 > /usr/local/bin/mill && chmod +x /usr/local/bin/mill"`, 
-      this will install mill version 0.9.8, it's the mill version used by **XiangShan** group.
+   - `sh -c "curl -L https://github.com/com-lihaoyi/mill/releases/download/0.9.8/0.9.8 > /usr/local/bin/mill && chmod +x /usr/local/bin/mill"`,
+     this will install mill version 0.9.8, it's the mill version used by **XiangShan** group.
 
 3. follow [chisel-bootcamp guide](https://github.com/freechipsproject/chisel-bootcamp/blob/master/Install.md) to install jupyter and scala kernel for python.
 
