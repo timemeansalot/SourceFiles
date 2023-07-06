@@ -1,13 +1,52 @@
 ---
-title: MacOS搭建开发和学习环境
+title: MacOS and Linux搭建开发和学习环境
 date: 2023-06-20 22:13:57
 tags: Tools
 ---
 
-MacOS 下搭建开发环境如：Python, Scala, Verilog, etc;
+MacOS and Linux 下搭建开发环境如：Python, Scala, Verilog, etc;
 学习环境如：LaTex, WPS and other mac handy tools
 
 <!--more-->
+
+# Ubuntu 22.04 config notes
+
+## Typing tools: nvim, tmux and terminal
+
+1. Nvim: Nvim is advanced-vim, on ubuntu you can use command ~~`sudo apt install neovim`~~ to install nvim.
+   **Important**: make sure the neovim version is $\ge$ 0.8. <- you can download Neovim source file and extract it,
+   link the `nvim` executable file to `/usr/bin`.
+2. Tmux: tmux can allow you to manage your terminal windows quickly, you can use command `sudo apt install tmux` to install it.
+   All tmux config is in the file `~/.tmux.config`,
+   [this link](https://github.com/timemeansalot/env_config/blob/main/tmux/.tmux.conf) is my config for tmux.
+3. Terminal: the Ubuntu default terminal is not true color and has many bug when using tmux. So we have to use a third party
+   terminal. I am using `wezterm` to replace the default ternimal. It's a cross plateform terminal.  
+   You can go to [their github page](https://github.com/wez/wezterm) to download it.  
+   Besides, wezterm config is in `~/.wezterm.lua`, [this website](https://wezfurlong.org/wezterm/config/files.html)
+   is the config demo for wezterm.
+
+## sogou input
+
+Just go to the sogou input [website](), they provided detailed installation guide. **BUT** sogou input works unstable on my Ubuntu.
+For example, sogou can't work with `zsh`, `wezterm`, etc. You have to make your default shell to be `bash`, if you make your
+default shell to be `zsh`, sogou input cannot type Chinese!
+
+## Coding Tools
+
+TODO: add installation guide in the future
+
+1. C++ and C
+   - gcc, g++
+   - make
+   - gdb
+2. Chisel:
+   - JRE
+   - Mill
+3. Verilog:
+   - Verilator
+4. Python
+   - Miniconda
+   - Jupyter
 
 # Step by step guide to setup your Macbook for coding and study
 
@@ -74,15 +113,16 @@ It's a better vim tool with a lot of config options.
 
 Make sure **you have good internet connection** before you want to config nvim, the config below will clone a lot of files from Githb.
 
-1. install neovim: `brew install neovim`
-2. config neovim
+1. install formatter `prettier`: `npm install -g prettier`
+2. install neovim: `brew install neovim`
+3. config neovim
    1. install `stow`: this is a tool for better manager git repos
    2. clone `.env_config` repo
    3. `cd .env_config && stow nvim`
-3. install all plugins: `cd ~/.config/nvim/lua/user && nvim plugins.lua`
+4. install all plugins: `cd ~/.config/nvim/lua/user && nvim plugins.lua`
    <u>Save the file</u>, nvim will **auto install** all the plugins.
-4. in nvim, use `TSUpdateSync` to install treesitter plugins.
-5. config markdown-preview: markdown-preview can let you see your markdown file **render** effect in neovim,
+5. in nvim, use `TSUpdateSync` to install treesitter plugins.
+6. config markdown-preview: markdown-preview can let you see your markdown file **render** effect in neovim,
    make sure you have `node` and `yarn` installed.
    ```bash
     cd ~/.local/share/nvim/site/pack/packer/start/
@@ -91,7 +131,7 @@ Make sure **you have good internet connection** before you want to config nvim, 
     yarn install
     yarn build
    ```
-6. install picgo_core: picgo is a picture upload tool to easy upload your picture to image bed.
+7. install picgo_core: picgo is a picture upload tool to easy upload your picture to image bed.
    nvim is configed to support picgo, we need to install picgo core to support picgo on sysetm,
    follow [this guide](https://github.com/askfiy/nvim-picgo) to install picgo_core.
    ```bash
@@ -113,7 +153,7 @@ Make sure **you have good internet connection** before you want to config nvim, 
      "picgoPlugins": {}
    }
    ```
-7. formatter: markdown formatter need to start null-ls LSP, and null-ls need you to install prettier on you Mac:
+8. formatter: markdown formatter need to start null-ls LSP, and null-ls need you to install prettier on you Mac:
    `brew install prettier`
 
 ## Tmux
