@@ -1,5 +1,5 @@
 ---
-title: 付杰周报-20230701
+title: 付杰周报-20230708
 date: 2023-03-08 14:45:34
 tags: RISC-V
 ---
@@ -115,7 +115,7 @@ tags: RISC-V
    - 不同于用verilog写的testbench，Difftest框架里初始化都是通过c函数来将编译好的二进制文件读入内存的。
      - 在Difftest代码里，定义了一块内存`pmem`用于存储MCU_Core的指令
      - 通过load_img函数来初始化pmem，实现I-Memory的初始化；在verilog写的testbench中，我们是通过readmemh函数来读入二进制文件到内存的
-       - 在verilog文件中，**指令的读取是通过DPI-C函数，读取`pmem`对应地址的值**；在verilog写的testbench中，指令的读取是直接通过`assign instr = i-memory[addr];`来实现的
+     - 在verilog文件中，**指令的读取是通过DPI-C函数，读取`pmem`对应地址的值**；在verilog写的testbench中，指令的读取是直接通过`assign instr = i-memory[addr];`来实现的
 
    ![image-20230707211024214](https://s2.loli.net/2023/07/07/adIbS1DR5uxBA4r.png)
 

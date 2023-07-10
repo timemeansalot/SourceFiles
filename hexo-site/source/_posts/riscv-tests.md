@@ -783,8 +783,6 @@ RISC-V 处理器验证
 3. 目前由于没有CSR模块，其实我们的MCU_Core的状态仅有**“PC+Register”**表征，因此Difftest框架只需要在指令提交之后比较PC跟Register即可。
    <u>Difftest核心思想：MCU_Core执行一条指令->Reference Model执行一条指令->比较二者的状态(PC + Register)</u>
 
-
-
 > 因此选择了“石峰提供的Difftest”版本，这是他之前做YSYX时接入的Difftest，其实现的效果是：将他设计的单周期RISC-V处理器接入到Difftest框架中，比较其每次提交指令后，Register是否跟Reference Model相同，比较符合我们目前的测试需求，接入的难度相当于接入最新版本的Difftest也更加可控。
 
 ## 接入Difftest框架做的修改
@@ -826,13 +824,13 @@ RISC-V 处理器验证
    static void execute(uint64_t n) {
      for (;n > 0; n --) {
        g_nr_guest_inst ++;
-   
+
        printf("Top: instr = 0x%x\n", top->instr);
        printf("ID Stage: id_instr=0x%x, opcode = %d, src1 = 0x%x, src2 = 0x%x, wb_src= %d\n", top->id_instr, top->op_code, top->src1, top->src2, top->wb_src);
        printf("EXE stage: alu_result = 0x%x\n", top->alu_result);
-       printf("WB Stage: wb_en=%d, idx=%d, data=%x\n", top->wb_en, 
+       printf("WB Stage: wb_en=%d, idx=%d, data=%x\n", top->wb_en,
               top->wb_idx, top->wb_data);
-   
+
    ```
 
    ```bash
@@ -865,7 +863,7 @@ RISC-V 处理器验证
    经过分析发现，我们的MCU_Core不论指令流是何种情况，其在写入Register的时候，都会有wb_en信号为高，因此**我们在top中加入该信号，并且在Difftest中根据该信号来控制Reference Model执行和Difftest比较**。
 
    ```c
-   // difftest/csrc/cpu_exec.c   
+   // difftest/csrc/cpu_exec.c
    /* difftest begin */
    cpu.pc = top->pc; // pc存入cpu结构体
    dump_gpr(); // 寄存器值存入cpu结构体
@@ -880,7 +878,7 @@ RISC-V 处理器验证
    - 不同于用verilog写的testbench，Difftest框架里初始化都是通过c函数来将编译好的二进制文件读入内存的。
      - 在Difftest代码里，定义了一块内存`pmem`用于存储MCU_Core的指令
      - 通过load_img函数来初始化pmem，实现I-Memory的初始化；在verilog写的testbench中，我们是通过readmemh函数来读入二进制文件到内存的
-       - 在verilog文件中，**指令的读取是通过DPI-C函数，读取`pmem`对应地址的值**；在verilog写的testbench中，指令的读取是直接通过`assign instr = i-memory[addr];`来实现的
+     - 在verilog文件中，**指令的读取是通过DPI-C函数，读取`pmem`对应地址的值**；在verilog写的testbench中，指令的读取是直接通过`assign instr = i-memory[addr];`来实现的
 
    ![image-20230707211024214](https://s2.loli.net/2023/07/07/adIbS1DR5uxBA4r.png)
 
@@ -888,26 +886,24 @@ RISC-V 处理器验证
 
    ```verilog
    import "DPI-C" function void set_gpr_ptr(input logic [63:0] a []); // add DPI-C function
-   module regfile 
+   module regfile
        (
        input  wire                              clk_i,
        input  wire                              resetn_i,
-   
+
        output wire    [REG_DATA_WIDTH-1 :0]     rs1_data_o, // rd1
        //....
        );
    	//.....
        // regfile其余部分均保持不变即可
        //.....
-   
+
        initial set_gpr_ptr(regfile_data); // <- 使用该DPI-C函数将mcu_core的register状态传递给Difftest模块
-       
+
    endmodule
    ```
 
    ![image-20230707210809687](https://s2.loli.net/2023/07/07/hjYRv8Ps32GOZTV.png)
-
-   
 
 ## MCU_Core接入Difftest结果
 
@@ -920,6 +916,7 @@ RISC-V 处理器验证
    ![image-20230707210602556](https://s2.loli.net/2023/07/07/nmXbVy69HxjOtwJ.png)
 
 2. 也会预先研究如何在Difftest中测试一些复杂事件的比较，例如Trap、CSR比较
+
 ## References
 
 1. [RISC-V 及 RISC-V core compliance test 简析](https://zhuanlan.zhihu.com/p/232088281)
