@@ -18,7 +18,7 @@ tags: RISC-V
 3. 目前由于没有CSR模块，其实我们的MCU_Core的状态仅有**“PC+Register”**表征，因此Difftest框架只需要在指令提交之后比较PC跟Register即可。
    <u>Difftest核心思想：MCU_Core执行一条指令->Reference Model执行一条指令->比较二者的状态(PC + Register)</u>
 
-> 因此选择了“石峰提供的Difftest”版本，这是他之前做YSYX时接入的Difftest，其实现的效果是：将他设计的单周期RISC-V处理器接入到Difftest框架中，比较其每次提交指令后，Register是否跟Reference Model相同，比较符合我们目前的测试需求，接入的难度相当于接入最新版本的Difftest也更加可控。
+> 因此选择了“老版本的Difftest”版本，其实现的效果是：将单周期RISC-V处理器接入到Difftest框架中，比较其每次提交指令后，Register是否跟Reference Model相同，比较符合我们目前的测试需求，接入的难度相当于接入最新版本的Difftest也更加可控。
 
 # 接入Difftest框架做的修改
 

@@ -33,13 +33,12 @@ default shell to be `zsh`, sogou input cannot type Chinese!
 
 1. WPS一开始不支持搜狗中文输入法，按照[wps在Ubuntu下可以中文输入的方法](https://blog.csdn.net/zaf0516/article/details/95769751)进行修复，主要是：
    方法一：在`/usr/bin/wps, /usr/bin/et, /usr/bin/wpp`三个文件一开始添加
-    ```bash 
-    #fcitx
-    export XMODIFIERS="@im=fcitx"
-    export QT_IM_MODULE="fcitx"
-    ```
-   方法二：直接在环境变量里面配置上述两行代码，就可以在所有的应用里输入中文啦 
-
+   ```bash
+   #fcitx
+   export XMODIFIERS="@im=fcitx"
+   export QT_IM_MODULE="fcitx"
+   ```
+   方法二：直接在环境变量里面配置上述两行代码，就可以在所有的应用里输入中文啦
 
 ## Coding Tools
 
@@ -132,7 +131,14 @@ Make sure **you have good internet connection** before you want to config nvim, 
 4. install all plugins: `cd ~/.config/nvim/lua/user && nvim plugins.lua`
    <u>Save the file</u>, nvim will **auto install** all the plugins.
 5. in nvim, use `TSUpdateSync` to install treesitter plugins.
-6. config markdown-preview: markdown-preview can let you see your markdown file **render** effect in neovim,
+6. telescope: this is a fuzzy finder, you have to install ripgrep to use telescope in nvim:
+   ```bash
+   # macos
+   brew install ripgrep
+   # ubuntu
+   sudo apt-get install ripgrep
+   ```
+7. config markdown-preview: markdown-preview can let you see your markdown file **render** effect in neovim,
    make sure you have `node` and `yarn` installed.
    ```bash
     cd ~/.local/share/nvim/site/pack/packer/start/
@@ -141,7 +147,13 @@ Make sure **you have good internet connection** before you want to config nvim, 
     yarn install
     yarn build
    ```
-7. install picgo_core: picgo is a picture upload tool to easy upload your picture to image bed.
+   if you have trouble running yarn install, you may have to reinstall yarn using npm:
+   ```bash
+       sudo apt remove cmdtest
+       sudo apt remove yarn
+       sudo npm install -g yarn
+   ```
+8. install picgo_core: picgo is a picture upload tool to easy upload your picture to image bed.
    nvim is configed to support picgo, we need to install picgo core to support picgo on sysetm,
    follow [this guide](https://github.com/askfiy/nvim-picgo) to install picgo_core.
    ```bash
@@ -163,7 +175,7 @@ Make sure **you have good internet connection** before you want to config nvim, 
      "picgoPlugins": {}
    }
    ```
-8. formatter: markdown formatter need to start null-ls LSP, and null-ls need you to install prettier on you Mac:
+9. formatter: markdown formatter need to start null-ls LSP, and null-ls need you to install prettier on you Mac:
    `brew install prettier`
 
 ## Tmux

@@ -1,6 +1,7 @@
 ---
 title: 一生一芯记录
 date: 2023-03-13 15:45:26
+top: true
 tags:
   - RISCV
   - YSYX
@@ -111,10 +112,34 @@ NEMU 是一个硬件模拟器，可以让其他程序在 NEMU 上运行。
 
 # S 阶段：专家阶段笔记
 
-
-# 第六期YSYX 
+# 第六期YSYX
 
 [项目介绍](https://ysyx.oscc.cc/project/project-intro.html#%E9%A1%B9%E7%9B%AE%E4%BA%AE%E7%82%B9)
 ![](https://ysyx.oscc.cc/res/images/project-intro-total-2.jpg)
 学习路线：
 ![](https://ysyx.oscc.cc/res/images/project-intro-route.jpg)
+
+## 阅读资料
+
+### 预学习
+
+1. 如何科学的提问
+   - [ ] [别像弱智一样提问](https://github.com/tangx/Stop-Ask-Questions-The-Stupid-Ways/blob/master/README.md)
+   - [ ] [提问的智慧](https://github.com/ryanhanwu/How-To-Ask-Questions-The-Smart-Way/blob/main/README-zh_CN.md)
+2. Linux系统安装和基本使用
+   - [ ] [Linux 101](https://101.ustclug.org/Ch01/)：中国科学技术大学 Linux 用户协会发起的Linux101
+3. 复习C语言
+   - [ ] [Linux C编程一站式学习open in new window](http://akaedu.github.io/book/)
+   - [ ] [The C programming language (2nd Edition)open in new window](http://math.ecnu.edu.cn/~jypan/Teaching/ParaComp/books/The C Programming Language 2nd.pdf): 真正的C语言之父是这本书的作者[Dennis M. Ritchieopen in new window](http://en.wikipedia.org/wiki/Dennis_Ritchie), 而不是谭浩强
+   - [ ] [SEI CERT C Coding Standardopen in new window](https://wiki.sei.cmu.edu/confluence/display/c/SEI+CERT+C+Coding+Standard)
+   - [ ] [Learn C the hard wayopen in new window](https://www.cntofu.com/book/25/index.html)中文版：C语言入门必做题练习0到练习18， 练习32，练习33，练习42，练习44 需要完成编程算法以及附加题.
+
+## PA 阅读资料
+
+### PA0
+
+- [ ] [Linux入门教程 by jyy](https://ysyx.oscc.cc/docs/ics-pa/linux.html)
+- [ ] [鸟哥的Linux私房菜](https://linux.vbird.org/linux_basic/)
+- [ ] [man快速入门](https://ysyx.oscc.cc/docs/ics-pa/man.html)
+- [ ] [GDB guide](https://www.cprogramming.com/gdb.html)
+- [ ] [The Missing Semester of Your CS Education](https://missing.csail.mit.edu/)
