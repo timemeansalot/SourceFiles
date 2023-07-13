@@ -31,7 +31,7 @@ VGA相关笔记
 
 4. 时序
 
-   ![VGA时序](../../../../../../Pictures/typora/image-20230712191804710.png)
+   ![VGA时序](https://s2.loli.net/2023/07/13/bLzAfZvM8YgURuo.png)
 
    Hor Scan Time是一个扫描周期，它会先扫描到Hor Sync、再扫描Hor Back Porch，然后才进入有效显示区Hor Active Video，最后是一段Hor Front Porch；可以看出来，四段区间只有Hor Active Video这一段是能够正常显示图像信息的，也就是屏幕上显示的那一块区间
 
@@ -39,7 +39,7 @@ VGA相关笔记
 
    - 分辨率
 
-     ![image-20230711113651677](../../../../../../Pictures/typora/image-20230711113651677.png)
+     ![image-20230711113651677](https://s2.loli.net/2023/07/13/F8OE2iUr74nHxuK.png)
 
    - 刷新频率：行扫描周期 _ 场扫描周期 _ 刷新频率 = 时钟频率
 
@@ -51,7 +51,7 @@ VGA相关笔记
      840 _ 500 _ 75 = 31,500,000 = 31.5MHz
      
      ![VESA and Industry Standards and Guidelines
-     for Computer Display Monitor Timing (DMT)](../../../../../../Pictures/typora/image-20230712191553709.png)
+     for Computer Display Monitor Timing (DMT)](https://s2.loli.net/2023/07/13/c5HDeym6pquUBYT.png)
 
 5. VGA基础知识
 
@@ -70,7 +70,7 @@ VGA相关笔记
 
 > 在640x480 VGA 显示器上显示时间的简单项目
 
-![image-20230712192126069](../../../../../../Pictures/typora/image-20230712192126069.png)
+![image-20230712192126069](https://s2.loli.net/2023/07/13/lJLxqWwBAD49j2F.png)
 
 只实现了**640x480**分辨率的VGA Controller，然后基于该VGA Controller实现了*时钟显示的应用*
 
@@ -219,21 +219,21 @@ endmodule
 | 考核标准   |      |
 | ---------- | ---- |
 | 可读性     | 5    |
-| 可配置性   | 5    |
+| 可配置性   | 4    |
 | 功能正确性 | 5    |
 | 易用性     | 4    |
 
 
 
-![image-20230713110232004](../../../../../../Pictures/typora/image-20230713110232004.png)
+![image-20230713110232004](https://s2.loli.net/2023/07/13/tYG5xCX3ypM6F8L.png)
 
-![image-20230713110138494](../../../../../../Pictures/typora/image-20230713110138494.png)
+![image-20230713110138494](https://s2.loli.net/2023/07/13/rHQUsAGiDJP6ujf.png)
 
 
 
 ## [vga_lcd](https://github.com/freecores/vga_lcd)
 
-<img src="../../../../../../Pictures/typora/image-20230713113742671.png" alt="image-20230713113742671" style="zoom: 25%;" />
+<img src="https://s2.loli.net/2023/07/13/NFyegRCiTvaLcnl.png" alt="image-20230713113742671" style="zoom: 25%;" />
 
 该项目有以下特点：
 
