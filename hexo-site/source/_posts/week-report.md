@@ -18,13 +18,11 @@ tags: RISC-V
 3. 目前由于没有CSR模块，其实我们的MCU_Core的状态仅有**“PC+Register”**表征，因此Difftest框架只需要在指令提交之后比较PC跟Register即可。
    <u>Difftest核心思想：MCU_Core执行一条指令->Reference Model执行一条指令->比较二者的状态(PC + Register)</u>
 
-
-
 > 因此选择了“石峰提供的Difftest”版本，这是他之前做YSYX时接入的Difftest，其实现的效果是：将他设计的单周期RISC-V处理器接入到Difftest框架中，比较其每次提交指令后，Register是否跟Reference Model相同，比较符合我们目前的测试需求，接入的难度相当于接入最新版本的Difftest也更加可控。
 
 # 接入Difftest框架做的修改
 
-![image-20230707211721928](../../../../../../Pictures/typora/image-20230707211721928.png)
+![image-20230707211721928](https://s2.loli.net/2023/07/12/FPkCghplBJEYzTA.png)
 
 为了将MCU_Core接入到Difftest框架，主要做了如下修改：
 
@@ -61,13 +59,13 @@ tags: RISC-V
    static void execute(uint64_t n) {
      for (;n > 0; n --) {
        g_nr_guest_inst ++;
-   
+
        printf("Top: instr = 0x%x\n", top->instr);
        printf("ID Stage: id_instr=0x%x, opcode = %d, src1 = 0x%x, src2 = 0x%x, wb_src= %d\n", top->id_instr, top->op_code, top->src1, top->src2, top->wb_src);
        printf("EXE stage: alu_result = 0x%x\n", top->alu_result);
-       printf("WB Stage: wb_en=%d, idx=%d, data=%x\n", top->wb_en, 
+       printf("WB Stage: wb_en=%d, idx=%d, data=%x\n", top->wb_en,
               top->wb_idx, top->wb_data);
-   
+
    ```
 
    ```bash
@@ -100,7 +98,7 @@ tags: RISC-V
    经过分析发现，我们的MCU_Core不论指令流是何种情况，其在写入Register的时候，都会有wb_en信号为高，因此**我们在top中加入该信号，并且在Difftest中根据该信号来控制Reference Model执行和Difftest比较**。
 
    ```c
-   // difftest/csrc/cpu_exec.c   
+   // difftest/csrc/cpu_exec.c
    /* difftest begin */
    cpu.pc = top->pc; // pc存入cpu结构体
    dump_gpr(); // 寄存器值存入cpu结构体
@@ -110,39 +108,107 @@ tags: RISC-V
    /* difftest end */
    ```
 
-4. 在I-Memory中增加DPI-C函数实现I-Memory初始化
+4. 增加MCU的I-Memory的读取逻辑，从Difftest框架里读取指令、加载到MCU中
 
    - 不同于用verilog写的testbench，Difftest框架里初始化都是通过c函数来将编译好的二进制文件读入内存的。
      - 在Difftest代码里，定义了一块内存`pmem`用于存储MCU_Core的指令
+     
      - 通过load_img函数来初始化pmem，实现I-Memory的初始化；在verilog写的testbench中，我们是通过readmemh函数来读入二进制文件到内存的
+     
      - 在verilog文件中，**指令的读取是通过DPI-C函数，读取`pmem`对应地址的值**；在verilog写的testbench中，指令的读取是直接通过`assign instr = i-memory[addr];`来实现的
-
-   ![image-20230707211024214](https://s2.loli.net/2023/07/07/adIbS1DR5uxBA4r.png)
+     
+     - 在top文件中添加I-memory的`sram_output`、`mem_addr`端口，在进行Difftest的时候，通过这两个端口读取指令数据（而不是通过imemory模块读取指令数据）
+     
+       ```verilog
+       module pipelineIF
+       (
+           input wire        clk,
+           input wire        resetn,
+       	// ....
+       
+           // DIFFTEST
+           `ifdef DIFFTEST
+           input wire [31:0] imemory_output,
+           output wire [31:0] imem_addr,
+           `endif 
+           /* output signals to ID stage */
+           output wire [31:0] instruction_f_o
+       
+       );
+           `ifdef DIFFTEST
+           reg [31:0] sram_output_reg;
+           always @(posedge clk ) begin 
+               // delay one cycle because I-Memory has 1 cycle read delay but c function don't has delay
+               sram_output_reg <= imemory_output; 
+           end
+           // read I-Memory through DPI-C, TOOD: fix this reorder
+           assign sram_output = {sram_output_reg[15:0], sram_output_reg[31:16]}; 
+           assign imem_addr   = mem_addr;
+           assign if_ir = instruction_f_o;
+           `else
+       
+       
+           // I-Memory instance
+           imemory u_imemory(
+               //ports
+               .clk    		( clk    		),
+               .resetn 		( resetn 		),
+               .ceb    		( ~ceb    		),
+               .web    		( web    		),
+               .A      		( sram_addr  	),
+               .Q      		( sram_output  	) // read instruction from imemory in MCU
+           );
+           `endif
+           // ...
+       
+       endmodule
+       ```
+     
+     - 在c文件中，通过上述top文件的端口，实现从`pmem`读取指令、加载到IF Stage
+     
+       ![image-20230712153213765](https://s2.loli.net/2023/07/12/r1K576pbits3qCI.png)
+     
+       
 
 5. 在Register中增加DPI-C函数将CPU的register传递给Difftest模块
 
    ```verilog
    import "DPI-C" function void set_gpr_ptr(input logic [63:0] a []); // add DPI-C function
-   module regfile 
+   module regfile
        (
        input  wire                              clk_i,
        input  wire                              resetn_i,
-   
+
        output wire    [REG_DATA_WIDTH-1 :0]     rs1_data_o, // rd1
        //....
        );
    	//.....
        // regfile其余部分均保持不变即可
        //.....
-   
+
        initial set_gpr_ptr(regfile_data); // <- 使用该DPI-C函数将mcu_core的register状态传递给Difftest模块
-       
+
    endmodule
    ```
 
    ![image-20230707210809687](https://s2.loli.net/2023/07/07/hjYRv8Ps32GOZTV.png)
 
-   
+6. 修复函数 `dump_gpr` in `csrc/cpu_exec`
+   该函数的作用是利用DPI-C函数将MCU的registers的数值读取读取到c结构体里(cpu.gpr)，后续Difftest会比较该结构体的值跟Reference Model是否匹配.
+
+   运行Difftest的时候发现，cpu.gpr[i]的值，实际上对应的是寄存器r[i+1]，导致Difftest报错，因此将cpu_gpr[i]更改为cpu_gpr[i-1]。
+
+   ```c
+    uint64_t *cpu_gpr = NULL;
+    void set_gpr_ptr(const svOpenArrayHandle r) {
+      cpu_gpr = (uint64_t *)(((VerilatedDpiOpenVar*)r)->datap());
+    }
+    void dump_gpr() {
+      for (int i = 0; i < 32; i++) {
+        cpu.gpr[i] = cpu_gpr[i-1]; // i-1 to make index correct in DPI-C
+      }
+    }
+   ```
 
 # MCU_Core接入Difftest结果
 
@@ -155,3 +221,40 @@ tags: RISC-V
    ![image-20230707210602556](https://s2.loli.net/2023/07/07/nmXbVy69HxjOtwJ.png)
 
 2. 也会预先研究如何在Difftest中测试一些复杂事件的比较，例如Trap、CSR比较
+
+# 发现和修复的bug
+
+1. reset之后第一条指令的pc时序问题
+   - [x] bug已修复
+   
+   - bug描述：resetn触发之后，ID会强制跳转到初始PC，但是之前MCU初始PC是0x00000000，因此每次resetn之后pc跳转都会出错
+   
+   - bug修复：将resetn之后的redirection_d_o修复为0x80000000
+     ```verilog
+       // file: pipelineID.v
+       assign redirection_d_o = ({32{~resetn_delay | flush_i}} & 32'h80000000)|        // <- fix bug
+                                ({32{ptnt_e_i & ~branchJAL_o}} & pc_next)| // sbp taken, alu not taken
+                                ({32{ptnt_e_i &  branchJAL_o}} & redirection_pc)| // sbp taken, alu not taken, following by JAL
+                                ({32{ redirection_e_i}}  & redirection_pc_e_i)| // pc from EXE
+                                ({32{~redirection_e_i}}  & redirection_pc);  // pc from SBP
+     ```
+   
+2. MCU内存跟riscv内存存储方式不一致
+
+   - [ ] bug已修复
+
+   - bug描述：MCU跟Difftest的二进制程序，其大小端方向不一致，因此Difftest得到的镜像文件加载之后，需要调换其顺序才可以得到指令
+
+   - bug修复：跟MCU之前测试时二进制程序编译有关、跟Difftest二进制程序编译有关、跟MCU imemory设计有关
+
+     ![image-20230712170217686](https://s2.loli.net/2023/07/12/EHPlZIyu97b6ojk.png)
+
+3. NOP指令导致错误的`wb_en`
+
+   - [x] bug已修复
+
+   - bug描述：需要被冲刷的指令，其行为会被翻译成一条NOP指令，但是NOP指令本质上是`addi x0, x0, 0`，译码单元对于`addi`指令会判断其`wb_en=1`，因此当系统resetn出发时，其面几条NOP指令会导致`wb_en=1`，进而导致Difftest开始比较MCU跟Reference Model，进而导致比较失败
+
+   - bug修复：译码的时候，如果发现指令是NOP指令，则`wb_en=0`，即`assign wb_en_o = instruction_i != 32'h00000013;`
+
+     ![image-20230712171228993](https://s2.loli.net/2023/07/12/vE7Z2KzFRsWgcAL.png)

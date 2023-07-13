@@ -110,3 +110,11 @@ NEMU 是一个硬件模拟器，可以让其他程序在 NEMU 上运行。
 # A 阶段：进阶阶段笔记
 
 # S 阶段：专家阶段笔记
+
+
+# 第六期YSYX 
+
+[项目介绍](https://ysyx.oscc.cc/project/project-intro.html#%E9%A1%B9%E7%9B%AE%E4%BA%AE%E7%82%B9)
+![](https://ysyx.oscc.cc/res/images/project-intro-total-2.jpg)
+学习路线：
+![](https://ysyx.oscc.cc/res/images/project-intro-route.jpg)
