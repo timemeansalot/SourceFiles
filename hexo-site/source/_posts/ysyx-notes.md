@@ -131,6 +131,7 @@ NEMU 是一个硬件模拟器，可以让其他程序在 NEMU 上运行。
 3. 复习C语言
    - [ ] [Linux C编程一站式学习open in new window](http://akaedu.github.io/book/)
    - [ ] [The C programming language (2nd Edition)open in new window](http://math.ecnu.edu.cn/~jypan/Teaching/ParaComp/books/The C Programming Language 2nd.pdf): 真正的C语言之父是这本书的作者[Dennis M. Ritchieopen in new window](http://en.wikipedia.org/wiki/Dennis_Ritchie), 而不是谭浩强
+   - [ ] [GDB使用教程](http://akaedu.github.io/book/ch10s01.html)
    - [ ] [SEI CERT C Coding Standardopen in new window](https://wiki.sei.cmu.edu/confluence/display/c/SEI+CERT+C+Coding+Standard)
    - [ ] [Learn C the hard wayopen in new window](https://www.cntofu.com/book/25/index.html)中文版：C语言入门必做题练习0到练习18， 练习32，练习33，练习42，练习44 需要完成编程算法以及附加题.
 

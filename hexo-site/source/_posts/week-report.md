@@ -224,7 +224,28 @@ tags: RISC-V
 
 # 发现和修复的bug
 
+1. 每条指令与其对应的PC差了4
+
+   - [x] bug已修复
+
+   - bug描述：由ID Stage来保证每一条指令跟其对应的pc相匹配，但是当某条指令计算需要用到pc的值时，错误的将next_pc的值给了源操作数，导致结果大了4
+
+     ![image-20230714103303910](https://s2.loli.net/2023/07/14/Pq9FQUvcLDKTZIp.png)
+
+   - bug修复：将当前pc的值赋值给源操作数`rs1_d_o`
+
+     ```verilog
+     // pipelineID.v
+     else begin
+         // rs1_d_o <= pc_next; // alu source from pc+4
+         rs1_d_o <= pc_instr; // alu source from pc
+     end
+     ```
+
+   
+
 1. reset之后第一条指令的pc时序问题
+   
    - [x] bug已修复
    
    - bug描述：resetn触发之后，ID会强制跳转到初始PC，但是之前MCU初始PC是0x00000000，因此每次resetn之后pc跳转都会出错
@@ -239,11 +260,13 @@ tags: RISC-V
                                 ({32{~redirection_e_i}}  & redirection_pc);  // pc from SBP
      ```
    
-2. MCU内存跟riscv内存存储方式不一致
+3. MCU内存跟riscv内存存储方式不一致
 
    - [ ] bug已修复
 
    - bug描述：MCU跟Difftest的二进制程序，其大小端方向不一致，因此Difftest得到的镜像文件加载之后，需要调换其顺序才可以得到指令
+
+     > PS: riscv采用小端存放的格式，对于32bits的指令一条指令aabbccdd，其存储为ccddaabb
 
    - bug修复：跟MCU之前测试时二进制程序编译有关、跟Difftest二进制程序编译有关、跟MCU imemory设计有关
 
