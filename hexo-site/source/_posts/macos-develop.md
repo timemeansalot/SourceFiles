@@ -77,6 +77,7 @@ If you use Safari instead of Chrome, you can skip this part.
    website of chrome. Allow download from this website and you can download
    `googlechrome.dmg` under your download folder.
 2. Double click the install file, and you can finnaly install chrome on you MAC.
+3. if chrome can not show content right: `rm -rf ~/.config/google-chrome/Default/GPUCache`
 
 ## [Clashx](https://github.com/yichengchen/clashX/releases)
 

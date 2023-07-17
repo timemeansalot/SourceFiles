@@ -134,6 +134,15 @@ NEMU 是一个硬件模拟器，可以让其他程序在 NEMU 上运行。
    - [ ] [GDB使用教程](http://akaedu.github.io/book/ch10s01.html)
    - [ ] [SEI CERT C Coding Standardopen in new window](https://wiki.sei.cmu.edu/confluence/display/c/SEI+CERT+C+Coding+Standard)
    - [ ] [Learn C the hard wayopen in new window](https://www.cntofu.com/book/25/index.html)中文版：C语言入门必做题练习0到练习18， 练习32，练习33，练习42，练习44 需要完成编程算法以及附加题.
+4. 数字电路
+   - [ ] [南大数字实验](https://nju-projectn.github.io/dlco-lecture-note/index.html)
+         以下部分是必做题：
+     - 实验一 选择器
+     - 实验二 译码器和编码器
+     - 实验三 加法器与ALU
+     - 实验六 移位寄存器及桶形移位器
+     - 实验七 状态机及键盘输入
+   - [ ] [Chisel API](https://javadoc.io/doc/org.chipsalliance/chisel_2.13/latest/index.html)
 
 ## PA 阅读资料
 
