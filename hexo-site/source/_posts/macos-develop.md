@@ -34,11 +34,14 @@ default shell to be `zsh`, sogou input cannot type Chinese!
 1. WPS一开始不支持搜狗中文输入法，按照[wps在Ubuntu下可以中文输入的方法](https://blog.csdn.net/zaf0516/article/details/95769751)进行修复，主要是：
    方法一：在`/usr/bin/wps, /usr/bin/et, /usr/bin/wpp`三个文件一开始添加
    ```bash
-   #fcitx
-   export XMODIFIERS="@im=fcitx"
-   export QT_IM_MODULE="fcitx"
+    # sogou input 
+    export GTK_IM_MODULE=fcitx
+    export QT_IM_MODULE=fcitx
+    export XMODIFIERS="@im=fcitx"
    ```
    方法二：直接在环境变量里面配置上述两行代码，就可以在所有的应用里输入中文啦
+
+method 3: create a file `~/.xprofile` and add the above 3 codes
 
 ## Coding Tools
 
