@@ -11,6 +11,9 @@ MacOS and Linux 下搭建开发环境如：Python, Scala, Verilog, etc;
 
 # Ubuntu 22.04 config notes
 
+## wechat
+you have to install wine to install wechat, follow [this page](https://github.com/zq1997/deepin-wine) to install wine-wechat.  
+Then follow [this guide](https://blog.csdn.net/Hesye/article/details/111087096?spm=1001.2101.3001.6661.1&utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-111087096-blog-126085602.235%5Ev38%5Epc_relevant_sort&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-111087096-blog-126085602.235%5Ev38%5Epc_relevant_sort&utm_relevant_index=1) to solve wechat resolution problem.
 ## Typing tools: nvim, tmux and terminal
 
 1. Nvim: Nvim is advanced-vim, on ubuntu you can use command ~~`sudo apt install neovim`~~ to install nvim.
@@ -24,6 +27,8 @@ MacOS and Linux 下搭建开发环境如：Python, Scala, Verilog, etc;
    You can go to [their github page](https://github.com/wez/wezterm) to download it.  
    Besides, wezterm config is in `~/.wezterm.lua`, [this website](https://wezfurlong.org/wezterm/config/files.html)
    is the config demo for wezterm.
+
+   **Important:** I think `alacritty` terminal is more useful that wezterm!!! So I prefer you use alacritty instead of wezterm.
 
 ## sogou input
 

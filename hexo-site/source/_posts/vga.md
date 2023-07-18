@@ -15,54 +15,51 @@ VGA相关笔记
 
 [TOC]
 
-
-
 # VGA（Video Graphics Array）基础原理
 
 > 实际上，操作VGA的过程就是给你一块有横纵坐标范围的区域，区域上的每一个坐标点就是一个像素点，你可以做的事情是**给这个像素点特定的rgb色彩**.
 
 ## 历史背景
 
-1. IBM于1987年随PS/2机一起推出的一种使用模拟信号的视频传输标准
+1.  IBM于1987年随PS/2机一起推出的一种使用模拟信号的视频传输标准
 
-2. 不支持热插拔，不支持音频传输
+2.  不支持热插拔，不支持音频传输
 
-3. 信号：三原色（红绿蓝）、hsync、vsyn
+3.  信号：三原色（红绿蓝）、hsync、vsyn
 
-4. 时序
+4.  时序
 
-   ![VGA时序](https://s2.loli.net/2023/07/13/bLzAfZvM8YgURuo.png)
+    ![VGA时序](https://s2.loli.net/2023/07/13/bLzAfZvM8YgURuo.png)
 
-   Hor Scan Time是一个扫描周期，它会先扫描到Hor Sync、再扫描Hor Back Porch，然后才进入有效显示区Hor Active Video，最后是一段Hor Front Porch；可以看出来，四段区间只有Hor Active Video这一段是能够正常显示图像信息的，也就是屏幕上显示的那一块区间
+    Hor Scan Time是一个扫描周期，它会先扫描到Hor Sync、再扫描Hor Back Porch，然后才进入有效显示区Hor Active Video，最后是一段Hor Front Porch；可以看出来，四段区间只有Hor Active Video这一段是能够正常显示图像信息的，也就是屏幕上显示的那一块区间
 
-   VGA的时序参数跟**分辨率**以及**刷新频率**有关
+    VGA的时序参数跟**分辨率**以及**刷新频率**有关
 
-   - 分辨率
+    - 分辨率
 
-     ![image-20230711113651677](https://s2.loli.net/2023/07/13/F8OE2iUr74nHxuK.png)
+      ![image-20230711113651677](https://s2.loli.net/2023/07/13/F8OE2iUr74nHxuK.png)
 
-   - 刷新频率：行扫描周期 _ 场扫描周期 _ 刷新频率 = 时钟频率
+    - 刷新频率：行扫描周期 _ 场扫描周期 _ 刷新频率 = 时钟频率
 
-     640x480@60：
-     行扫描周期：800(像素)，场扫描周期：525(行扫描周期) 刷新频率：60Hz
-     800 _ 525 _ 60 = 25,200,000 ≈ 25.175MHz （误差忽略不计）
-     640x480@75：
-     行扫描周期：840(像素) 场扫描周期：500(行扫描周期) 刷新频率：75Hz
-     840 _ 500 _ 75 = 31,500,000 = 31.5MHz
-     
-     ![VESA and Industry Standards and Guidelines
-     for Computer Display Monitor Timing (DMT)](https://s2.loli.net/2023/07/13/c5HDeym6pquUBYT.png)
+           640x480@60：
+           行扫描周期：800(像素)，场扫描周期：525(行扫描周期) 刷新频率：60Hz
+           800 _ 525 _ 60 = 25,200,000 ≈ 25.175MHz （误差忽略不计）
+           640x480@75：
+           行扫描周期：840(像素) 场扫描周期：500(行扫描周期) 刷新频率：75Hz
+           840 _ 500 _ 75 = 31,500,000 = 31.5MHz
 
-5. VGA基础知识
+           ![VESA and Industry Standards and Guidelines
 
-   1. 一件很重要的事情是，虽然你看到的屏幕大小是640x480的，但是它的实际大小并不只有那么点，形象一点就是说，VGA扫描的范围是包含了你能够看到的640x480这一块区域的更大区域
-   2. VGA 显示器扫描方式从屏幕左上角一点开始，从左向右逐点扫描，每扫描完一行，电子束回到屏幕的左边下一行的起始位置，在这期间，**CRT（阴极射线管） 对电子束进行消隐**（当电子枪扫描过了右侧没有荧光粉的区域后，还没有收到回到最左侧的命令（行同步信号脉冲）之前，电子枪需要关闭以实现**消隐**），每行结束时，用行同步信号进行同步
-   3. 当扫描完所有的行，**形成一帧**，用场同步信号进行场同步，并使扫描回到屏幕左上方
-   4. 完成一行扫描的时间称为水平扫描时间，其倒数称为行频率；完成一帧（整屏）扫描的时间称为垂直扫描时间，其倒数称为场频率，即屏幕的刷新频率
+      for Computer Display Monitor Timing (DMT)](https://s2.loli.net/2023/07/13/c5HDeym6pquUBYT.png)
 
-   ![img](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9pbWcyMDE4LmNuYmxvZ3MuY29tL2Jsb2cvMTQyNjI0MC8yMDE4MDkvMTQyNjI0MC0yMDE4MDkyMjE2MzM0NTgxOC0xNzA0NjU5OTQucG5n?x-oss-process=image/format,png)
+5.  VGA基础知识
 
+    1. 一件很重要的事情是，虽然你看到的屏幕大小是640x480的，但是它的实际大小并不只有那么点，形象一点就是说，VGA扫描的范围是包含了你能够看到的640x480这一块区域的更大区域
+    2. VGA 显示器扫描方式从屏幕左上角一点开始，从左向右逐点扫描，每扫描完一行，电子束回到屏幕的左边下一行的起始位置，在这期间，**CRT（阴极射线管） 对电子束进行消隐**（当电子枪扫描过了右侧没有荧光粉的区域后，还没有收到回到最左侧的命令（行同步信号脉冲）之前，电子枪需要关闭以实现**消隐**），每行结束时，用行同步信号进行同步
+    3. 当扫描完所有的行，**形成一帧**，用场同步信号进行场同步，并使扫描回到屏幕左上方
+    4. 完成一行扫描的时间称为水平扫描时间，其倒数称为行频率；完成一帧（整屏）扫描的时间称为垂直扫描时间，其倒数称为场频率，即屏幕的刷新频率
 
+    ![img](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9pbWcyMDE4LmNuYmxvZ3MuY29tL2Jsb2cvMTQyNjI0MC8yMDE4MDkvMTQyNjI0MC0yMDE4MDkyMjE2MzM0NTgxOC0xNzA0NjU5OTQucG5n?x-oss-process=image/format,png)
 
 # VGA开源项目
 
@@ -74,18 +71,16 @@ VGA相关笔记
 
 只实现了**640x480**分辨率的VGA Controller，然后基于该VGA Controller实现了*时钟显示的应用*
 
-| 考核标准   |      |
-| ---------- | ---- |
-| 可读性     | 4    |
-| 可配置性   | 2    |
-| 功能正确性 | 5    |
-| 易用性     | 2    |
+| 考核标准   |     |
+| ---------- | --- |
+| 可读性     | 4   |
+| 可配置性   | 2   |
+| 功能正确性 | 5   |
+| 易用性     | 2   |
 
+## [Miz702_VGA](https://gitee.com/fengshuaigit/Miz702_VGA)
 
-
-##  [Miz702_VGA](https://gitee.com/fengshuaigit/Miz702_VGA)
-
-> 支持640*480分辨率，能够显示静态彩色图片
+> 支持640\*480分辨率，能够显示静态彩色图片
 
 其VGA控制器端口如下，控制器端口列表里不包括待显示的数据信号，一共可以显示680x480个像素点，像素点位置由pixel_x, pixel_y确定
 
@@ -97,9 +92,9 @@ module vga_sync(
         output  reg             hsync,                 //场同步信号
         output  reg             vsync,                 //行同步信号
         output  wire    [9:0]   pixel_x,               //待显示待像素的x坐标
-        output  wire    [9:0]   pixel_y                //待显示待像素的y坐标 
+        output  wire    [9:0]   pixel_y                //待显示待像素的y坐标
 );
-    
+
 endmodule
 ```
 
@@ -126,12 +121,12 @@ endmodule
 
 项目分析（满分5分）：
 
-| 考核标准   |      |
-| ---------- | ---- |
-| 可读性     | 5    |
-| 可配置性   | 2    |
-| 功能正确性 | 5    |
-| 易用性     | 4    |
+| 考核标准   |     |
+| ---------- | --- |
+| 可读性     | 5   |
+| 可配置性   | 2   |
+| 功能正确性 | 5   |
+| 易用性     | 4   |
 
 ## [VGA原理与FPGA实现](https://blog.csdn.net/yifantan/article/details/126835530?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-5-126835530-blog-81840978.235^v38^pc_relevant_sort_base2&spm=1001.2101.3001.4242.4&utm_relevant_index=8)
 
@@ -148,7 +143,7 @@ module VGA_CTRL(
     output reg [9:0]hcount, //当前扫描点的有效图片H坐标, 用于test模块
     output reg [9:0]vcount, //当前扫描点的有效图片V坐标, 用于test模块
     output reg VGA_HS,
-    output reg VGA_VS, 
+    output reg VGA_VS,
     output reg VGA_BLK,     //BLK表示的就是 输出有效图片 信号  高电平有效
     output reg [23:0]VGA_RGB//  RGB888
     );
@@ -166,7 +161,7 @@ endmodule
 //`define Resolution_1280x720 1	//刷新率为60Hz时像素时钟为74.25MHz
 //`define Resolution_1920x1080 1	//刷新率为60Hz时像素时钟为148.5MHz
 
-`ifdef Resolution_480x272    
+`ifdef Resolution_480x272
     `define H_Right_Border 0
     `define H_Front_Porch 2
     `define H_Sync_Time 41
@@ -181,7 +176,7 @@ endmodule
     `define V_Top_Border 0
     `define V_Data_Time 272
     `define V_Total_Time 286
-    
+
 `elsif Resolution_640x480
 	`define H_Total_Time  12'd800
 	`define H_Right_Border  12'd8
@@ -216,20 +211,16 @@ endmodule
 
 项目分析（满分5分）：
 
-| 考核标准   |      |
-| ---------- | ---- |
-| 可读性     | 5    |
-| 可配置性   | 4    |
-| 功能正确性 | 5    |
-| 易用性     | 4    |
-
-
+| 考核标准   |     |
+| ---------- | --- |
+| 可读性     | 5   |
+| 可配置性   | 4   |
+| 功能正确性 | 5   |
+| 易用性     | 4   |
 
 ![image-20230713110232004](https://s2.loli.net/2023/07/13/tYG5xCX3ypM6F8L.png)
 
 ![image-20230713110138494](https://s2.loli.net/2023/07/13/rHQUsAGiDJP6ujf.png)
-
-
 
 ## [vga_lcd](https://github.com/freecores/vga_lcd)
 
@@ -241,8 +232,6 @@ endmodule
 2. 支持多种颜色深度bpp
 3. 定义了跟Host进行数据读取的模块
 4. 支持鼠标模块
-
-
 
 上述架构图中，各个模块的功能如下：
 
@@ -264,20 +253,14 @@ endmodule
    - Wishbone Master Interface：Color Processor跟Cursor Processor访问外部存储器时，通过该接口
    - Wishbone Slave Interface：控制用户可以访问的寄存器的访问
 
-   
-
 项目分析（满分5分）：
 
-| 考核标准   |      |
-| ---------- | ---- |
-| 可读性     | 3    |
-| 可配置性   | 5    |
-| 功能正确性 | 5    |
-| 易用性     | 3    |
-
-
-
-
+| 考核标准   |     |
+| ---------- | --- |
+| 可读性     | 3   |
+| 可配置性   | 5   |
+| 功能正确性 | 5   |
+| 易用性     | 3   |
 
 # VGA项目比较
 
@@ -286,3 +269,42 @@ endmodule
 [VGA原理与FPGA实现](https://blog.csdn.net/yifantan/article/details/126835530?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-5-126835530-blog-81840978.235^v38^pc_relevant_sort_base2&spm=1001.2101.3001.4242.4&utm_relevant_index=8)则支持多种分辨率模式的VGA接口，其原理在于通过预先定义的宏来支持各种分辨率的VGA，并且其VGA Controller模块中的信号包含`hsync, vsync, RGB[23:0]` 等信号，因此其VGA Controller的输出可以直接驱动显示器显示画面；
 
 [vga_lcd](https://github.com/freecores/vga_lcd)支持多种分辨率模式、多种色深模式，其不止是一个VGA控制器，还支持鼠标显示；此外该项目还包含了VGA模块跟存储模块的交互设置，保证了VGA颜色可以源源不断地输出，但是该项目也是最复杂的。
+
+# VGA细节设计和设计难点
+
+VGA支持如下特性：
+
+1. 其分辨率最高为680x480，颜色深度为4以节约输出带宽
+2. 配备有从Core读取数据的逻辑，保证数据源源不断的输入到VGA模块
+3. 配备有输出到屏幕的FIFO，保证数据输出正常、避免屏幕闪烁或者画面撕裂
+
+## (VGA)模块跟处理器(Core)的接口
+
+> VGA如何跟Core交互，从而获得其需要展示的数据
+
+![](https://s2.loli.net/2023/07/18/WDCI9tPxsgcw6JA.png)
+
+## VGA Port端口
+
+| Port    | Width | Rirection | Description      |
+| ------- | ----- | --------- | ---------------- |
+| clk_p_i | 1     | Input     | Pixel Clock      |
+| hsync_o | 1     | Output    | Horizontal Sync  |
+| vsync_o | 1     | Output    | Vertical Sync    |
+| csync_o | 1     | Output    | Composite Sync   |
+| blank_o | 1     | Output    | Blank Sync       |
+| r_o     | 4     | Output    | Red Color Data   |
+| g_o     | 4     | Output    | Green Color Data |
+| b_o     | 4     | Output    | Blue Color Data  |
+
+TODO: 增加上述信号的详细描述
+
+**NOTE**：<u>只需要把刷新的上界的值存储在**寄存器**里，就可以支持不同的刷新率跟分辨率了</u>，
+如果只需要固定的640x480分辨率，则可以将相关参数在RTL代码里写死.
+
+TODO: 说明如何根据寄存器里的值，输出不同分辨率的信号、VGA相关数学公式
+
+- [ ] 如果支持不同的分辨率（将参数写在寄存器里），相关的参数计算公式，如何影响VGA Output
+- [ ] VGA模块框图，框图之间的数据流动: Host-> ping-pong memory -> VGA -> color FIFO -> Display
+- [ ] 各个端口描述信息
+- [ ] 难点分析
