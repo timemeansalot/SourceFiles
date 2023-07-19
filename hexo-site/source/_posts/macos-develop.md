@@ -12,8 +12,10 @@ MacOS and Linux 下搭建开发环境如：Python, Scala, Verilog, etc;
 # Ubuntu 22.04 config notes
 
 ## wechat
+
 you have to install wine to install wechat, follow [this page](https://github.com/zq1997/deepin-wine) to install wine-wechat.  
 Then follow [this guide](https://blog.csdn.net/Hesye/article/details/111087096?spm=1001.2101.3001.6661.1&utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-111087096-blog-126085602.235%5Ev38%5Epc_relevant_sort&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-111087096-blog-126085602.235%5Ev38%5Epc_relevant_sort&utm_relevant_index=1) to solve wechat resolution problem.
+
 ## Typing tools: nvim, tmux and terminal
 
 1. Nvim: Nvim is advanced-vim, on ubuntu you can use command ~~`sudo apt install neovim`~~ to install nvim.
@@ -39,7 +41,7 @@ default shell to be `zsh`, sogou input cannot type Chinese!
 1. WPS一开始不支持搜狗中文输入法，按照[wps在Ubuntu下可以中文输入的方法](https://blog.csdn.net/zaf0516/article/details/95769751)进行修复，主要是：
    方法一：在`/usr/bin/wps, /usr/bin/et, /usr/bin/wpp`三个文件一开始添加
    ```bash
-    # sogou input 
+    # sogou input
     export GTK_IM_MODULE=fcitx
     export QT_IM_MODULE=fcitx
     export XMODIFIERS="@im=fcitx"
@@ -269,6 +271,7 @@ Follow this [guid](https://www.josean.com/posts/tmux-setup) to config tmux.
    brew test riscv-tools    # test installation
    which riscv64-unknown-elf-gcc # if this works fine, the Toolchain is ready on your mac
    ```
+5. on Ubuntu, go to [download](https://static.dev.sifive.com/dev-tools/freedom-tools/v2020.08/riscv64-unknown-elf-gcc-10.1.0-2020.08.2-x86_64-linux-ubuntu14.tar.gz) pre-build riscv-tools and extract it. Then add the `bin` folder to your `PATH`
 
 ## Config for Scala and Chisel
 

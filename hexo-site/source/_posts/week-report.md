@@ -111,43 +111,41 @@ tags: RISC-V
 4. 增加MCU的I-Memory的读取逻辑，从Difftest框架里读取指令、加载到MCU中
 
    - 不同于用verilog写的testbench，Difftest框架里初始化都是通过c函数来将编译好的二进制文件读入内存的。
+
      - 在Difftest代码里，定义了一块内存`pmem`用于存储MCU_Core的指令
-     
      - 通过load_img函数来初始化pmem，实现I-Memory的初始化；在verilog写的testbench中，我们是通过readmemh函数来读入二进制文件到内存的
-     
      - 在verilog文件中，**指令的读取是通过DPI-C函数，读取`pmem`对应地址的值**；在verilog写的testbench中，指令的读取是直接通过`assign instr = i-memory[addr];`来实现的
-     
      - 在top文件中添加I-memory的`sram_output`、`mem_addr`端口，在进行Difftest的时候，通过这两个端口读取指令数据（而不是通过imemory模块读取指令数据）
-     
+
        ```verilog
        module pipelineIF
        (
            input wire        clk,
            input wire        resetn,
        	// ....
-       
+
            // DIFFTEST
            `ifdef DIFFTEST
            input wire [31:0] imemory_output,
            output wire [31:0] imem_addr,
-           `endif 
+           `endif
            /* output signals to ID stage */
            output wire [31:0] instruction_f_o
-       
+
        );
            `ifdef DIFFTEST
            reg [31:0] sram_output_reg;
-           always @(posedge clk ) begin 
+           always @(posedge clk ) begin
                // delay one cycle because I-Memory has 1 cycle read delay but c function don't has delay
-               sram_output_reg <= imemory_output; 
+               sram_output_reg <= imemory_output;
            end
            // read I-Memory through DPI-C, TOOD: fix this reorder
-           assign sram_output = {sram_output_reg[15:0], sram_output_reg[31:16]}; 
+           assign sram_output = {sram_output_reg[15:0], sram_output_reg[31:16]};
            assign imem_addr   = mem_addr;
            assign if_ir = instruction_f_o;
            `else
-       
-       
+
+
            // I-Memory instance
            imemory u_imemory(
                //ports
@@ -160,15 +158,13 @@ tags: RISC-V
            );
            `endif
            // ...
-       
+
        endmodule
        ```
-     
+
      - 在c文件中，通过上述top文件的端口，实现从`pmem`读取指令、加载到IF Stage
-     
+
        ![image-20230712153213765](https://s2.loli.net/2023/07/12/r1K576pbits3qCI.png)
-     
-       
 
 5. 在Register中增加DPI-C函数将CPU的register传递给Difftest模块
 
@@ -193,7 +189,41 @@ tags: RISC-V
 
    ![image-20230707210809687](https://s2.loli.net/2023/07/07/hjYRv8Ps32GOZTV.png)
 
-6. 修复函数 `dump_gpr` in `csrc/cpu_exec`
+6. 适配32 bit MCU
+   MCU是32 bit的，其gpr宽度为32，但是Difftest框架默认是64bits，如果不修改difftest中读取MCU gpr的C函数，则会读到错误的数据
+
+   ```bash
+        --- a/npc/csrc/npc_cpu/npc_exec.c
+        +++ b/npc/csrc/npc_cpu/npc_exec.c
+        @@ -24,13 +24,13 @@ const char *regs[] = {
+         };
+
+         // 一个输出RTL中通用寄存器的值的示例
+        -uint64_t *cpu_gpr = NULL;
+        +uint32_t *cpu_gpr = NULL;
+         void set_gpr_ptr(const svOpenArrayHandle r) {
+        -  cpu_gpr = (uint64_t *)(((VerilatedDpiOpenVar*)r)->datap());
+        +  cpu_gpr = (uint32_t *)(((VerilatedDpiOpenVar*)r)->datap());
+         }
+         void dump_gpr() {
+           for (int i = 0; i < 32; i++) {
+        -    cpu.gpr[i] = cpu_gpr[i-1]; // i-1 to make index correct in DPI-C
+        +    cpu.gpr[i] = cpu_gpr[i]; // i-1 to make index correct in DPI-C
+           }
+         }
+   ```
+   ```bash
+    --- a/npc/vsrc/regfile.v
+    +++ b/npc/vsrc/regfile.v
+    @@ -5,7 +5,7 @@ file: register file in ID stage
+     author: fujie
+     time: 2023年 4月28日 星期五 16时16分32秒 CST
+     */
+    -import "DPI-C" function void set_gpr_ptr(input logic [63:0] a []); // add DPI-C function
+    +import "DPI-C" function void set_gpr_ptr(input logic [31:0] a []); // add DPI-C function
+   ```
+
+7. 修复函数 `dump_gpr` in `csrc/cpu_exec`
    该函数的作用是利用DPI-C函数将MCU的registers的数值读取读取到c结构体里(cpu.gpr)，后续Difftest会比较该结构体的值跟Reference Model是否匹配.
 
    运行Difftest的时候发现，cpu.gpr[i]的值，实际上对应的是寄存器r[i+1]，导致Difftest报错，因此将cpu_gpr[i]更改为cpu_gpr[i-1]。
@@ -242,14 +272,10 @@ tags: RISC-V
      end
      ```
 
-   
-
 1. reset之后第一条指令的pc时序问题
-   
+
    - [x] bug已修复
-   
    - bug描述：resetn触发之后，ID会强制跳转到初始PC，但是之前MCU初始PC是0x00000000，因此每次resetn之后pc跳转都会出错
-   
    - bug修复：将resetn之后的redirection_d_o修复为0x80000000
      ```verilog
        // file: pipelineID.v
@@ -259,8 +285,8 @@ tags: RISC-V
                                 ({32{ redirection_e_i}}  & redirection_pc_e_i)| // pc from EXE
                                 ({32{~redirection_e_i}}  & redirection_pc);  // pc from SBP
      ```
-   
-3. MCU内存跟riscv内存存储方式不一致
+
+1. MCU内存跟riscv内存存储方式不一致
 
    - [ ] bug已修复
 
@@ -272,7 +298,7 @@ tags: RISC-V
 
      ![image-20230712170217686](https://s2.loli.net/2023/07/12/EHPlZIyu97b6ojk.png)
 
-3. NOP指令导致错误的`wb_en`
+1. NOP指令导致错误的`wb_en`
 
    - [x] bug已修复
 
@@ -281,3 +307,10 @@ tags: RISC-V
    - bug修复：译码的时候，如果发现指令是NOP指令，则`wb_en=0`，即`assign wb_en_o = instruction_i != 32'h00000013;`
 
      ![image-20230712171228993](https://s2.loli.net/2023/07/12/vE7Z2KzFRsWgcAL.png)
+
+## 新发现的bug
+
+1. RV32 R-Type指令跟RV32 M 指令译码错误
+   - [x] bug已修复
+   - bug描述：R-Type 指令`instruction[25]==0`，M指令`instruction[25]==1`，在`decoder.v`文件里，把该条件写反了
+   - bug修复：如果`instruction[25]==0`则按照R-Type指令进行译码
