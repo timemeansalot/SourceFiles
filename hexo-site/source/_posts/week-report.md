@@ -8,30 +8,30 @@ tags: RISC-V
 
 <!--more-->
 
-# 放弃使用香山官方提供的最新的Difftest版本
+# 放弃使用香山官方提供的最新的 Difftest 版本
 
-放弃使用最新版本Difftest的原因如下：
+放弃使用最新版本 Difftest 的原因如下：
 
-1. 香山最新版本的Github仓库里Difftest只有Scala的版本，无法直接在Verilog中引用
-2. 目前最新版本的Difftest**过于复杂**：它支持多核、Cache、Uart、Trap等模块，导致移植MCU_Core到最新版本的Difftest时，需要保证这些模块都真确连线，十分复杂。
-   一开始尝试接入最新版本的Difftest，结果调试了一两天还是报错无法看到*有进展的结果*，因此预测将MCU_Core接入到最新版本的Difftest框架中将消耗很久的时间
-3. 目前由于没有CSR模块，其实我们的MCU_Core的状态仅有**“PC+Register”**表征，因此Difftest框架只需要在指令提交之后比较PC跟Register即可。
-   <u>Difftest核心思想：MCU_Core执行一条指令->Reference Model执行一条指令->比较二者的状态(PC + Register)</u>
+1. 香山最新版本的 Github 仓库里 Difftest 只有 Scala 的版本，无法直接在 Verilog 中引用
+2. 目前最新版本的 Difftest**过于复杂**：它支持多核、Cache、Uart、Trap 等模块，导致移植 MCU_Core 到最新版本的 Difftest 时，需要保证这些模块都真确连线，十分复杂。
+   一开始尝试接入最新版本的 Difftest，结果调试了一两天还是报错无法看到*有进展的结果*，因此预测将 MCU_Core 接入到最新版本的 Difftest 框架中将消耗很久的时间
+3. 目前由于没有 CSR 模块，其实我们的 MCU_Core 的状态仅有**“PC+Register”**表征，因此 Difftest 框架只需要在指令提交之后比较 PC 跟 Register 即可。
+   <u>Difftest 核心思想：MCU_Core 执行一条指令->Reference Model 执行一条指令->比较二者的状态(PC + Register)</u>
 
-> 因此选择了“老版本的Difftest”版本，其实现的效果是：将单周期RISC-V处理器接入到Difftest框架中，比较其每次提交指令后，Register是否跟Reference Model相同，比较符合我们目前的测试需求，接入的难度相当于接入最新版本的Difftest也更加可控。
+> 因此选择了“老版本的 Difftest”版本，其实现的效果是：将单周期 RISC-V 处理器接入到 Difftest 框架中，比较其每次提交指令后，Register 是否跟 Reference Model 相同，比较符合我们目前的测试需求，接入的难度相当于接入最新版本的 Difftest 也更加可控。
 
-# 接入Difftest框架做的修改
+# 接入 Difftest 框架做的修改
 
 ![image-20230707211721928](https://s2.loli.net/2023/07/12/FPkCghplBJEYzTA.png)
 
-为了将MCU_Core接入到Difftest框架，主要做了如下修改：
+为了将 MCU_Core 接入到 Difftest 框架，主要做了如下修改：
 
-1. 修改Verilog代码接入Difftest框架之后的Warning，主要包括代码中的“隐式变量声明、信号位宽不匹配、模块重定义”等Warning。因为Verilator相较于Iverilog对于语法检查更加严格一些。
+1. 修改 Verilog 代码接入 Difftest 框架之后的 Warning，主要包括代码中的“隐式变量声明、信号位宽不匹配、模块重定义”等 Warning。因为 Verilator 相较于 Iverilog 对于语法检查更加严格一些。
 
-2. 在top.v中增加接口，因为：
+2. 在 top.v 中增加接口，因为：
 
-   - Difftest框架需要知道MCU_Core的一些内部信号，如pc, instruction
-   - 将一些重要的信号从top引出来，可以在Difftest的时候进行打印，方便判断
+   - Difftest 框架需要知道 MCU_Core 的一些内部信号，如 pc, instruction
+   - 将一些重要的信号从 top 引出来，可以在 Difftest 的时候进行打印，方便判断
 
    ```verilog
    // mcu_core/top.v
@@ -83,41 +83,44 @@ tags: RISC-V
    pmem_read_rtl: raddr = 0x80000000, rdata= 413
    ```
 
-   如上所示，我们在top的接口中定义了一些信号，我们在Difftest框架中就可以打印相应的信号值
+   如上所示，我们在 top 的接口中定义了一些信号，我们在 Difftest 框架中就可以打印相应的信号值
 
-3. 确定MCU_Core提交到difftest 的时机
+3. 确定 MCU_Core 提交到 difftest 的时机
 
-   **我们不能简单的以`wb_en`来判断一条指令是否提交**，因为branch指令其wb_en是0，但是正常情况下branch指令是需要提交的，因此需要通过hazard以及reset来判断指令提交，具体如下：
+   **我们不能简单的以`wb_en`来判断一条指令是否提交**，因为 branch 指令其 wb_en 是 0，但是正常情况下 branch 指令是需要提交的，因此需要通过 hazard 以及 reset 来判断指令提交，具体如下：
 
-   ~~- 由于Reference Model是单周期的处理器，其每个Cycle就会提交一条指令；我们的MCU_Core是5级流水线处理器，第一条指令必须等到5个Cycle之后其结果才会写入到Register~~
-   - 我们的MCU由于分支预测器的存在，可能会取一条指令，但是这条指令会被冲刷，因此其不会写入到Register
+   1. 判断第一条指令的提交： `resetn`触发之后，2 个 cycle 才可以读出第一条指令，第一条指令经过 5 个 cycle 才能提交
+   2. 后续指令需要根据 hazard unit 的`flush`信号来判断是否会被冲刷，hazard unit 只对 ID 进行冲刷
 
-   可见**MCU_Core中的指令，并不是每一个Cycle都会写入到Register，但是Reference Model一旦执行一条指令，则会在一个Cycle写入到Register**，因此：
+   ~~- 由于 Reference Model 是单周期的处理器，其每个 Cycle 就会提交一条指令；我们的 MCU_Core 是 5 级流水线处理器，第一条指令必须等到 5 个 Cycle 之后其结果才会写入到 Register~~
+   ~~- 我们的 MCU 由于分支预测器的存在，可能会取一条指令，但是这条指令会被冲刷，因此其不会写入到 Register~~
 
-   - MCU_Core必须告诉Difftest框架，其在某时刻写入到了Register
-   - Difftest框架在收到该信号之后，令Reference Model执行一步，并且将其结果写入到Register
+   ~~可见**MCU_Core 中的指令，并不是每一个 Cycle 都会写入到 Register，但是 Reference Model 一旦执行一条指令，则会在一个 Cycle 写入到 Register**，因此：~~
 
-   经过分析发现，我们的MCU_Core不论指令流是何种情况，其在写入Register的时候，都会有wb_en信号为高，因此**我们在top中加入该信号，并且在Difftest中根据该信号来控制Reference Model执行和Difftest比较**。
+   ~~- MCU_Core 必须告诉 Difftest 框架，其在某时刻写入到了 Register~~
+   ~~- Difftest 框架在收到该信号之后，令 Reference Model 执行一步，并且将其结果写入到 Register~~
 
-   ```c
-   // difftest/csrc/cpu_exec.c
-   /* difftest begin */
-   cpu.pc = top->pc; // pc存入cpu结构体
-   dump_gpr(); // 寄存器值存入cpu结构体
-   if(top->wb_en){ // <- 判断指令提交再进入Difftest
-       difftest_step(top->pc);
-   }
-   /* difftest end */
-   ```
+   ~~经过分析发现，我们的 MCU_Core 不论指令流是何种情况，其在写入 Register 的时候，都会有 wb_en 信号为高，因此**我们在 top 中加入该信号，并且在 Difftest 中根据该信号来控制 Reference Model 执行和 Difftest 比较**。~~
 
-4. 增加MCU的I-Memory的读取逻辑，从Difftest框架里读取指令、加载到MCU中
+   ~~```c~~
+   ~~// difftest/csrc/cpu_exec.c~~
+   ~~/_ difftest begin _/~~
+   ~~cpu.pc = top->pc; // pc 存入 cpu 结构体~~
+   ~~dump_gpr(); // 寄存器值存入 cpu 结构体~~
+   ~~if(top->wb_en){ // <- 判断指令提交再进入 Difftest~~
+   ~~ difftest_step(top->pc);~~
+   ~~}~~
+   ~~/_ difftest end _/~~
+   ~~```~~
 
-   - 不同于用verilog写的testbench，Difftest框架里初始化都是通过c函数来将编译好的二进制文件读入内存的。
+4. 增加 MCU 的 I-Memory 的读取逻辑，从 Difftest 框架里读取指令、加载到 MCU 中
 
-     - 在Difftest代码里，定义了一块内存`pmem`用于存储MCU_Core的指令
-     - 通过load_img函数来初始化pmem，实现I-Memory的初始化；在verilog写的testbench中，我们是通过readmemh函数来读入二进制文件到内存的
-     - 在verilog文件中，**指令的读取是通过DPI-C函数，读取`pmem`对应地址的值**；在verilog写的testbench中，指令的读取是直接通过`assign instr = i-memory[addr];`来实现的
-     - 在top文件中添加I-memory的`sram_output`、`mem_addr`端口，在进行Difftest的时候，通过这两个端口读取指令数据（而不是通过imemory模块读取指令数据）
+   - 不同于用 verilog 写的 testbench，Difftest 框架里初始化都是通过 c 函数来将编译好的二进制文件读入内存的。
+
+     - 在 Difftest 代码里，定义了一块内存`pmem`用于存储 MCU_Core 的指令
+     - 通过 load_img 函数来初始化 pmem，实现 I-Memory 的初始化；在 verilog 写的 testbench 中，我们是通过 readmemh 函数来读入二进制文件到内存的
+     - 在 verilog 文件中，**指令的读取是通过 DPI-C 函数，读取`pmem`对应地址的值**；在 verilog 写的 testbench 中，指令的读取是直接通过`assign instr = i-memory[addr];`来实现的
+     - 在 top 文件中添加 I-memory 的`sram_output`、`mem_addr`端口，在进行 Difftest 的时候，通过这两个端口读取指令数据（而不是通过 imemory 模块读取指令数据）
 
        ```verilog
        module pipelineIF
@@ -164,11 +167,11 @@ tags: RISC-V
        endmodule
        ```
 
-     - 在c文件中，通过上述top文件的端口，实现从`pmem`读取指令、加载到IF Stage
+     - 在 c 文件中，通过上述 top 文件的端口，实现从`pmem`读取指令、加载到 IF Stage
 
        ![image-20230712153213765](https://s2.loli.net/2023/07/12/r1K576pbits3qCI.png)
 
-5. 在Register中增加DPI-C函数将CPU的register传递给Difftest模块
+5. 在 Register 中增加 DPI-C 函数将 CPU 的 register 传递给 Difftest 模块
 
    ```verilog
    import "DPI-C" function void set_gpr_ptr(input logic [63:0] a []); // add DPI-C function
@@ -191,8 +194,8 @@ tags: RISC-V
 
    ![image-20230707210809687](https://s2.loli.net/2023/07/07/hjYRv8Ps32GOZTV.png)
 
-6. 适配32 bit MCU
-   MCU是32 bit的，其gpr宽度为32，但是Difftest框架默认是64bits，如果不修改difftest中读取MCU gpr的C函数，则会读到错误的数据
+6. 适配 32 bit MCU
+   MCU 是 32 bit 的，其 gpr 宽度为 32，但是 Difftest 框架默认是 64bits，如果不修改 difftest 中读取 MCU gpr 的 C 函数，则会读到错误的数据
 
    ```bash
         --- a/npc/csrc/npc_cpu/npc_exec.c
@@ -214,6 +217,7 @@ tags: RISC-V
            }
          }
    ```
+
    ```bash
     --- a/npc/vsrc/regfile.v
     +++ b/npc/vsrc/regfile.v
@@ -226,9 +230,9 @@ tags: RISC-V
    ```
 
 7. 修复函数 `dump_gpr` in `csrc/cpu_exec`
-   该函数的作用是利用DPI-C函数将MCU的registers的数值读取读取到c结构体里(cpu.gpr)，后续Difftest会比较该结构体的值跟Reference Model是否匹配.
+   该函数的作用是利用 DPI-C 函数将 MCU 的 registers 的数值读取读取到 c 结构体里(cpu.gpr)，后续 Difftest 会比较该结构体的值跟 Reference Model 是否匹配.
 
-   运行Difftest的时候发现，cpu.gpr[i]的值，实际上对应的是寄存器r[i+1]，导致Difftest报错，因此将cpu_gpr[i]更改为cpu_gpr[i-1]。
+   运行 Difftest 的时候发现，cpu.gpr[i]的值，实际上对应的是寄存器 r[i+1]，导致 Difftest 报错，因此将 cpu_gpr[i]更改为 cpu_gpr[i-1]。
 
    ```c
     uint64_t *cpu_gpr = NULL;
@@ -242,29 +246,29 @@ tags: RISC-V
     }
    ```
 
-# MCU_Core接入Difftest结果
+# MCU_Core 接入 Difftest 结果
 
 ![image-20230707210706875](https://s2.loli.net/2023/07/07/QD8nlf1BTNMxYGo.png)
 
-目前MCU_Core已经接入到了Difftest框架，Difftest检测到MCU_Core运行的结果跟Reference Model的结果不同，会报错，并且给出报错的信息，如上图所示。
+目前 MCU_Core 已经接入到了 Difftest 框架，Difftest 检测到 MCU_Core 运行的结果跟 Reference Model 的结果不同，会报错，并且给出报错的信息，如上图所示。
 
-1. 后续会陆续根据Difftest的提示，陆续修改MCU_Core中的bug，直到通过所有的测试，达到如下图所示效果，出现`HIT GOOD TRAP`字样：
+1. 后续会陆续根据 Difftest 的提示，陆续修改 MCU_Core 中的 bug，直到通过所有的测试，达到如下图所示效果，出现`HIT GOOD TRAP`字样：
 
    ![image-20230707210602556](https://s2.loli.net/2023/07/07/nmXbVy69HxjOtwJ.png)
 
-2. 也会预先研究如何在Difftest中测试一些复杂事件的比较，例如Trap、CSR比较
+2. 也会预先研究如何在 Difftest 中测试一些复杂事件的比较，例如 Trap、CSR 比较
 
-# 发现和修复的bug
+# 发现和修复的 bug
 
-1. 每条指令与其对应的PC差了4
+1. 每条指令与其对应的 PC 差了 4
 
-   - [x] bug已修复
+   - [x] bug 已修复
 
-   - bug描述：由ID Stage来保证每一条指令跟其对应的pc相匹配，但是当某条指令计算需要用到pc的值时，错误的将next_pc的值给了源操作数，导致结果大了4
+   - bug 描述：由 ID Stage 来保证每一条指令跟其对应的 pc 相匹配，但是当某条指令计算需要用到 pc 的值时，错误的将 next_pc 的值给了源操作数，导致结果大了 4
 
      ![image-20230714103303910](https://s2.loli.net/2023/07/14/Pq9FQUvcLDKTZIp.png)
 
-   - bug修复：将当前pc的值赋值给源操作数`rs1_d_o`
+   - bug 修复：将当前 pc 的值赋值给源操作数`rs1_d_o`
 
      ```verilog
      // pipelineID.v
@@ -274,11 +278,11 @@ tags: RISC-V
      end
      ```
 
-1. reset之后第一条指令的pc时序问题
+1. reset 之后第一条指令的 pc 时序问题
 
-   - [x] bug已修复
-   - bug描述：resetn触发之后，ID会强制跳转到初始PC，但是之前MCU初始PC是0x00000000，因此每次resetn之后pc跳转都会出错
-   - bug修复：将resetn之后的redirection_d_o修复为0x80000000
+   - [x] bug 已修复
+   - bug 描述：resetn 触发之后，ID 会强制跳转到初始 PC，但是之前 MCU 初始 PC 是 0x00000000，因此每次 resetn 之后 pc 跳转都会出错
+   - bug 修复：将 resetn 之后的 redirection_d_o 修复为 0x80000000
      ```verilog
        // file: pipelineID.v
        assign redirection_d_o = ({32{~resetn_delay | flush_i}} & 32'h80000000)|        // <- fix bug
@@ -288,46 +292,46 @@ tags: RISC-V
                                 ({32{~redirection_e_i}}  & redirection_pc);  // pc from SBP
      ```
 
-1. MCU内存跟riscv内存存储方式不一致
+1. MCU 内存跟 riscv 内存存储方式不一致
 
-   - [ ] bug已修复
+   - [ ] bug 已修复
 
-   - bug描述：MCU跟Difftest的二进制程序，其大小端方向不一致，因此Difftest得到的镜像文件加载之后，需要调换其顺序才可以得到指令
+   - bug 描述：MCU 跟 Difftest 的二进制程序，其大小端方向不一致，因此 Difftest 得到的镜像文件加载之后，需要调换其顺序才可以得到指令
 
-     > PS: riscv采用小端存放的格式，对于32bits的指令一条指令aabbccdd，其存储为ccddaabb
+     > PS: riscv 采用小端存放的格式，对于 32bits 的指令一条指令 aabbccdd，其存储为 ccddaabb
 
-   - bug修复：跟MCU之前测试时二进制程序编译有关、跟Difftest二进制程序编译有关、跟MCU imemory设计有关
+   - bug 修复：跟 MCU 之前测试时二进制程序编译有关、跟 Difftest 二进制程序编译有关、跟 MCU imemory 设计有关
 
      ![image-20230712170217686](https://s2.loli.net/2023/07/12/EHPlZIyu97b6ojk.png)
 
-1. NOP指令导致错误的`wb_en`
+1. NOP 指令导致错误的`wb_en`
 
-   - [x] bug已修复
+   - [x] bug 已修复
 
-   - bug描述：需要被冲刷的指令，其行为会被翻译成一条NOP指令，但是NOP指令本质上是`addi x0, x0, 0`，译码单元对于`addi`指令会判断其`wb_en=1`，因此当系统resetn出发时，其面几条NOP指令会导致`wb_en=1`，进而导致Difftest开始比较MCU跟Reference Model，进而导致比较失败
+   - bug 描述：需要被冲刷的指令，其行为会被翻译成一条 NOP 指令，但是 NOP 指令本质上是`addi x0, x0, 0`，译码单元对于`addi`指令会判断其`wb_en=1`，因此当系统 resetn 出发时，其面几条 NOP 指令会导致`wb_en=1`，进而导致 Difftest 开始比较 MCU 跟 Reference Model，进而导致比较失败
 
-   - bug修复：译码的时候，如果发现指令是NOP指令，则`wb_en=0`，即`assign wb_en_o = instruction_i != 32'h00000013;`
+   - bug 修复：译码的时候，如果发现指令是 NOP 指令，则`wb_en=0`，即`assign wb_en_o = instruction_i != 32'h00000013;`
 
      ![image-20230712171228993](https://s2.loli.net/2023/07/12/vE7Z2KzFRsWgcAL.png)
 
-## 新发现的bug
+## 新发现的 bug
 
-1. RV32 R-Type指令跟RV32 M 指令译码错误
-   - [x] bug已修复
-   - bug描述：R-Type 指令`instruction[25]==0`，M指令`instruction[25]==1`，在`decoder.v`文件里，把该条件写反了
-   - bug修复：如果`instruction[25]==0`则按照R-Type指令进行译码
-2. EXE Stage在`redirection_e_o`信号对`JAL`指令判断错误 
-   - [x] bug已修复
-   - bug描述：EXE Stage需要判断SBP对于Branch的分支预测是否正确；但是EXE Stage不需要判断SBP对于`JAL`指令判断是否正确
-   - bug修复：EXE Stage在判断的时候，首先判断是否是Branch指令，再判断SBP预测是否正确；从而避免多此一举的对`JAL`是否预测正确判断
+1. RV32 R-Type 指令跟 RV32 M 指令译码错误
+   - [x] bug 已修复
+   - bug 描述：R-Type 指令`instruction[25]==0`，M 指令`instruction[25]==1`，在`decoder.v`文件里，把该条件写反了
+   - bug 修复：如果`instruction[25]==0`则按照 R-Type 指令进行译码
+2. EXE Stage 在`redirection_e_o`信号对`JAL`指令判断错误
+   - [x] bug 已修复
+   - bug 描述：EXE Stage 需要判断 SBP 对于 Branch 的分支预测是否正确；但是 EXE Stage 不需要判断 SBP 对于`JAL`指令判断是否正确
+   - bug 修复：EXE Stage 在判断的时候，首先判断是否是 Branch 指令，再判断 SBP 预测是否正确；从而避免多此一举的对`JAL`是否预测正确判断
      ```bash
         diff --git a/npc/vsrc/pipelineEXE.v b/npc/vsrc/pipelineEXE.v
         index 8f44516..407184c 100644
         --- a/npc/vsrc/pipelineEXE.v
         +++ b/npc/vsrc/pipelineEXE.v
         @@ -21,6 +21,7 @@ module pipelineEXE (
-        +    input wire        btype_d_i,       // instruction is branch type instruction 
-         
+        +    input wire        btype_d_i,       // instruction is branch type instruction
+
         @@ -128,7 +129,7 @@ module pipelineEXE (
              end
              assign redirection_e_o = st_e_i? redirection_r :
