@@ -82,7 +82,7 @@ VGA相关笔记
 
 > 支持640\*480分辨率，能够显示静态彩色图片
 
-其VGA控制器端口如下，控制器端口列表里不包括待显示的数据信号，一共可以显示680x480个像素点，像素点位置由pixel_x, pixel_y确定
+其VGA控制器端口如下，控制器端口列表里不包括待显示的数据信号，一共可以显示640x480个像素点，像素点位置由pixel_x, pixel_y确定
 
 ```verilog
 module vga_sync(
@@ -114,7 +114,7 @@ endmodule
 
 在显示器上输出静态图片的原理：
 
-- 将680x480的静态图片制作成ceo文件
+- 将640x480的静态图片制作成ceo文件
 - 在vivado里将该ceo文件创建为一个ROM IP
 - 在testbench里面调用该ROM IP，实现数据读取。将数据读取到寄存器里
 - testbench输出rbg信号的时候，存寄存器里输出信号到rgb
@@ -264,7 +264,7 @@ endmodule
 
 # VGA项目比较
 
-如上所述，[vga-clock](https://github.com/mattvenn/vga-clock)、 [Miz702_VGA](https://gitee.com/fengshuaigit/Miz702_VGA)两个项目都只支持固定680x480分辨率的VGA接口，其优点在于代码规范、比较容易上手；
+如上所述，[vga-clock](https://github.com/mattvenn/vga-clock)、 [Miz702_VGA](https://gitee.com/fengshuaigit/Miz702_VGA)两个项目都只支持固定640x480分辨率的VGA接口，其优点在于代码规范、比较容易上手；
 
 [VGA原理与FPGA实现](https://blog.csdn.net/yifantan/article/details/126835530?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-5-126835530-blog-81840978.235^v38^pc_relevant_sort_base2&spm=1001.2101.3001.4242.4&utm_relevant_index=8)则支持多种分辨率模式的VGA接口，其原理在于通过预先定义的宏来支持各种分辨率的VGA，并且其VGA Controller模块中的信号包含`hsync, vsync, RGB[23:0]` 等信号，因此其VGA Controller的输出可以直接驱动显示器显示画面；
 
@@ -272,39 +272,90 @@ endmodule
 
 # VGA细节设计和设计难点
 
+![](https://s2.loli.net/2023/07/19/EAGOHLg6V2qbNTS.png)
+
 VGA支持如下特性：
 
-1. 其分辨率最高为680x480，颜色深度为4以节约输出带宽
-2. 配备有从Core读取数据的逻辑，保证数据源源不断的输入到VGA模块
-3. 配备有输出到屏幕的FIFO，保证数据输出正常、避免屏幕闪烁或者画面撕裂
+1. 其分辨率最高为640x480，颜色深度为4以节约输出带宽
+2. 其分辨率最高为640x480，颜色深度为4以节约数据存储空间
 
-## (VGA)模块跟处理器(Core)的接口
-
-> VGA如何跟Core交互，从而获得其需要展示的数据
-
-![](https://s2.loli.net/2023/07/18/WDCI9tPxsgcw6JA.png)
-
-## VGA Port端口
+## VGA Ctrl模块的输入输出信号
 
 | Port    | Width | Rirection | Description      |
 | ------- | ----- | --------- | ---------------- |
 | clk_p_i | 1     | Input     | Pixel Clock      |
+| reset   | 1     | Input     | Reset Singal     |
+| data_i  | 12    | Input     | Color Data Input |
 | hsync_o | 1     | Output    | Horizontal Sync  |
 | vsync_o | 1     | Output    | Vertical Sync    |
-| csync_o | 1     | Output    | Composite Sync   |
 | blank_o | 1     | Output    | Blank Sync       |
 | r_o     | 4     | Output    | Red Color Data   |
 | g_o     | 4     | Output    | Green Color Data |
 | b_o     | 4     | Output    | Blue Color Data  |
+| v_addr  | 10    | Output    | Vertical index   |
+| h_addr  | 9     | Output    | Horizontal index |
 
-TODO: 增加上述信号的详细描述
+信号说明：
 
-**NOTE**：<u>只需要把刷新的上界的值存储在**寄存器**里，就可以支持不同的刷新率跟分辨率了</u>，
+1. clk_p_i, reset: 时钟信号，跟像素输出所需要的频率有关；复位信号
+2. data_i：从内存里读取的颜色信号，一共12bit，每个颜色占4bit
+3. r_o, g_o, b_o：颜色信号，每个颜色信号占 4 bit，输出的颜色信号会被数模转换模块(DAC)转化为对应的模拟信号
+4. hsync_o, vsync_o：同步信号、低有效，分别是“水平同步”、“垂直同步”，各同步信号对于图像输出的作用如下图所示
+
+   ![](https://s2.loli.net/2023/07/19/5FxhmHw4ZItsuKG.png)
+
+5. blank_o：空白信号、低有效，该信号为高的时候，表明显示器上没有图像显示，blank信号有效时，DAC输出的模拟信号会被强制拉低
+6. v_addr, h_addr：像素点的坐标，该坐标主要用于从Data Memory里面去读取对应的像素信息，每次从Data Memory里读取12 bits数据，输入到VGA中
+
+## 内存计算相关
+
+640x480的屏幕，一帧画面需要的存储为MEM，则
+
+$$
+MEM = 640 * 480 * 12 = 3.51 MB
+$$
+
+> 为了保证VGA能够输出连续的画面，VGA需要输出的一帧的色彩数据，需要提前写入到Memory中，然后供VGA读取
+
+1. 针对640x480的屏幕，令其存储为RAM一共有640*480=307200行，每一行占12 bit，在数据读取的时候，
+   根据`index=h_addr*480+v_addr`，再由该index作为索引取出12bits的数据
+   **Question:**既然VGA输出信号是从左到右、从上到下顺序输出的，我们是否需要能够在一帧画面输出开始之后，顺序从Data Memory里取出数据给到VGA，从而不用使用地址进行索引？
+
+2. 为了保证Core写入数据到Data Memory跟VGA 从Data Memory数据被VGA读出时互不干扰，Data Memory采用Ping Pong Memory的结构，保证一读一写； Data Memory内部需要维护读写操作
+
+## Optional：调节输出的分辨率
+
+<u>只需要把刷新的上界的值存储在**寄存器**里，就可以支持不同的刷新率跟分辨率了</u>，
 如果只需要固定的640x480分辨率，则可以将相关参数在RTL代码里写死.
 
-TODO: 说明如何根据寄存器里的值，输出不同分辨率的信号、VGA相关数学公式
+```verilog
+  //640x480分辨率下的VGA参数设置
+  parameter    h_frontporch = 96;
+  parameter    h_active = 144;
+  parameter    h_backporch = 784;
+  parameter    h_total = 800;
 
-- [ ] 如果支持不同的分辨率（将参数写在寄存器里），相关的参数计算公式，如何影响VGA Output
-- [ ] VGA模块框图，框图之间的数据流动: Host-> ping-pong memory -> VGA -> color FIFO -> Display
-- [ ] 各个端口描述信息
-- [ ] 难点分析
+  parameter    v_frontporch = 2;
+  parameter    v_active = 35;
+  parameter    v_backporch = 515;
+  parameter    v_total = 525;
+```
+
+如上所示，VGA输出的信号都是有上述信号来计算产生的，例如同步信号的计算如下：
+
+```verilog
+  //生成同步信号
+  assign hsync = (x_cnt > h_frontporch);
+  assign vsync = (y_cnt > v_frontporch);
+```
+
+在不同的分辨率下上述参数有不同的数值，如下表所示；若上述参数不是在RTL代码里固定写死的，而是通过寄存器里读出，那么VGA模块在实际运行的时候，就可以支持输出不同的分辨率以及频率了。
+
+![](https://s2.loli.net/2023/07/19/4kWq2lSJR7pvgao.png)
+
+## 难点分析
+
+1. Core的时钟跟VGA的时钟不同，需要数据时钟域的切换；此外，能否保证Ping Pong Memory跟VGA是一个时钟域？
+2. 如何正确地选择VGA Data Memory的容量，才可以保证其能够容纳VGA一帧的画面、并且不会占据太多存储空间？
+3. Core如何写入数据到Data Memory？是通过load/store指令还是通过DMA？
+4. 如果我们采用寄存器的方式来更改VGA输出的分辨率以及频率，则我们应该如何往这些配置寄存器里写入数据？是通过处理器往VGA配置寄存器里写入吗？
