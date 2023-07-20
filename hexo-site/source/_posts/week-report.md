@@ -314,3 +314,10 @@ tags: RISC-V
    - [x] bug已修复
    - bug描述：R-Type 指令`instruction[25]==0`，M指令`instruction[25]==1`，在`decoder.v`文件里，把该条件写反了
    - bug修复：如果`instruction[25]==0`则按照R-Type指令进行译码
+2. EXE Stage在`redirection_e_o`信号对`JAL`指令判断错误 
+   - [x] bug已修复
+   - bug描述：EXE Stage需要判断SBP对于Branch的分支预测是否正确；但是EXE Stage不需要判断SBP对于`JAL`指令判断是否正确
+   - bug修复：EXE Stage在判断的时候，首先判断是否是Branch指令，再判断SBP预测是否正确；从而避免多此一举的对`JAL`是否预测正确判断
+     ```verilog
+
+     ```
