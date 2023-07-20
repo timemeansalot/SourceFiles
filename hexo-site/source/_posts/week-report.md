@@ -87,7 +87,9 @@ tags: RISC-V
 
 3. 确定MCU_Core提交到difftest 的时机
 
-   - 由于Reference Model是单周期的处理器，其每个Cycle就会提交一条指令；我们的MCU_Core是5级流水线处理器，第一条指令必须等到5个Cycle之后其结果才会写入到Register
+   **我们不能简单的以`wb_en`来判断一条指令是否提交**，因为branch指令其wb_en是0，但是正常情况下branch指令是需要提交的，因此需要通过hazard以及reset来判断指令提交，具体如下：
+
+   ~~- 由于Reference Model是单周期的处理器，其每个Cycle就会提交一条指令；我们的MCU_Core是5级流水线处理器，第一条指令必须等到5个Cycle之后其结果才会写入到Register~~
    - 我们的MCU由于分支预测器的存在，可能会取一条指令，但是这条指令会被冲刷，因此其不会写入到Register
 
    可见**MCU_Core中的指令，并不是每一个Cycle都会写入到Register，但是Reference Model一旦执行一条指令，则会在一个Cycle写入到Register**，因此：
@@ -318,6 +320,17 @@ tags: RISC-V
    - [x] bug已修复
    - bug描述：EXE Stage需要判断SBP对于Branch的分支预测是否正确；但是EXE Stage不需要判断SBP对于`JAL`指令判断是否正确
    - bug修复：EXE Stage在判断的时候，首先判断是否是Branch指令，再判断SBP预测是否正确；从而避免多此一举的对`JAL`是否预测正确判断
-     ```verilog
-
+     ```bash
+        diff --git a/npc/vsrc/pipelineEXE.v b/npc/vsrc/pipelineEXE.v
+        index 8f44516..407184c 100644
+        --- a/npc/vsrc/pipelineEXE.v
+        +++ b/npc/vsrc/pipelineEXE.v
+        @@ -21,6 +21,7 @@ module pipelineEXE (
+        +    input wire        btype_d_i,       // instruction is branch type instruction 
+         
+        @@ -128,7 +129,7 @@ module pipelineEXE (
+             end
+             assign redirection_e_o = st_e_i? redirection_r :
+        -                                    (taken_d_i^alu_taken)|(jalr_d_i&~taken_d_i);
+        +                                    ( btype_d_i & taken_d_i^alu_taken)|(jalr_d_i&~taken_d_i);
      ```
