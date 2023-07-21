@@ -359,8 +359,6 @@ tags: RISC-V
 2. 后续指令需要根据 hazard unit 的`flush`信号来判断是否会被冲刷，hazard unit 只对 ID 进行冲刷
 3. 流水线 stall 的时候，需要暂停提交
 
-### 增加ecall指令
-在decoder.v里通过DPI-C函数增加ecall指令，这样在译码到ecall指令的时候，会通知DIFFTEST，riscv-test也是一ecall来表明测试结束的
 
 
 主要在 top.v 里增加了如下内容
@@ -398,6 +396,19 @@ tags: RISC-V
     `endif
 ```
 
+### 增加ecall指令
+在decoder.v里通过DPI-C函数增加ecall指令，这样在译码到ecall指令的时候，会通知DIFFTEST，riscv-test也是一ecall来表明测试结束的
+
+```verilog
+    `ifdef DIFFTEST
+    wire inst_ecall;    
+    assign inst_ecall = instruction_i == 32'h00000073;
+
+    always @(*) begin
+      if (inst_ebreak) ecall();
+    end
+    `endif
+```
 ## 新发现的 bug
 
 1. RV32 R-Type 指令跟 RV32 M 指令译码错误
@@ -458,8 +469,6 @@ tags: RISC-V
    ![xori](https://s2.loli.net/2023/07/21/R5YbuGZrDVf6cgj.png)
 4. lui
    ![lui](https://s2.loli.net/2023/07/21/W8MKySYt6eAOnI1.png)
-
-TOOD: 添加 difftest commit 的说明
 
 TODO: must use 32 bits instead of 64 bits
 ![must 32](https://s2.loli.net/2023/07/21/myp1vc9XGajgwSP.png)
