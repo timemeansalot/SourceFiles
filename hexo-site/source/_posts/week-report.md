@@ -386,7 +386,18 @@ tags: RISC-V
      1. alu_result
      2. extended_imm
      3. next_pc
-     4. load_data
+     4. load_data <- only in MEM stage bypass
+
+   ```bash
+        diff --git a/npc/vsrc/pipelineEXE.v b/npc/vsrc/pipelineEXE.v
+        index b81fbbe..62bb8e2 100644
+        --- a/npc/vsrc/pipelineEXE.v
+        +++ b/npc/vsrc/pipelineEXE.v
+        -    assign bypass_e_o=alu_calculation;
+        +    assign bypass_e_o = {32{result_src_d_i[0]}} & alu_calculation |
+        +                        {32{result_src_d_i[1]}} & extended_imm_d_i|
+        +                        {32{result_src_d_i[3]}} & pc_plus4_d_i;
+   ```     
         ![addi mistake](https://s2.loli.net/2023/07/21/RasrSTfE4luqUDY.png)
 
 ## 测试通过的 riscv-tests
