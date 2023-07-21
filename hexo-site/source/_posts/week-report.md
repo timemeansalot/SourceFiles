@@ -91,6 +91,41 @@ tags: RISC-V
 
    1. 判断第一条指令的提交： `resetn`触发之后，2 个 cycle 才可以读出第一条指令，第一条指令经过 5 个 cycle 才能提交
    2. 后续指令需要根据 hazard unit 的`flush`信号来判断是否会被冲刷，hazard unit 只对 ID 进行冲刷
+   3. 流水线stall的时候，需要暂停提交
+
+主要在top.v里增加了如下内容
+```verilog
+    `ifdef DIFFTEST
+    // instruction commit
+    reg resetn_d, resetn_d_d;
+    reg commit_en_exe, commit_en_mem, commit_en_wb, commit_en_delay;
+    wire commit_en_id;
+    assign id_instr=instruction_f_o;
+    // TODO: add stall logic consideration for instruction commit
+
+    always @(posedge clk ) begin 
+        resetn_d <= resetn;
+        resetn_d_d <= resetn_d;
+    end
+
+    assign commit_en_id = ~flush_d_i & resetn_d_d;
+    assign commit_en    = commit_en_delay;
+    always @(posedge clk ) begin 
+        if(~resetn) begin
+            commit_en_exe <= 0;    
+            commit_en_mem <= 0;    
+            commit_en_wb  <= 0;    
+            commit_en_delay <= 0;    
+        end
+        else begin
+            commit_en_exe   <= commit_en_id;
+            commit_en_mem   <= commit_en_exe;
+            commit_en_wb    <= commit_en_mem;
+            commit_en_delay <= commit_en_wb;
+        end
+    end
+    `endif
+```
 
    ~~- 由于 Reference Model 是单周期的处理器，其每个 Cycle 就会提交一条指令；我们的 MCU_Core 是 5 级流水线处理器，第一条指令必须等到 5 个 Cycle 之后其结果才会写入到 Register~~
    ~~- 我们的 MCU 由于分支预测器的存在，可能会取一条指令，但是这条指令会被冲刷，因此其不会写入到 Register~~
@@ -338,3 +373,6 @@ tags: RISC-V
         -                                    (taken_d_i^alu_taken)|(jalr_d_i&~taken_d_i);
         +                                    ( btype_d_i & taken_d_i^alu_taken)|(jalr_d_i&~taken_d_i);
      ```
+
+## 测试通过的riscv-tests
+1. andi
