@@ -91,9 +91,10 @@ tags: RISC-V
 
    1. 判断第一条指令的提交： `resetn`触发之后，2 个 cycle 才可以读出第一条指令，第一条指令经过 5 个 cycle 才能提交
    2. 后续指令需要根据 hazard unit 的`flush`信号来判断是否会被冲刷，hazard unit 只对 ID 进行冲刷
-   3. 流水线stall的时候，需要暂停提交
+   3. 流水线 stall 的时候，需要暂停提交
 
-主要在top.v里增加了如下内容
+主要在 top.v 里增加了如下内容
+
 ```verilog
     `ifdef DIFFTEST
     // instruction commit
@@ -103,19 +104,19 @@ tags: RISC-V
     assign id_instr=instruction_f_o;
     // TODO: add stall logic consideration for instruction commit
 
-    always @(posedge clk ) begin 
+    always @(posedge clk ) begin
         resetn_d <= resetn;
         resetn_d_d <= resetn_d;
     end
 
     assign commit_en_id = ~flush_d_i & resetn_d_d;
     assign commit_en    = commit_en_delay;
-    always @(posedge clk ) begin 
+    always @(posedge clk ) begin
         if(~resetn) begin
-            commit_en_exe <= 0;    
-            commit_en_mem <= 0;    
-            commit_en_wb  <= 0;    
-            commit_en_delay <= 0;    
+            commit_en_exe <= 0;
+            commit_en_mem <= 0;
+            commit_en_wb  <= 0;
+            commit_en_delay <= 0;
         end
         else begin
             commit_en_exe   <= commit_en_id;
@@ -127,26 +128,26 @@ tags: RISC-V
     `endif
 ```
 
-   ~~- 由于 Reference Model 是单周期的处理器，其每个 Cycle 就会提交一条指令；我们的 MCU_Core 是 5 级流水线处理器，第一条指令必须等到 5 个 Cycle 之后其结果才会写入到 Register~~
-   ~~- 我们的 MCU 由于分支预测器的存在，可能会取一条指令，但是这条指令会被冲刷，因此其不会写入到 Register~~
+~~- 由于 Reference Model 是单周期的处理器，其每个 Cycle 就会提交一条指令；我们的 MCU_Core 是 5 级流水线处理器，第一条指令必须等到 5 个 Cycle 之后其结果才会写入到 Register~~
+~~- 我们的 MCU 由于分支预测器的存在，可能会取一条指令，但是这条指令会被冲刷，因此其不会写入到 Register~~
 
-   ~~可见**MCU_Core 中的指令，并不是每一个 Cycle 都会写入到 Register，但是 Reference Model 一旦执行一条指令，则会在一个 Cycle 写入到 Register**，因此：~~
+~~可见**MCU_Core 中的指令，并不是每一个 Cycle 都会写入到 Register，但是 Reference Model 一旦执行一条指令，则会在一个 Cycle 写入到 Register**，因此：~~
 
-   ~~- MCU_Core 必须告诉 Difftest 框架，其在某时刻写入到了 Register~~
-   ~~- Difftest 框架在收到该信号之后，令 Reference Model 执行一步，并且将其结果写入到 Register~~
+~~- MCU_Core 必须告诉 Difftest 框架，其在某时刻写入到了 Register~~
+~~- Difftest 框架在收到该信号之后，令 Reference Model 执行一步，并且将其结果写入到 Register~~
 
-   ~~经过分析发现，我们的 MCU_Core 不论指令流是何种情况，其在写入 Register 的时候，都会有 wb_en 信号为高，因此**我们在 top 中加入该信号，并且在 Difftest 中根据该信号来控制 Reference Model 执行和 Difftest 比较**。~~
+~~经过分析发现，我们的 MCU_Core 不论指令流是何种情况，其在写入 Register 的时候，都会有 wb_en 信号为高，因此**我们在 top 中加入该信号，并且在 Difftest 中根据该信号来控制 Reference Model 执行和 Difftest 比较**。~~
 
-   ~~```c~~
-   ~~// difftest/csrc/cpu_exec.c~~
-   ~~/_ difftest begin _/~~
-   ~~cpu.pc = top->pc; // pc 存入 cpu 结构体~~
-   ~~dump_gpr(); // 寄存器值存入 cpu 结构体~~
-   ~~if(top->wb_en){ // <- 判断指令提交再进入 Difftest~~
-   ~~ difftest_step(top->pc);~~
-   ~~}~~
-   ~~/_ difftest end _/~~
-   ~~```~~
+~~```c~~
+~~// difftest/csrc/cpu_exec.c~~
+~~/_ difftest begin _/~~
+~~cpu.pc = top->pc; // pc 存入 cpu 结构体~~
+~~dump_gpr(); // 寄存器值存入 cpu 结构体~~
+~~if(top->wb_en){ // <- 判断指令提交再进入 Difftest~~
+~~ difftest*step(top->pc);~~
+~~}~~
+~~/* difftest end \_/~~
+~~```~~
 
 4. 增加 MCU 的 I-Memory 的读取逻辑，从 Difftest 框架里读取指令、加载到 MCU 中
 
@@ -356,9 +357,11 @@ tags: RISC-V
    - bug 描述：R-Type 指令`instruction[25]==0`，M 指令`instruction[25]==1`，在`decoder.v`文件里，把该条件写反了
    - bug 修复：如果`instruction[25]==0`则按照 R-Type 指令进行译码
 2. EXE Stage 在`redirection_e_o`信号对`JAL`指令判断错误
+
    - [x] bug 已修复
    - bug 描述：EXE Stage 需要判断 SBP 对于 Branch 的分支预测是否正确；但是 EXE Stage 不需要判断 SBP 对于`JAL`指令判断是否正确
    - bug 修复：EXE Stage 在判断的时候，首先判断是否是 Branch 指令，再判断 SBP 预测是否正确；从而避免多此一举的对`JAL`是否预测正确判断
+
      ```bash
         diff --git a/npc/vsrc/pipelineEXE.v b/npc/vsrc/pipelineEXE.v
         index 8f44516..407184c 100644
@@ -374,5 +377,27 @@ tags: RISC-V
         +                                    ( btype_d_i & taken_d_i^alu_taken)|(jalr_d_i&~taken_d_i);
      ```
 
-## 测试通过的riscv-tests
+3. lui 指令需要 bypass 的时候，bypass 了错误的值
+   - [x] bug 已修复
+   - bug 描述：当一条指令的源寄存器跟它上一条指令的目的寄存器想同时，则会存在 EXE->ID 的 bypass，将 alu_result bypass 到 ID Stage.
+     目前 EXE Stage 的代码只会 bypass alu_result，但是对于`LUI`指令，其写回到寄存器的指不是 alu 的计算结果，而是`extended_imm`
+     ![](https://s2.loli.net/2023/07/21/ZKWGEwJUb9A8poO.png)
+   - bug 修复：在 bypass 的时候，需要根据写回到寄存器的来源，选择正确的源进行 bypass，一共有 4 种写会到寄存器的源：
+     1. alu_result
+     2. extended_imm
+     3. next_pc
+     4. load_data
+        ![addi mistake](https://s2.loli.net/2023/07/21/RasrSTfE4luqUDY.png)
+
+## 测试通过的 riscv-tests
+
 1. andi
+   ![](https://s2.loli.net/2023/07/21/VCwrtB6vZhkdTNR.png)
+2. ori
+   ![ori](https://s2.loli.net/2023/07/21/QPRkNrMflacEoAj.png)
+3. xori
+   ![xori](https://s2.loli.net/2023/07/21/R5YbuGZrDVf6cgj.png)
+4. lui
+   ![lui](https://s2.loli.net/2023/07/21/W8MKySYt6eAOnI1.png)
+
+TOOD: 添加 difftest commit 的说明
