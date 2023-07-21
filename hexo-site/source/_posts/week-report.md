@@ -350,6 +350,54 @@ tags: RISC-V
 
      ![image-20230712171228993](https://s2.loli.net/2023/07/12/vE7Z2KzFRsWgcAL.png)
 
+## 更改指令 commit 的时机
+
+![](https://s2.loli.net/2023/07/21/e8URhdaPM4lTC6z.png)
+**我们不能简单的以`wb_en`来判断一条指令是否提交**，因为 branch 指令其 wb_en 是 0，但是正常情况下 branch 指令是需要提交的，因此需要通过 hazard 以及 reset 来判断指令提交，具体如下：
+
+1.  判断第一条指令的提交： `resetn`触发之后，2 个 cycle 才可以读出第一条指令，第一条指令经过 5 个 cycle 才能提交
+2. 后续指令需要根据 hazard unit 的`flush`信号来判断是否会被冲刷，hazard unit 只对 ID 进行冲刷
+3. 流水线 stall 的时候，需要暂停提交
+
+### 增加ecall指令
+在decoder.v里通过DPI-C函数增加ecall指令，这样在译码到ecall指令的时候，会通知DIFFTEST，riscv-test也是一ecall来表明测试结束的
+
+
+主要在 top.v 里增加了如下内容
+
+```verilog
+    `ifdef DIFFTEST
+    // instruction commit
+    reg resetn_d, resetn_d_d;
+    reg commit_en_exe, commit_en_mem, commit_en_wb, commit_en_delay;
+    wire commit_en_id;
+    assign id_instr=instruction_f_o;
+    // TODO: add stall logic consideration for instruction commit
+
+    always @(posedge clk ) begin
+        resetn_d <= resetn;
+        resetn_d_d <= resetn_d;
+    end
+
+    assign commit_en_id = ~flush_d_i & resetn_d_d;
+    assign commit_en    = commit_en_delay;
+    always @(posedge clk ) begin
+        if(~resetn) begin
+            commit_en_exe <= 0;
+            commit_en_mem <= 0;
+            commit_en_wb  <= 0;
+            commit_en_delay <= 0;
+        end
+        else begin
+            commit_en_exe   <= commit_en_id;
+            commit_en_mem   <= commit_en_exe;
+            commit_en_wb    <= commit_en_mem;
+            commit_en_delay <= commit_en_wb;
+        end
+    end
+    `endif
+```
+
 ## 新发现的 bug
 
 1. RV32 R-Type 指令跟 RV32 M 指令译码错误
@@ -378,6 +426,7 @@ tags: RISC-V
      ```
 
 3. lui 指令需要 bypass 的时候，bypass 了错误的值
+
    - [x] bug 已修复
    - bug 描述：当一条指令的源寄存器跟它上一条指令的目的寄存器想同时，则会存在 EXE->ID 的 bypass，将 alu_result bypass 到 ID Stage.
      目前 EXE Stage 的代码只会 bypass alu_result，但是对于`LUI`指令，其写回到寄存器的指不是 alu 的计算结果，而是`extended_imm`
@@ -397,8 +446,7 @@ tags: RISC-V
         +    assign bypass_e_o = {32{result_src_d_i[0]}} & alu_calculation |
         +                        {32{result_src_d_i[1]}} & extended_imm_d_i|
         +                        {32{result_src_d_i[3]}} & pc_plus4_d_i;
-   ```     
-        ![addi mistake](https://s2.loli.net/2023/07/21/RasrSTfE4luqUDY.png)
+   ```
 
 ## 测试通过的 riscv-tests
 
@@ -412,3 +460,6 @@ tags: RISC-V
    ![lui](https://s2.loli.net/2023/07/21/W8MKySYt6eAOnI1.png)
 
 TOOD: 添加 difftest commit 的说明
+
+TODO: must use 32 bits instead of 64 bits
+![must 32](https://s2.loli.net/2023/07/21/myp1vc9XGajgwSP.png)
