@@ -2,3 +2,12 @@
 Blog/.deploy_git
 Outlook/.deploy_git
 .DS_Store
+# don't track these latex files
+*.fdb_latexmk
+*.log
+*.synctex.gz
+*.xdv
+*.aux
+*.fls
+*.out
+
