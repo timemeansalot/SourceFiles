@@ -12,10 +12,8 @@ tags: RISC-V
 **我们不能简单的以`wb_en`来判断一条指令是否提交**，因为 branch 指令其 wb_en 是 0，但是正常情况下 branch 指令是需要提交的，因此需要通过 hazard 以及 reset 来判断指令提交，具体如下：
 
 1.  判断第一条指令的提交： `resetn`触发之后，2 个 cycle 才可以读出第一条指令，第一条指令经过 5 个 cycle 才能提交
-2. 后续指令需要根据 hazard unit 的`flush`信号来判断是否会被冲刷，hazard unit 只对 ID 进行冲刷
-3. 流水线 stall 的时候，需要暂停提交
-
-
+2.  后续指令需要根据 hazard unit 的`flush`信号来判断是否会被冲刷，hazard unit 只对 ID 进行冲刷
+3.  流水线 stall 的时候，需要暂停提交
 
 主要在 top.v 里增加了如下内容
 
@@ -53,11 +51,12 @@ tags: RISC-V
 ```
 
 ### 增加ecall指令
+
 在decoder.v里通过DPI-C函数增加ecall指令，这样在译码到ecall指令的时候，会通知DIFFTEST，riscv-test也是一ecall来表明测试结束的
 
 ```verilog
     `ifdef DIFFTEST
-    wire inst_ecall;    
+    wire inst_ecall;
     assign inst_ecall = instruction_i == 32'h00000073;
 
     always @(*) begin
@@ -65,6 +64,7 @@ tags: RISC-V
     end
     `endif
 ```
+
 ## 新发现的 bug
 
 1. RV32 R-Type 指令跟 RV32 M 指令译码错误
@@ -84,7 +84,7 @@ tags: RISC-V
         +++ b/npc/vsrc/pipelineEXE.v
         @@ -21,6 +21,7 @@ module pipelineEXE (
         +    input wire        btype_d_i,       // instruction is branch type instruction
-  
+
         @@ -128,7 +129,7 @@ module pipelineEXE (
              end
              assign redirection_e_o = st_e_i? redirection_r :
@@ -117,14 +117,109 @@ tags: RISC-V
 
 ## 测试通过的 riscv-tests
 
-1. andi
-   ![](https://s2.loli.net/2023/07/21/VCwrtB6vZhkdTNR.png)
-2. ori
-   ![ori](https://s2.loli.net/2023/07/21/QPRkNrMflacEoAj.png)
-3. xori
-   ![xori](https://s2.loli.net/2023/07/21/R5YbuGZrDVf6cgj.png)
-4. lui
-   ![lui](https://s2.loli.net/2023/07/21/W8MKySYt6eAOnI1.png)
+1. Immdiate Type
+   - [ ] ADDI
+   - [ ] SLTI
+   - [ ] SLTIU
+   - [x] XORI
+   - [x] ORI
+   - [x] ANDI
+   - [ ] SLLI
+   - [ ] SRLI
+   - [ ] SRAI
+   - [ ] AUIPC
+   - [x] LUI
+2. Register-Type
+   - [x] ADD
+   - [ ] SUB
+   - [ ] SLT
+   - [ ] SLTU
+   - [x] XOR
+   - [x] OR
+   - [x] AND
+   - [ ] SLL
+   - [ ] SRL
+   - [ ] SRA
+3. Branch-Type
+   - [ ] JALR
+   - [ ] JAL
+   - [ ] BEQ
+   - [ ] BNE
+   - [ ] BLT
+   - [ ] BGE
+   - [ ] BLTU
+   - [ ] BGEU
+4. Memory-Type
+   - [ ] LB
+   - [ ] BH
+   - [ ] LW
+   - [ ] LBU
+   - [ ] LHU
+   - [ ] SB
+   - [ ] SH
+   - [ ] SW
+
+### 测试通过截图
+
+#### Immdiate-Type
+
+1. ADDI
+2. SLTI
+3. SLTIU
+4. XORI
+   ![XORI](https://s2.loli.net/2023/07/21/R5YbuGZrDVf6cgj.png)
+5. ORI
+   ![ORI](https://s2.loli.net/2023/07/21/QPRkNrMflacEoAj.png)
+6. ANDI
+   ![ANDI](https://s2.loli.net/2023/07/21/VCwrtB6vZhkdTNR.png)
+7. SLLI
+   ![SLLI](https://s2.loli.net/2023/07/26/SfJrbcljPNHFBTR.png)
+8. SRLI
+   ![SRLI](https://s2.loli.net/2023/07/26/oLqO8IsVh2ztwNT.png)
+9. SRAI
+   ![SRAI](https://s2.loli.net/2023/07/26/yQ1WlAGuoBMskS7.png)
+10. AUIPC
+11. LUI
+    ![LUI](https://s2.loli.net/2023/07/21/W8MKySYt6eAOnI1.png)
+
+#### Register-Type
+
+1. ADD
+   ![ADD](https://s2.loli.net/2023/07/25/PMqymGolJQxSETR.png)
+2. SUB
+3. SLT
+4. SLTU
+5. XOR
+   ![XOR](https://s2.loli.net/2023/07/25/peKc3EVj7LxQBzb.png)
+6. OR
+   ![OR](https://s2.loli.net/2023/07/25/JaV15uRe96OHKwl.png)
+7. AND
+   ![AND](https://s2.loli.net/2023/07/25/YszPN56nKEIgFdv.png)
+8. SLL
+9. SRL
+10. SRA
+
+#### Branch-Type
+
+1. JALR
+2. JAL
+3. BEQ
+4. BNE
+5. BLT
+6. BGE
+7. BLTU
+8. BGEU
+
+#### Memory-Type
+
+1. LB
+2. BH
+3. LW
+4. LBU
+5. LHU
+6. SB
+7. SH
+8. SW
 
 TODO: must use 32 bits instead of 64 bits
 ![must 32](https://s2.loli.net/2023/07/21/myp1vc9XGajgwSP.png)

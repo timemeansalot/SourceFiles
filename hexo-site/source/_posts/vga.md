@@ -368,18 +368,100 @@ $$
 
 ## 架构设计
 
-> 架构图
+![data flow](https://s2.loli.net/2023/07/27/edc2HSwg5iNuXsI.png)
+如上图所示，从SoC产生数据到数据通过VGA现实在屏幕上，数据需要首先被写入到SDRAM中，VGA再从SDRAM中读取数据。
+由于需要处理好**SDRAM的竞争问题**，经过调研发现如下几种常见的解决方法：
+
+1. 使用双端口SDRAM
+   - 优点：能够直接支持Core跟VGA同时访问SDRAM
+   - 缺点：
+     1. 双端口SDRAM的成本跟面积比单端口SDRAM大
+     2. 当有其他访问SDRAM的设备加入时，不适用
+2. 将SDRAM的频率提升至Core频率的两倍，此时SDRAM一半的时间可以由Core访问、另一半的时间可以由VGA访问
+   - 优点：能够满足Core跟VGA交替访问SDRAM
+   - 缺点：
+     1. SDRAM频率很难做到Core的两倍
+     2. 当有其他访问SDRAM的设备加入时，不适用
+3. 总线+时分复用：由于VGA输出存在blank时间，此时不需要现实数据，因此blank时间可以让Core访问SDRAM
+   - 优点：对SDRAM没有额外要求
+   - 缺点：
+     1. 需要额外控制链路控制Core跟VGA访问SDRAM
+     2. 在VGA处于visible时间时，Core无法访问SDRAM，因此可能导致Core Stall
+
+![system](https://s2.loli.net/2023/07/26/BxZr9HknAaltCUd.png)
+通过上述分析，以及开源SDRAM设计，本版VGA跟SDRAM和Core通过AXI总线链接，如上图所示，其设计特点如下：
+
+1. 采用双端口SDRAM以尽可能保证VGA访问SDRAM时，SDRAM不会被其他设备占用
+2. Core写入SDRAM的优先级高于VGA访问优先级，从而保证Core的执行
+3. VGA模块内部有ping pong memory作为frame buffer，SDRAM通过Burst传输的方式将帧画面写入到frame buffer
+
+![vga](https://s2.loli.net/2023/07/27/2Mqdg78YAphLjQI.png)
+VGA模块内部设计如上图所示，主要分为3大模块，各模块功能如下：
+
+1. Frame Buffer：是一块Ping Pong Memory，其主要作用是缓存一帧的画面，从而避免VGA访问SDRAM失败时，输出画面撕裂
+2. Config Module：通过AXI总线接受Core对VGA的配置信息，从而更改VGA的输出分辨率以及帧率
+3. VGA Ctrl：运行VGA计算，输出444的RGB数据以及同步信号
 
 ## 顶层接口
 
 > input and output design
 
-### 从 SDRAM 读取数据的接口
+- VGA的输入数据主要来自于Core的寄存器配置信息，以及从SDRAM里读出的帧画面信息；
+- VGA输出数据主要包括RGB信号以及同步信号。
 
-TODO: 从 SDRAM 读取数据，需要考虑 AXI4 的设计
+### 从SDRAM读取数据的信号
 
-1. AXI
-   ![axi feature](https://s2.loli.net/2023/07/24/d24w6yzNEKHs9pA.png)
+> VGA 的frame buffer作为AXI的master
+
+| Signal  | Direction | Width | Description                                |
+| ------- | --------- | ----- | ------------------------------------------ |
+| arburst | Output    | 2     | burst传输类型                              |
+| araddr  | Output    | 32    | 读地址                                     |
+| arlen   | Output    | 8     | bursy长度；表示一次burst传输包含的传输次数 |
+| arsize  | Output    | 3     | 表示一次burst传输内每次传输的size          |
+| arready | Input     | 1     | 准备好接收读地址                           |
+| arvalid | Output    | 1     | 读地址有效信号                             |
+| rdata   | Input     | 32    | 读数据                                     |
+| rresp   | Input     | 2     | 读操作状态                                 |
+| rlast   | Input     | 1     | burst传输内的最后一个                      |
+| rready  | Output    | 1     | 准备好了接收读数据                         |
+| rvalid  | Input     | 1     | 读有效信号                                 |
+
+TODO: add clock signals
+
+### Core写入到VGA 寄存器的信号
+
+> VGA config单元作为AXI的Slave
+
+| Signal  | Direction | Width | Description                                                      |
+| ------- | --------- | ----- | ---------------------------------------------------------------- |
+| awid    | Input     |       | 写地址ID，用来标识写操作，相同ID内响应不能乱序；不同ID间可以乱序 |
+| awburst | Input     | 2     | burst类型                                                        |
+| awlen   | Input     | 8     | burst长度                                                        |
+| awsize  | Input     | 3     | burst传输size                                                    |
+| awready | Output    | 1     | slave准备好接收写地址                                            |
+| awvalid | Input     | 1     | 写地址有效信号                                                   |
+| awaddr  | Input     | 32    | 写地址                                                           |
+| wdata   | Input     | 32    | 写数据                                                           |
+| wstrb   | Input     | 4     | bit为1表示对应byte数据有效                                       |
+| wready  | Output    | 1     | 准备好接收写数据                                                 |
+| wvalid  | Input     | 1     | 写有效                                                           |
+| bresp   | Output    | 2     | 写操作状态                                                       |
+| bvalid  | Output    | 1     | 写响应有效信号                                                   |
+| bready  | Input     | 1     | MASTER准备好接收写响应                                           |
+
+### 输出到屏幕的信号
+
+| Signal  | Direction | Width | Description           |
+| ------- | --------- | ----- | --------------------- |
+| clk_p   | Input     | 1     | 像素时钟，默认是25mhz |
+| reset_n | Input     | 1     | 复位信号              |
+| r       | Output    | 4     | 蓝色                  |
+| g       | Output    | 4     | 绿色                  |
+| b       | Output    | 4     | 蓝色                  |
+| vsync   | Output    | 1     | 垂直同步              |
+| hsycn   | Output    | 1     | 水平同步              |
+| blank   | Output    | 1     | 黑屏信号              |
 
 ## 关键时序
 
@@ -387,6 +469,7 @@ TODO: 从 SDRAM 读取数据，需要考虑 AXI4 的设计
 
 ![vga timing](https://s2.loli.net/2023/07/24/NzXkTIdPU56uE3F.png)
 
+TODO: 画大概的时序即可
 TODO: 时序分析，需要考虑数据从 SDRAM 读出的时序
 TODO: 时序分析，需要考虑使用 AXI4 接口的时序
 
@@ -395,10 +478,36 @@ TODO: 时序分析，需要考虑使用 AXI4 接口的时序
 > 描述该模块具体怎么实现功能描述的，包含哪些子模块，各个子模块的功能描述、顶层接口、模块框图和电路图等。
 > 要具体详细，他人看到该部分后能完成该模块的 RTL 代码实现。
 
+1. The VGA uses uncached byte accesses to 0xA0000-0xBFFFF
+2. VGA has internal registers which can be write or read by the Core, these registers are used for VGA configuration
+3. VGA has 256k of video memory, which is composed of 4 bank memory block(64k)
+
+TODO: 详细写出各个模块的设计细节
+
+不同的VGA访存方案：
+
+> CPU需要往RAM里写，VGA需要从RAM里读取，所以需要控制好二者对RAM的访问
+
+1. 采用2-port RAM
+2. 时间复用，RAM的速度翻倍，从而可以在一半的时间由CPU访问，在另一半时间由VGA访问
+3. 采用Bus：VGA处于visible的时间时，VGA访问RAM，否则CPU访问RAM(CPU必须在VGA访问RAM的时候，暂停)
+4. 将RAM分不同的BANK，当VGA跟CPU访问不同BANK的时候，二者可以并行
+
 ## 功能分解
 
 > 详细列出该模块的功能点，目的是为该模块的单元测试（UT）做准备。
 > 功能点分解是为了**针对该模块的功能点设计相应的测试用例**，完成该模块单元测试功能覆盖率覆盖。
+
+VGA 输出到显示器时，需要实现的功能：
+
+1. 在640x480 60Hz的输出分辨率下：
+   1. 输出到显示器，在整个显示器上显示同一块颜色
+   2. 输出到显示器，在整个显示器上显示彩条，如下图所示
+      ![output color strop](https://s2.loli.net/2023/07/25/hbEuYgeNWm8aJfy.png)
+   3. 输出到显示器，在整个显示器上静态图片
+   4. 输出到显示器，在整个显示器上文字
+2. 跟SDRAM读取数据时需要考虑的情况
+3. 更改输出分辨率时需要考虑的情况
 
 ## 临时疑问
 
