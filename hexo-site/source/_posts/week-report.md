@@ -176,11 +176,11 @@ A: 在进行riscv-tests测试的时候，针对addi, xor等测试集，64 bits�
 
 ```bash
  lui ra, 0x80000
- srai a4, ra, 1 # <- miss match
+ srli a4, ra, 1 # <- miss match
 ```
 
 在32bits的MCU上：`ra=0x80000000; a4=0x40000000;`  
- 在64bits的Ref上：`ra=0xffffffff80000000; a4=0xffffffffc0000000;`  
+ 在64bits的Ref上：`ra=0xffffffff80000000; a4=0x7fffffffc0000000;`  
  即使取Ref的低32bits，也会有：`0xc0000000 != 0x40000000`
 ![must 32](https://s2.loli.net/2023/07/21/myp1vc9XGajgwSP.png)
 
