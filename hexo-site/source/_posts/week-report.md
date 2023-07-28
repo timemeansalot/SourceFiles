@@ -6,137 +6,85 @@ tags: RISC-V
 
 [TOC]
 
-## 更改指令 commit 的时机
+# 本周发现和修复的 bug
 
-![](https://s2.loli.net/2023/07/21/e8URhdaPM4lTC6z.png)
-**我们不能简单的以`wb_en`来判断一条指令是否提交**，因为 branch 指令其 wb_en 是 0，但是正常情况下 branch 指令是需要提交的，因此需要通过 hazard 以及 reset 来判断指令提交，具体如下：
-
-1.  判断第一条指令的提交： `resetn`触发之后，2 个 cycle 才可以读出第一条指令，第一条指令经过 5 个 cycle 才能提交
-2.  后续指令需要根据 hazard unit 的`flush`信号来判断是否会被冲刷，hazard unit 只对 ID 进行冲刷
-3.  流水线 stall 的时候，需要暂停提交
-
-主要在 top.v 里增加了如下内容
-
-```verilog
-    `ifdef DIFFTEST
-    // instruction commit
-    reg resetn_d, resetn_d_d;
-    reg commit_en_exe, commit_en_mem, commit_en_wb, commit_en_delay;
-    wire commit_en_id;
-    assign id_instr=instruction_f_o;
-    // TODO: add stall logic consideration for instruction commit
-
-    always @(posedge clk ) begin
-        resetn_d <= resetn;
-        resetn_d_d <= resetn_d;
-    end
-
-    assign commit_en_id = ~flush_d_i & resetn_d_d;
-    assign commit_en    = commit_en_delay;
-    always @(posedge clk ) begin
-        if(~resetn) begin
-            commit_en_exe <= 0;
-            commit_en_mem <= 0;
-            commit_en_wb  <= 0;
-            commit_en_delay <= 0;
-        end
-        else begin
-            commit_en_exe   <= commit_en_id;
-            commit_en_mem   <= commit_en_exe;
-            commit_en_wb    <= commit_en_mem;
-            commit_en_delay <= commit_en_wb;
-        end
-    end
-    `endif
-```
-
-### 增加ecall指令
-
-在decoder.v里通过DPI-C函数增加ecall指令，这样在译码到ecall指令的时候，会通知DIFFTEST，riscv-test也是一ecall来表明测试结束的
-
-```verilog
-    `ifdef DIFFTEST
-    wire inst_ecall;
-    assign inst_ecall = instruction_i == 32'h00000073;
-
-    always @(*) begin
-      if (inst_ebreak) ecall();
-    end
-    `endif
-```
-
-## 新发现的 bug
-
-1. RV32 R-Type 指令跟 RV32 M 指令译码错误
-   - [x] bug 已修复
-   - bug 描述：R-Type 指令`instruction[25]==0`，M 指令`instruction[25]==1`，在`decoder.v`文件里，把该条件写反了
-   - bug 修复：如果`instruction[25]==0`则按照 R-Type 指令进行译码
-2. EXE Stage 在`redirection_e_o`信号对`JAL`指令判断错误
+1. Store指令错误选择src1当作写回的数据
 
    - [x] bug 已修复
-   - bug 描述：EXE Stage 需要判断 SBP 对于 Branch 的分支预测是否正确；但是 EXE Stage 不需要判断 SBP 对于`JAL`指令判断是否正确
-   - bug 修复：EXE Stage 在判断的时候，首先判断是否是 Branch 指令，再判断 SBP 预测是否正确；从而避免多此一举的对`JAL`是否预测正确判断
+   - bug 描述：Store指令选择将src2写入到Data Memory，当前的MCU错误的选择了将src1写回到Data Memory
+     ![](https://s2.loli.net/2023/07/27/lOGdqNX4bHM58Za.png)
+   - bug 修复：EXE Stage -> MEM Stage都选择src2作为写回到Data Memory的数据
 
+2. 针对Store指令，ID需要将src2的两种可能传递给EXE
+   - [x] bug 已修复
+   - bug 描述：Store指令需要两个操作：
+     1. 计算地址: `addr=src1+imm`
+     2. 将src2写回
+        当前代码里ID->EXE对于src的选择，要么是寄存器读出的数，要么是立即数拓展，  
+        导致**地址计算正确跟取到正确的写回数据只能同时满足一个**
+        ![rs2_sel_o wrong](https://s2.loli.net/2023/07/27/2y8uST9NoA4f3CJ.png)
+        ![wrong addr](https://s2.loli.net/2023/07/27/r5ZiuoNtmBE7sSO.png)
+   - bug 修复：对于ID来说，针对src2需要同时将RF读取值跟立即数拓展同时传递给EXE
+     1. EXE利用立即数拓展计算地址
+     2. 将RF读取值传递给MEM
+3. MEM写入读出必须提前一个周期
+
+   - [x] bug 已修复
+   - bug 描述：由于Data Memory写入需要一个周期的延迟，因此EXE必须提前一个cycle给出地址到Data Memory才可以保证Data Memory在MEM State完成数据的写入
+   - bug 修复：EXE在遇到Store类型指令时，将其addr, src2, dmem_type都直接给到MEM，不通过pipeline register
+
+4. 非访存指令（除load/store）之外的指令，decoder为设置其访存类型为`DMEM_NO`
+
+   - [x] bug 已修复
+   - bug 描述：decoder没有设置非访存指令的访存类型，导致一条访存指令后面的所有非访存指令都可以写入到Data Memory，从而导致写入的数据是错误的数据
+     ![lw](https://s2.loli.net/2023/07/27/qU2CM1Da5Hi64Rl.png)
+   - bug 修复：在decoder中设置非访存指令不能够访问Data Memory
      ```bash
-        diff --git a/npc/vsrc/pipelineEXE.v b/npc/vsrc/pipelineEXE.v
-        index 8f44516..407184c 100644
-        --- a/npc/vsrc/pipelineEXE.v
-        +++ b/npc/vsrc/pipelineEXE.v
-        @@ -21,6 +21,7 @@ module pipelineEXE (
-        +    input wire        btype_d_i,       // instruction is branch type instruction
-
-        @@ -128,7 +129,7 @@ module pipelineEXE (
-             end
-             assign redirection_e_o = st_e_i? redirection_r :
-        -                                    (taken_d_i^alu_taken)|(jalr_d_i&~taken_d_i);
-        +                                    ( btype_d_i & taken_d_i^alu_taken)|(jalr_d_i&~taken_d_i);
+     diff --git a/npc/vsrc/decoder.v b/npc/vsrc/decoder.v
+     index e607eca..66b45f8 100644
+     --- a/npc/vsrc/decoder.v
+     +++ b/npc/vsrc/decoder.v
+     @@ -83,6 +83,7 @@ module decoder(
+              instr_illegal_o = 1'b0; // suppose instruction is legal by default.
+              wb_src_o = `WBSRC_ALU;  // suppose write back source is from ALU
+              wb_en_o = 1'b0; // suppose write back is not enable
+     +        dmem_type_o = `DMEM_NO;
+              case(opcode)
+                  `OPCODE_LOAD  : begin
+                      imm_type_o = `IMM_I;
      ```
 
-3. lui 指令需要 bypass 的时候，bypass 了错误的值
+# 测试通过的 riscv-tests
 
-   - [x] bug 已修复
-   - bug 描述：当一条指令的源寄存器跟它上一条指令的目的寄存器想同时，则会存在 EXE->ID 的 bypass，将 alu_result bypass 到 ID Stage.
-     目前 EXE Stage 的代码只会 bypass alu_result，但是对于`LUI`指令，其写回到寄存器的指不是 alu 的计算结果，而是`extended_imm`
-     ![](https://s2.loli.net/2023/07/21/ZKWGEwJUb9A8poO.png)
-   - bug 修复：在 bypass 的时候，需要根据写回到寄存器的来源，选择正确的源进行 bypass，一共有 4 种写会到寄存器的源：
-     1. alu_result
-     2. extended_imm
-     3. next_pc
-     4. load_data <- only in MEM stage bypass
+## 本周通过的测试
 
-   ```bash
-        diff --git a/npc/vsrc/pipelineEXE.v b/npc/vsrc/pipelineEXE.v
-        index b81fbbe..62bb8e2 100644
-        --- a/npc/vsrc/pipelineEXE.v
-        +++ b/npc/vsrc/pipelineEXE.v
-        -    assign bypass_e_o=alu_calculation;
-        +    assign bypass_e_o = {32{result_src_d_i[0]}} & alu_calculation |
-        +                        {32{result_src_d_i[1]}} & extended_imm_d_i|
-        +                        {32{result_src_d_i[3]}} & pc_plus4_d_i;
-   ```
+1. SW
+2. ADDI
+3. SLLI
+4. AUIPC
 
-## 测试通过的 riscv-tests
+## 所有通过的测试
 
 1. Immdiate Type
-   - [ ] ADDI
+   - [x] ADDI
    - [ ] SLTI
    - [ ] SLTIU
    - [x] XORI
    - [x] ORI
    - [x] ANDI
-   - [ ] SLLI
+   - [x] SLLI
    - [ ] SRLI
    - [ ] SRAI
-   - [ ] AUIPC
+   - [x] AUIPC
    - [x] LUI
 2. Register-Type
-   - [x] ADD
+   - [ ] ADD
    - [ ] SUB
    - [ ] SLT
    - [ ] SLTU
-   - [x] XOR
-   - [x] OR
-   - [x] AND
+   - [ ] XOR
+   - [ ] OR
+   - [ ] AND
    - [ ] SLL
    - [ ] SRL
    - [ ] SRA
@@ -157,13 +105,14 @@ tags: RISC-V
    - [ ] LHU
    - [ ] SB
    - [ ] SH
-   - [ ] SW
+   - [x] SW
 
-### 测试通过截图
+## 测试通过截图
 
-#### Immdiate-Type
+### Immdiate-Type
 
 1. ADDI
+   ![ADDI](https://s2.loli.net/2023/07/27/ayvf7q5Zsjb24WB.png)
 2. SLTI
 3. SLTIU
 4. XORI
@@ -175,31 +124,26 @@ tags: RISC-V
 7. SLLI
    ![SLLI](https://s2.loli.net/2023/07/26/SfJrbcljPNHFBTR.png)
 8. SRLI
-   ![SRLI](https://s2.loli.net/2023/07/26/oLqO8IsVh2ztwNT.png)
 9. SRAI
-   ![SRAI](https://s2.loli.net/2023/07/26/yQ1WlAGuoBMskS7.png)
 10. AUIPC
+    ![AUIPC](https://s2.loli.net/2023/07/27/6r1gowdD5TSCKZ7.png)
 11. LUI
     ![LUI](https://s2.loli.net/2023/07/21/W8MKySYt6eAOnI1.png)
 
-#### Register-Type
+### Register-Type
 
 1. ADD
-   ![ADD](https://s2.loli.net/2023/07/25/PMqymGolJQxSETR.png)
 2. SUB
 3. SLT
 4. SLTU
 5. XOR
-   ![XOR](https://s2.loli.net/2023/07/25/peKc3EVj7LxQBzb.png)
 6. OR
-   ![OR](https://s2.loli.net/2023/07/25/JaV15uRe96OHKwl.png)
 7. AND
-   ![AND](https://s2.loli.net/2023/07/25/YszPN56nKEIgFdv.png)
 8. SLL
 9. SRL
 10. SRA
 
-#### Branch-Type
+### Branch-Type
 
 1. JALR
 2. JAL
@@ -210,7 +154,7 @@ tags: RISC-V
 7. BLTU
 8. BGEU
 
-#### Memory-Type
+### Memory-Type
 
 1. LB
 2. BH
@@ -220,6 +164,53 @@ tags: RISC-V
 6. SB
 7. SH
 8. SW
+   ![SW](https://s2.loli.net/2023/07/27/uc3dSQDjxvnhGAO.png)
 
-TODO: must use 32 bits instead of 64 bits
+# 编译32 bits的reference model
+
+## Q: 为什么需要32 bits的reference model?
+
+A: 在进行riscv-tests测试的时候，针对addi, xor等测试集，64 bits的reference model勉强可以用（在使用的时候，针对64bits的reference model，
+我们可以取其寄存器低32bits来同MCU进行比较）；  
+ 但是在遇到sra，srl等指令的时候，就不能这么操作了：因为64bits的reference model，其最高位是跟32bits的MCU是不同的，例如：
+
+```bash
+ lui ra, 0x80000
+ srai a4, ra, 1 # <- miss match
+```
+
+在32bits的MCU上：`ra=0x80000000; a4=0x40000000;`  
+ 在64bits的Ref上：`ra=0xffffffff80000000; a4=0xffffffffc0000000;`  
+ 即使取Ref的低32bits，也会有：`0xc0000000 != 0x40000000`
 ![must 32](https://s2.loli.net/2023/07/21/myp1vc9XGajgwSP.png)
+
+## 编译32bits reference model遇到的问题
+
+> 目前DIFFTEST框架使用的是64bits的Spike作为reference model，在引入32bits的reference model时做了如下尝试:
+
+1.  尝试编译32bits的NEMU作为reference model，**失败**
+
+    - 在NEMU的[GitHub主页](https://github.com/OpenXiangShan/NEMU/tree/master)上，给出了编译的教程，但是该教程只针对64bits的版本
+    - 尝试根据上述教程做修改编译32bits的NEMU作为reference model失败，<u>因为官方给出的NEMU只包含64bits版本的实现</u>
+    - 32bits的NEMU没有给出具体实现，因为一直以来*一生一芯*的培养过程当中，主要的培养内容就是让学生实现32bits版本的NEMU，
+      因此NEMU自然不会给出32版本的NEMU实现
+    - 另一方面，当前使用NEMU编译得到的64bits 的reference model在接入到DIFFTEST框架之后，会出现<u>segment fault</u>，目前还没有debug出原因。
+
+2.  尝试编译32bits的spike作为reference model，没有进展
+
+    - 根据[Spike GitHub主页](https://github.com/riscv-software-src/riscv-isa-sim/tree/master/arch_test_target/spike)
+      上的教程，更改了XLEN版本，进行编译，但是编译得到的Spike还是64bits的
+      ![spike reference](https://s2.loli.net/2023/07/28/ha4CoZfjxkYJgwz.png)
+
+3.  可行的思路：在查资料的时候找到了[一生一心第六期的讲义](https://ysyx.oscc.cc/docs/ics-pa/2.4.html#differential-testing)，
+    <u>该讲义中提到了在编写32bits的NMEU的时候，可以使用Spike作为32bit是的reference moedel</u>，
+    所以打算按照该讲义搭建一生一芯第六期的开发环境，然后在该开发环境里生成32bits的Spike reference model。
+    ![spike](https://s2.loli.net/2023/07/28/YXyJ9fZIp1mtzlr.png)
+
+> PS：感谢**石峰**同学在搭建Difftest框架时的帮助，例如MCU接入Difftest测试框架、编译Reference Model
+
+## 受reference model导致测试不通过的测试集
+
+1. 右移指令
+2. SH, SB
+3. 其他未测试过的指令集，也有可能受reference model原因导致测试不通过

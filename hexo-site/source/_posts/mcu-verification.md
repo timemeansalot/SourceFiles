@@ -576,7 +576,51 @@ tags:
 8. SW
    ![SW](https://s2.loli.net/2023/07/27/uc3dSQDjxvnhGAO.png)
 
-## TODO LIST
+# 编译32 bits的reference model
 
-TODO: must use 32 bits instead of 64 bits
+## Q: 为什么需要32 bits的reference model?
+
+A: 在进行riscv-tests测试的时候，针对addi, xor等测试集，64 bits的reference model勉强可以用（在使用的时候，针对64bits的reference model，
+我们可以取其寄存器低32bits来同MCU进行比较）；  
+ 但是在遇到sra，srl等指令的时候，就不能这么操作了：因为64bits的reference model，其最高位是跟32bits的MCU是不同的，例如：
+
+```bash
+ lui ra, 0x80000
+ srai a4, ra, 1 # <- miss match
+```
+
+在32bits的MCU上：`ra=0x80000000; a4=0x40000000;`  
+ 在64bits的Ref上：`ra=0xffffffff80000000; a4=0xffffffffc0000000;`  
+ 即使取Ref的低32bits，也会有：`0xc0000000 != 0x40000000`
 ![must 32](https://s2.loli.net/2023/07/21/myp1vc9XGajgwSP.png)
+
+## 编译32bits reference model遇到的问题
+
+> 目前DIFFTEST框架使用的是64bits的Spike作为reference model，在引入32bits的reference model时做了如下尝试:
+
+1.  尝试编译32bits的NEMU作为reference model，**失败**
+
+    - 在NEMU的[GitHub主页](https://github.com/OpenXiangShan/NEMU/tree/master)上，给出了编译的教程，但是该教程只针对64bits的版本
+    - 尝试根据上述教程做修改编译32bits的NEMU作为reference model失败，<u>因为官方给出的NEMU只包含64bits版本的实现</u>
+    - 32bits的NEMU没有给出具体实现，因为一直以来*一生一芯*的培养过程当中，主要的培养内容就是让学生实现32bits版本的NEMU，
+      因此NEMU自然不会给出32版本的NEMU实现
+    - 另一方面，当前使用NEMU编译得到的64bits 的reference model在接入到DIFFTEST框架之后，会出现<u>segment fault</u>，目前还没有debug出原因。
+
+2.  尝试编译32bits的spike作为reference model，没有进展
+
+    - 根据[Spike GitHub主页](https://github.com/riscv-software-src/riscv-isa-sim/tree/master/arch_test_target/spike)
+      上的教程，更改了XLEN版本，进行编译，但是编译得到的Spike还是64bits的
+      ![spike reference](https://s2.loli.net/2023/07/28/ha4CoZfjxkYJgwz.png)
+
+3.  可行的思路：在查资料的时候找到了[一生一心第六期的讲义](https://ysyx.oscc.cc/docs/ics-pa/2.4.html#differential-testing)，
+    <u>该讲义中提到了在编写32bits的NMEU的时候，可以使用Spike作为32bit是的reference moedel</u>，
+    所以打算按照该讲义搭建一生一芯第六期的开发环境，然后在该开发环境里生成32bits的Spike reference model。
+    ![spike](https://s2.loli.net/2023/07/28/YXyJ9fZIp1mtzlr.png)
+
+> PS：感谢**石峰**同学在搭建Difftest框架时的帮助，例如MCU接入Difftest测试框架、编译Reference Model
+
+## 受reference model导致测试不通过的测试集
+
+1. 右移指令
+2. SH, SB
+3. 其他未测试过的指令集，也有可能受reference model原因导致测试不通过
