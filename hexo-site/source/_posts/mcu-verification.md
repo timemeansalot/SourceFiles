@@ -470,14 +470,14 @@ tags:
 
 1. Immdiate Type
    - [x] ADDI
-   - [ ] SLTI
-   - [ ] SLTIU
+   - [x] SLTI
+   - [x] SLTIU
    - [x] XORI
    - [x] ORI
    - [x] ANDI
    - [x] SLLI
-   - [ ] SRLI
-   - [ ] SRAI
+   - [x] SRLI
+   - [x] SRAI
    - [x] AUIPC
    - [x] LUI
 2. Register-Type
@@ -517,7 +517,9 @@ tags:
 1. ADDI
    ![ADDI](https://s2.loli.net/2023/07/27/ayvf7q5Zsjb24WB.png)
 2. SLTI
+   ![SLTI](https://s2.loli.net/2023/08/02/XtVMlsZwGNq6Juj.png)
 3. SLTIU
+   ![SLTIU](https://s2.loli.net/2023/08/02/uQ1PjDWF38kH6Ic.png)
 4. XORI
    ![XORI](https://s2.loli.net/2023/07/21/R5YbuGZrDVf6cgj.png)
 5. ORI
@@ -527,9 +529,9 @@ tags:
 7. SLLI
    ![SLLI](https://s2.loli.net/2023/07/26/SfJrbcljPNHFBTR.png)
 8. SRLI
-   ![SRLI](https://s2.loli.net/2023/07/26/oLqO8IsVh2ztwNT.png)
+   ![SRLI](https://s2.loli.net/2023/08/02/JwRvtHl2V1dYMZo.png)
 9. SRAI
-   ![SRAI](https://s2.loli.net/2023/07/26/yQ1WlAGuoBMskS7.png)
+   ![SRAI](https://s2.loli.net/2023/08/02/xVch8pouNJ6RsCf.png)
 10. AUIPC
     ![AUIPC](https://s2.loli.net/2023/07/27/6r1gowdD5TSCKZ7.png)
 11. LUI
@@ -624,3 +626,18 @@ A: 在进行riscv-tests测试的时候，针对addi, xor等测试集，64 bits�
 1. 右移指令
 2. SH, SB
 3. 其他未测试过的指令集，也有可能受reference model原因导致测试不通过
+
+## 编译32版本的spike作为reference model
+
+参考了[一生一心第六期的讲义](https://ysyx.oscc.cc/docs/ics-pa/2.4.html#differential-testing)里的makefile，通过`make -nB`可以看到每`make`执行的每一条指令；  
+回到之前的difftest 框架中，参考上述的`make`指令即可编译出32bits的spike作为reference model
+
+```bash
+    cd nemu/tools/spike-diff
+    make -s GUEST_ISA=riscv32 SHARE=1 ENGINE=interpreter # set to build 32 bits version
+    mkdir -p repo/build
+    cd repo/build && ../configure
+    sed -i -e 's/-g -O2/-O2/' repo/build/Makefile
+    CFLAGS="-fvisibility=hidden" CXXFLAGS="-fvisibility=hidden"
+    cd spike-diff && make
+```
