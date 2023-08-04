@@ -44,7 +44,7 @@
   section = {
     nameformat = {},
     number = {},
-    format = \noindent \zihao{4} \heiti \__resume_section_title_format:n,
+    format =\centering \noindent \zihao{4} \heiti \__resume_section_title_format:n,
     indent = -1em,
     afterskip = 0.5em,
     beforeskip = 0.2em,
@@ -167,7 +167,12 @@
 % Render content with a hyperlink, marked with underline.
 \NewDocumentCommand{\ResumeUrl}{mm}
 {
-  \href{#1}{\CJKunderline{#2}}
+  \href{#1}{\uwave{#2}}
+}
+% 
+\NewDocumentCommand{\ProjectUrl}{mm}
+{
+  \href{#1}{\textit{#2}}
 }
 
 \endinput

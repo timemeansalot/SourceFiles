@@ -34,11 +34,10 @@
 
 \section{技术能力}
 \begin{itemize}
-  \item \textbf{语言}: 编程不受特定语言限制。
-      常用 Verilog, Python，C； 熟悉C++, Chisel；了解\GrayText{Scala, LaTeX}。
+  \item \textbf{语言}: 常用 Verilog, Python，C； 熟悉C++, Chisel；了解\GrayText{Scala, LaTeX}。
       \footnote{与求职岗位无关的技能省略或用灰色表示。}
   \item \textbf{工作流}: Linux, Makefile, (Neo)Vim, Git, Tmux.
-  \item \textbf{其他}: 熟悉RISC-V指令集、Toolchain，了解开源的RISC-V处理器项目。
+  \item \textbf{其他}: 熟悉RISC-V指令集、Toolchain，了解开源的RISC-V处理器项目；英语六级551分。
 \end{itemize}
 
 \section{实习经历}
@@ -56,46 +55,37 @@
 \ResumeItem{上海处理器创新中心}
 [开源IP开发]
 [2023.07—至今] 
-实习的主要工作是为\textbf{一生一芯项目}开发开源IP，工作重心主要聚焦在数字外设IP核，
-后期将会围绕“一生一芯”处理器板卡打造一套开源且经过流片验证的外设组件库，
-通过不断迭代的方式逐步优化各个IP的功能和性能，最终实现对常用IP组件的全覆盖，
-从而构建一套完整且稳定的开源SoC生态系统，供个人和企业免费使用。
-
+实习的主要工作是为\textbf{一生一芯项目}提供经过充分验证的IP组件库，搭建IP的设计及验证平台；
+目前我主要负责VGA模块的设计、验证工作，在流片之前拟将VGA模块放到FPGA板卡上进行验证，保证流片之后IP能够正常使用。
 \section{项目经历}
-\ResumeItem{RISC-V低功耗快速响应MCU}
+\ProjectUrl{https://github.com/timemeansalot/FAST_INTR_CPU}{RISC-V快速响应MCU}
 \begin{itemize}
     \item \textbf{项目需求}：老师项目组里现有的5G基带芯片中有很多加速器，购买的Andes的RISC-V处理器核来负责加速器的调度，但是发现加速器向处理器核发出中断之后需要几百上千个周期来响应，
     达不到预期的设计要求、并且由于是购买的IP定位问题也很不方便；\\
-    于是想要设计一款专门用于基带芯片加速器调度的RISC-V微控制器，\textbf{满足快速响应的需求并且能够自主可控}。
+    于是想要设计一款专门用于基带芯片加速器调度的RISC-V MCU，\textbf{满足快速响应的需求并且能够自主可控}。
     \item \textbf{工作内容}：
     \begin{enumerate}
         \item 分析现有的加速器调度问题，其缺点有：1. 中断响应发出后需要很长的时间用于软件保存上下文；2. 不支持中断嵌套，导致多个加速器发出响应后调度很慢。
               在此基础上提出了\textbf{硬件保存上下文}和\textbf{中断尾链}的解决方法。
-        \item 设计微控制器架构：调研了市面上开源的RISC-V处理器核，如蜂鸟E203、果壳、香山、玄铁等，基于目前项目采用RISC-V 32IMC指令集；
-              提出了\textit{顺序单发射五级流水线}的架构，并且主要负责取指、译码和访存模块的设计及实现，支持指令预取、分支预测、压缩指令对齐、紧耦合存储器。
-        \item 微控制器验证：引入了Difftest验证框架，采用Spike作为Golden Model来验证微控制器的功能正确性，针对自研的微控制器对验证框架做了适配；
-              目前已经通过了所有的riscv-tests测试集；后续准备在FPGA上对微控制器进一步测试。
+        \item 设计MCU架构：调研了市面上开源的RISC-V处理器核，如蜂鸟E203、果壳、香山、玄铁等；
+              提出了\textit{顺序单发射五级流水线}的架构，支持RISC-V 32IMC指令集；\\ 
+              我主要负责\textbf{取指、译码和访存模块}的设计及实现，支持指令预取、分支预测、压缩指令对齐、紧耦合存储器。
+        \item 搭建MCU Core 验证平台：引入了 Difftest 验证框架，采用 Spike 作为 Golden Model 来验证MCU的功能正确性，针对 自研的MCU对验证框架做了适配；目前已经通过了所有的 riscv-tests 测试集；后续准备在 FPGA 上对微控 制器进一步测试。
     \end{enumerate}
     \item \textbf{项目收获}：对RISC-V指令集及开源工具链有了比较深刻的理解；对处理器架构、中断、程序执行有了更深刻的认识；
           编程能力以及处理器核验证能力有了很大提升；沟通、撰写文档以及项目管理能力得到了锻炼。
           TODO: 收获部分可以修改
 \end{itemize}
-\ResumeItem{开源IP开发}
+\ProjectUrl{https://github.com/oscc-ysyx-ip-project/ysyx-ip-vga}{开源IP开发\footnote{项目名可达项目地址}}
+
 目前主要负责为一生一芯项目组设计VGA开源IP模块，目前该项目还在进行当中，其主要工作包括：
 
 \begin{itemize}
     \item \textbf{项目需求}：主要为一生一芯项目组板卡开发VGA模块，提供经过仿真验证的VGA模块，拟支持的分辨率有800x600, 640x480, 480x272, 320x240。
-    \item \textbf{工作内容}：调研了VGA的技术原理、设计VGA模块的实现方案：VGA支持有处理器核通过AXI总线配置分辨率、支持通过DMA从SDRAM里搬运需要显示的数据。搭建IP模块的设计、验证框架。
-    \item \textbf{项目收获}：了解了VGA、嵌入式系统、总线的相关知识；加深了对开源的认识。
+    \item \textbf{工作内容}：设计VGA模块的规格、接口及详细设计方案，以及VGA跟处理器核及SDRAM交互的方案；搭建IP模块的开发、验证框架，确定测试点方案及测试向量。
+    \item \textbf{项目收获}：了解了VGA、嵌入式系统、总线的相关知识；加深了对UVM验证及开源的认识。
 \end{itemize}
 
 \section{个人总结}
 具有比较丰富的项目经历、团队协作经验、专业背景知识、英语读写能力、追求前沿的技术、喜欢分享技术博客。
-\begin{itemize}
-    \item 本人乐观开朗、在校成绩优异、自驱能力强，具有良好的沟通能力和团队合作精神。
-    \item 可以使用英语进行工作交流（六级成绩551），平时有阅读英文论文和口语练习的习惯。
-    \item 对Linux下工具熟悉，日常使用tmux, nvim, git；能编写shell, Makefile等
-    \item 热爱开源，喜欢分享自己的技术博客；当前关注重点包括超标量处理器架构、开源IP等方向。
-\end{itemize}
-
 \end{document}
