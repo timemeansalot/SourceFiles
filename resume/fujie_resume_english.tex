@@ -1,0 +1,95 @@
+% !TeX TS-program = xelatex
+
+\documentclass{resume}
+\ResumeName{Fu Jie}
+
+\begin{document}
+
+\ResumeContacts{
+  (+86) 151-6213-3916,%
+  \ResumeUrl{mailto:timemeansalot@gmail.com}{timemeansalot@gmail.com},%
+  \ResumeUrl{https://timemeansalot.github.io/}{Fu Jie's Blog}
+  \footnote{The underlined content contains hyperlinks.},%
+  \ResumeUrl{https://github.com/timemeansalot}{Github Homepage}%
+}
+
+\ResumeTitle
+
+\section{Educational Experience}
+\ResumeItem
+[CUMT|Master]
+{Joint training of ShanghaiTech and ICT}
+[\textnormal{Computer Science and Technology}|Master]
+[2021.09—2024.06]
+\textbf{GPA: 3.02/4.0}，main research direction is \textbf{chip design and computer architecture}，
+\textbf{fresh graduates in 2024}, got the school scholarship twice.
+
+\ResumeItem
+[CUMT|Bachelor]
+{CUMT}
+[\textnormal{Computer Science and Technology} | Bachelor]
+[2016.09—2020.06]
+\textbf{GPA: 3.4/4.0}: school scholarship once, department scholarship once, scholarships for outstanding freshmen once.
+
+\section{Technical Ability}
+\begin{itemize}
+  \item \textbf{Programming}: Verilog, Python, C, C++, Chisel; \GrayText{Scala, LaTeX}。
+      \footnote{Skills that are not related to the job position are omitted or expressed in gray.}
+  \item \textbf{Work Flow}: Linux, Makefile, (Neo)Vim, Git, Tmux.
+  \item \textbf{Others}: Familiar with RISC-V ISA, toolchain, processor architecture of some open source cores, English speking and writing.
+\end{itemize}
+
+\section{Internship Experience}
+
+\ResumeItem{Institute of Computing Technology, Chinese Academy of Sciences}
+[Chip Design Intern]
+[2022.06—2023.06] 
+\begin{itemize}
+    \item The main content of the internship is to \textbf{design MCU for managing accelerator in 5G baseband chip}. As the main project leader
+        I studied the architecture design of the 5G baseband chip analysis its issue. 
+        Then I investigate some open source RISC-V processor design as reference as well as RISC-V ISA and RISC-V Toolchain. 
+    \item Based on the reserch, we developed the five-stage pipeline architecture of the MCU. I am responsible for the ID, EXE and MEM Stage of the MCU and the verificaton of the MCU core.
+\end{itemize}
+
+\ResumeItem{Shanghai Processor Innovation Center}
+[Open Source IP Development]
+[2023.07—util now] 
+The main work of the internship is to provide a fully verified IP component library for \textbf{YSYX project}, and developed an IP design and verification platform;
+At present, I am mainly responsible for the design and verification of the VGA module. 
+Before tapout, I plan to put the VGA module on the FPGA board for verification to ensure that the IP can be used normally after tapout.
+\section{Project Experience}
+\ProjectUrl{https://github.com/timemeansalot/FAST_INTR_CPU}{RISC-V Fast Interrupt MCU}
+\begin{itemize}
+    \item \textbf{Project Requirements}: 
+    There are many accelerators in the existing 5G baseband chips. 
+    We use Andes's RISC-V Core to schedule the accelerators, but we found that it took hundreds for the Core to response the accelerator's interrupt. 
+    So we want to design a RISC-V MCU specially used for baseband chip accelerator scheduling, \textbf{meet the needs of fast response and can be autonomously controlled}.
+    \item \textbf{Work Content}: 
+    \begin{enumerate}
+        \item Analyzing the existing accelerator scheduling problems, the disadvantages are: 1. After the interrupt response is sent, it takes a long time for the software to save the context; 2. Interrupt nesting is not supported, resulting in slow scheduling after multiple accelerators respond.\\
+On this basis, the solution of \textbf{hardware context saving} and \textbf{interrupting tail chain} is proposed.
+        \item Design MCU architecture: investigated the open source RISC-V processor cores, such as Hummingbird E203, NutShell, Xiangshan, Xuantie, etc;
+              The \textit{sequential single-issue five-stage pipeline} architecture is proposed and support the RISC-V 32IMC instruction set; \\
+              I am mainly responsible for the design and implementation of \textbf{Fetch, Decode and Execute Stage}, enable instruction pre-taking, branch prediction, compressed instruction alignment, and tight coupling memory.
+        \item Build the MCU Core verification platform: the \textit{difftest} verification framework is introduced, 
+              Spike is used as the Golden Model to verify the functional correctness of the MCU, and the verification framework is adapted for the self-developed MCU; at present, all riscv-tests test sets have been passed; and the MCU will be further tested on the FPGA
+    \end{enumerate}
+    \item \textbf{Project Gain}: deep understanding of RISC-V instruction set and open source tool chain; deeper understanding of processor architecture, interrupt, and program execution;
+          Programming ability and processor core verification ability; communication, document writing and project management ability.
+\end{itemize}
+
+\ProjectUrl{https://github.com/oscc-ysyx-ip-project/ysyx-ip-vga}{Open Source IP Development\footnote{The project name can reach the project homepage.}}
+
+\begin{itemize}
+    \item \textbf{Project Requirements}: My main work is to develop VGA modules for the YSYX project board, and provides well-verified VGA modules. 
+          The VGA resolutions to be supported are 800x600, 640x480, 480x272, 320x240.
+    \item \textbf{Work Content}: Design the specifications, interface and detailed design scheme of the VGA module, 
+          as well as the scheme of VGA interaction with the processor core and SDRAM; 
+          build the development and verification framework of the IP module, and determine the test point scheme and test vector. 
+          At present, the project is still in progress. 
+    \item \textbf{Project Gain}：I have learned about VGA, embedded systems and buses; I have deepened my understanding of UVM verification and open source.
+\end{itemize}
+
+\section{Personal Summary}
+I have rich project and teamwork experience, professional background knowledge, English reading and writing skills. I pursuit of cutting-edge technology, and like to share technology blogs.
+\end{document}
