@@ -1,93 +1,63 @@
 ---
-title: 付杰周报-20230708
+title: 付杰周报-20230805
 date: 2023-03-08 14:45:34
 tags: RISC-V
 ---
 
 [TOC]
 
-# 本周发现和修复的 bug
-
-1. Store指令错误选择src1当作写回的数据
-
-   - [x] bug 已修复
-   - bug 描述：Store指令选择将src2写入到Data Memory，当前的MCU错误的选择了将src1写回到Data Memory
-     ![](https://s2.loli.net/2023/07/27/lOGdqNX4bHM58Za.png)
-   - bug 修复：EXE Stage -> MEM Stage都选择src2作为写回到Data Memory的数据
-
-2. 针对Store指令，ID需要将src2的两种可能传递给EXE
-   - [x] bug 已修复
-   - bug 描述：Store指令需要两个操作：
-     1. 计算地址: `addr=src1+imm`
-     2. 将src2写回
-        当前代码里ID->EXE对于src的选择，要么是寄存器读出的数，要么是立即数拓展，  
-        导致**地址计算正确跟取到正确的写回数据只能同时满足一个**
-        ![rs2_sel_o wrong](https://s2.loli.net/2023/07/27/2y8uST9NoA4f3CJ.png)
-        ![wrong addr](https://s2.loli.net/2023/07/27/r5ZiuoNtmBE7sSO.png)
-   - bug 修复：对于ID来说，针对src2需要同时将RF读取值跟立即数拓展同时传递给EXE
-     1. EXE利用立即数拓展计算地址
-     2. 将RF读取值传递给MEM
-3. MEM写入读出必须提前一个周期
-
-   - [x] bug 已修复
-   - bug 描述：由于Data Memory写入需要一个周期的延迟，因此EXE必须提前一个cycle给出地址到Data Memory才可以保证Data Memory在MEM State完成数据的写入
-   - bug 修复：EXE在遇到Store类型指令时，将其addr, src2, dmem_type都直接给到MEM，不通过pipeline register
-
-4. 非访存指令（除load/store）之外的指令，decoder为设置其访存类型为`DMEM_NO`
-
-   - [x] bug 已修复
-   - bug 描述：decoder没有设置非访存指令的访存类型，导致一条访存指令后面的所有非访存指令都可以写入到Data Memory，从而导致写入的数据是错误的数据
-     ![lw](https://s2.loli.net/2023/07/27/qU2CM1Da5Hi64Rl.png)
-   - bug 修复：在decoder中设置非访存指令不能够访问Data Memory
-     ```bash
-     diff --git a/npc/vsrc/decoder.v b/npc/vsrc/decoder.v
-     index e607eca..66b45f8 100644
-     --- a/npc/vsrc/decoder.v
-     +++ b/npc/vsrc/decoder.v
-     @@ -83,6 +83,7 @@ module decoder(
-              instr_illegal_o = 1'b0; // suppose instruction is legal by default.
-              wb_src_o = `WBSRC_ALU;  // suppose write back source is from ALU
-              wb_en_o = 1'b0; // suppose write back is not enable
-     +        dmem_type_o = `DMEM_NO;
-              case(opcode)
-                  `OPCODE_LOAD  : begin
-                      imm_type_o = `IMM_I;
-     ```
-
 # 测试通过的 riscv-tests
 
 ## 本周通过的测试
 
-1. SW
-2. ADDI
-3. SLLI
-4. AUIPC
+1. SLTI
+2. SLTIU
+3. SRAI
+4. SRLI
+5. ADD
+6. SUB
+7. SLT
+8. SLTU
+9. XOR
+10. OR
+11. AND
+12. SLL
+13. SRL
+14. SRA
+15. LB
+16. BH
+17. LW
+18. LBU
+19. LHU
+20. SB
+21. SH
+22. SW
 
 ## 所有通过的测试
 
 1. Immdiate Type
    - [x] ADDI
-   - [ ] SLTI
-   - [ ] SLTIU
+   - [x] SLTI
+   - [x] SLTIU
    - [x] XORI
    - [x] ORI
    - [x] ANDI
    - [x] SLLI
-   - [ ] SRLI
-   - [ ] SRAI
+   - [x] SRLI
+   - [x] SRAI
    - [x] AUIPC
    - [x] LUI
 2. Register-Type
-   - [ ] ADD
-   - [ ] SUB
-   - [ ] SLT
-   - [ ] SLTU
-   - [ ] XOR
-   - [ ] OR
-   - [ ] AND
-   - [ ] SLL
-   - [ ] SRL
-   - [ ] SRA
+   - [x] ADD
+   - [x] SUB
+   - [x] SLT
+   - [x] SLTU
+   - [x] XOR
+   - [x] OR
+   - [x] AND
+   - [x] SLL
+   - [x] SRL
+   - [x] SRA
 3. Branch-Type
    - [ ] JALR
    - [ ] JAL
@@ -98,119 +68,198 @@ tags: RISC-V
    - [ ] BLTU
    - [ ] BGEU
 4. Memory-Type
-   - [ ] LB
-   - [ ] BH
-   - [ ] LW
-   - [ ] LBU
-   - [ ] LHU
-   - [ ] SB
-   - [ ] SH
+   - [x] LB
+   - [x] BH
+   - [x] LW
+   - [x] LBU
+   - [x] LHU
+   - [x] SB
+   - [x] SH
    - [x] SW
+5. Multiple
+   - [ ] DIV
+   - [ ] DIVU
+   - [ ] DIVUW
+   - [ ] DIVW
+   - [ ] MUL
+   - [ ] MULH
+   - [ ] MULHSU
+   - [ ] MULHU
+   - [ ] MULW
+   - [ ] REM
+   - [ ] REMU
+   - [ ] REMUW
+   - [ ] REMW
+6. Compressed
+   - [ ] RVC
 
-## 测试通过截图
+# 编译32版本的spike作为reference model
 
-### Immdiate-Type
-
-1. ADDI
-   ![ADDI](https://s2.loli.net/2023/07/27/ayvf7q5Zsjb24WB.png)
-2. SLTI
-3. SLTIU
-4. XORI
-   ![XORI](https://s2.loli.net/2023/07/21/R5YbuGZrDVf6cgj.png)
-5. ORI
-   ![ORI](https://s2.loli.net/2023/07/21/QPRkNrMflacEoAj.png)
-6. ANDI
-   ![ANDI](https://s2.loli.net/2023/07/21/VCwrtB6vZhkdTNR.png)
-7. SLLI
-   ![SLLI](https://s2.loli.net/2023/07/26/SfJrbcljPNHFBTR.png)
-8. SRLI
-9. SRAI
-10. AUIPC
-    ![AUIPC](https://s2.loli.net/2023/07/27/6r1gowdD5TSCKZ7.png)
-11. LUI
-    ![LUI](https://s2.loli.net/2023/07/21/W8MKySYt6eAOnI1.png)
-
-### Register-Type
-
-1. ADD
-2. SUB
-3. SLT
-4. SLTU
-5. XOR
-6. OR
-7. AND
-8. SLL
-9. SRL
-10. SRA
-
-### Branch-Type
-
-1. JALR
-2. JAL
-3. BEQ
-4. BNE
-5. BLT
-6. BGE
-7. BLTU
-8. BGEU
-
-### Memory-Type
-
-1. LB
-2. BH
-3. LW
-4. LBU
-5. LHU
-6. SB
-7. SH
-8. SW
-   ![SW](https://s2.loli.net/2023/07/27/uc3dSQDjxvnhGAO.png)
-
-# 编译32 bits的reference model
-
-## Q: 为什么需要32 bits的reference model?
-
-A: 在进行riscv-tests测试的时候，针对addi, xor等测试集，64 bits的reference model勉强可以用（在使用的时候，针对64bits的reference model，
-我们可以取其寄存器低32bits来同MCU进行比较）；  
- 但是在遇到sra，srl等指令的时候，就不能这么操作了：因为64bits的reference model，其最高位是跟32bits的MCU是不同的，例如：
+参考了[一生一心第六期的讲义](https://ysyx.oscc.cc/docs/ics-pa/2.4.html#differential-testing)里的makefile，通过`make -nB`可以看到每`make`执行的每一条指令；  
+回到之前的difftest 框架中，参考上述的`make`指令即可编译出32bits的spike作为reference model
 
 ```bash
- lui ra, 0x80000
- srli a4, ra, 1 # <- miss match
+    cd nemu/tools/spike-diff
+    make -s GUEST_ISA=riscv32 SHARE=1 ENGINE=interpreter # set to build 32 bits version
+    mkdir -p repo/build
+    cd repo/build && ../configure
+    sed -i -e 's/-g -O2/-O2/' repo/build/Makefile
+    CFLAGS="-fvisibility=hidden" CXXFLAGS="-fvisibility=hidden"
+    cd spike-diff && make
 ```
 
-在32bits的MCU上：`ra=0x80000000; a4=0x40000000;`  
- 在64bits的Ref上：`ra=0xffffffff80000000; a4=0x7fffffffc0000000;`  
- 即使取Ref的低32bits，也会有：`0xc0000000 != 0x40000000`
-![must 32](https://s2.loli.net/2023/07/21/myp1vc9XGajgwSP.png)
+除此之外，需要将difftest里CPU_state里的gpr跟pc都更改为32bits位宽
 
-## 编译32bits reference model遇到的问题
+```verilog
+    typedef struct {
+      // uint64_t gpr[32];
+      // uint64_t pc;
+      uint32_t gpr[32];
+      uint32_t pc;
+    } CPU_state;
+```
 
-> 目前DIFFTEST框架使用的是64bits的Spike作为reference model，在引入32bits的reference model时做了如下尝试:
+## 对riscv-tests测试集做的修改
 
-1.  尝试编译32bits的NEMU作为reference model，**失败**
+1. riscv-tests更改load测试集
 
-    - 在NEMU的[GitHub主页](https://github.com/OpenXiangShan/NEMU/tree/master)上，给出了编译的教程，但是该教程只针对64bits的版本
-    - 尝试根据上述教程做修改编译32bits的NEMU作为reference model失败，<u>因为官方给出的NEMU只包含64bits版本的实现</u>
-    - 32bits的NEMU没有给出具体实现，因为一直以来*一生一芯*的培养过程当中，主要的培养内容就是让学生实现32bits版本的NEMU，
-      因此NEMU自然不会给出32版本的NEMU实现
-    - 另一方面，当前使用NEMU编译得到的64bits 的reference model在接入到DIFFTEST框架之后，会出现<u>segment fault</u>，目前还没有debug出原因。
+   - 问题描述：spike初始化的时候，其Data Memory不是初始化为0, riscv-tests的load相关的测试集在执行load指令之前，都没有往对应的Data Memory地址写入数据，
+     导致spike执行load之后会取出spike初始化的Data Memory的值，mcu执行load之后会取出0，二者对不上
+     ![](https://s2.loli.net/2023/08/03/xTF8kvfjhaWwoKV.png)
+   - 问题解决：修改riscv-tests测试集，在执行之前，执行相应的Store指定往对应地址写入数据，避免spike初始化跟MCU初始化不同，导致load指令读出的结果不同
 
-2.  尝试编译32bits的spike作为reference model，没有进展
+     ```bash
+      diff --git a/code/asm/riscvtest/test_macros.h b/code/asm/riscvtest/test_macros.h
+      index 7375715..c748749 100644
+      --- a/code/asm/riscvtest/test_macros.h
+      +++ b/code/asm/riscvtest/test_macros.h
+      @@ -219,6 +219,7 @@ test_ ## testnum: \
+           TEST_CASE( testnum, x14, result, \
+             li  x15, result; /* Tell the exception handler the expected result. */ \
+             la  x1, base; \
+      +      sh x15, offset(x1); \
+             inst x14, offset(x1); \
+           )
+  
+      @@ -227,7 +228,7 @@ test_ ## testnum: \
+             la  x1, base; \
+             li  x2, result; \
+             la  x15, 7f; /* Tell the exception handler how to skip this test. */ \
+      -      sw x0, offset(x1); \
+      +      sw x0, 0(x1); \
+             store_inst x2, offset(x1); \
+             load_inst x14, offset(x1); \
+             j 8f; \
+      @@ -242,6 +243,8 @@ test_ ## testnum: \
+           li  TESTNUM, testnum; \
+           li  x4, 0; \
+       1:  la  x1, base; \
+      +    li x15, result; \
+      +    sh x15, offset(x1);\
+           inst x14, offset(x1); \
+           TEST_INSERT_NOPS_ ## nop_cycles \
+           addi  x6, x14, 0; \
+      @@ -257,6 +260,8 @@ test_ ## testnum: \
+           li  x4, 0; \
+       1:  la  x1, base; \
+           TEST_INSERT_NOPS_ ## nop_cycles \
+      +    li x15, result; \
+      +    sh x15, offset(x1);\
+           inst x14, offset(x1); \
+           li  x7, result; \
+           bne x14, x7, fail; \
+     ```
 
-    - 根据[Spike GitHub主页](https://github.com/riscv-software-src/riscv-isa-sim/tree/master/arch_test_target/spike)
-      上的教程，更改了XLEN版本，进行编译，但是编译得到的Spike还是64bits的
-      ![spike reference](https://s2.loli.net/2023/07/28/ha4CoZfjxkYJgwz.png)
+2. riscv-tests更改store测试集
+   ![](https://s2.loli.net/2023/08/03/ykcImVd7DbUCwYl.png)
 
-3.  可行的思路：在查资料的时候找到了[一生一心第六期的讲义](https://ysyx.oscc.cc/docs/ics-pa/2.4.html#differential-testing)，
-    <u>该讲义中提到了在编写32bits的NMEU的时候，可以使用Spike作为32bit是的reference moedel</u>，
-    所以打算按照该讲义搭建一生一芯第六期的开发环境，然后在该开发环境里生成32bits的Spike reference model。
-    ![spike](https://s2.loli.net/2023/07/28/YXyJ9fZIp1mtzlr.png)
+   - 问题描述：spike初始化的时候，其Data Memory不是初始化为0，因此在测试`SH`, `SB`等riscv-tests测试集的时候，会出错，如下所示：
+      ![](https://s2.loli.net/2023/08/05/tI2ZE5Nb6gahmeD.png)
+   - 问题解决：修改riscv-tests测试集，在执行`SH`, `SB`之前，将`0x00000000`通过`SW`写入到Data Memory对应行，避免spike初始化跟MCU初始化不同，导致`LW`读出的结果不同
 
-> PS：感谢**石峰**同学在搭建Difftest框架时的帮助，例如MCU接入Difftest测试框架、编译Reference Model
+     ```
+       #define TEST_ST_OP( testnum, load_inst, store_inst, result, offset, base ) \
+           TEST_CASE( testnum, x14, result, \
+             la  x1, base; \
+             li  x2, result; \
+             la  x15, 7f; /* Tell the exception handler how to skip this test. */ \
+             sw x0, 0(x1); /*write 0 to target location first*/ \
+             store_inst x2, offset(x1); \
+             load_inst x14, offset(x1); \
+             j 8f; \
+             7:    \
+             /* Set up the correct result for TEST_CASE(). */ \
+             mv x14, x2; \
+             8:    \
+           )
+     ```
 
-## 受reference model导致测试不通过的测试集
+# 本周发现和修复的 bug
 
-1. 右移指令
-2. SH, SB
-3. 其他未测试过的指令集，也有可能受reference model原因导致测试不通过
+1. 移位器msb计算错误
+
+   - [x] bug 已修复
+   - bug 描述：移位器默认是右移，左移是通过将`din`对折、取反、再对折来实现的；用右移来实现左移的时候，alu里shifter32的例化方式会导致左移恒补1，进而出错
+     ```verilog
+     // alu.v
+         shifter32 #(32,5) sft(
+          .d_in(ain),
+          .shift(bin[4:0]),
+          .arithOrLogic(srl_op), // SRA or SRL
+          .leftOrRight(sra_op|srl_op), // shift left or right
+          .d_out(sft_ans));
+     // shifter32.v
+      assign msbFill=arithOrLogic?0:d_in[DATA_WIDTH-1];
+     ```
+   - bug 修复：msbFill在左移的时候，必须置0
+     ```verilog
+     // shifter32.v
+         assign msbFill=leftOrRight ? (arithOrLogic?0:d_in[DATA_WIDTH-1]) : 0;
+     ```
+
+2. ID Stage没有在译码到Load指令时，未将`is_load`信号发送给hazard unit，导致Load Stall失败
+
+   - [x] bug 已修复
+   - bug 描述：ID Stage没有给到hazard unit对应的信号，导致hazard unit无法识别load指令
+     ![lw stall failed](https://s2.loli.net/2023/08/03/hYQG37NiyAHgnW1.png)
+   - bug 修复：ID需要将对应的信号给到hazard unit
+
+     ```verilog
+       // pipelineID.v
+      // decode instance
+      decoder u_decoder(
+          //ports
+          .instruction_i  		( instru_32bits  	),
+          .alu_op_o        		( aluOperation_o 		),
+          .rs1_sel_o       		( rs1_sel_o       		),
+          .rs2_sel_o       		( rs2_sel_o       		),
+          .imm_type_o      		( imm_type_o      		),
+          .branchBType_o  		( branchBType_o  		),
+          .branchJAL_o    		( branchJAL_o    		),
+          .branchJALR_o   		( branchJALR_o   		),
+          .is_load_o              ( is_load_d_o           ),
+          .dmem_type_o     		( dmem_type_o     		),
+          .wb_src_o        		( wb_src_o        		),
+          .wb_en_o         		( wb_en_o         		),
+          .instr_illegal_o 		( decoder_instr_illegal )
+         );
+     ```
+
+3. ID Stage计算指令pc的时候，没有考虑stall的情况
+   - [x] bug 已修复
+   - bug 描述：ID Stage负责计算每条指令对应的pc，流水线stall的时候，ID Stage依然错误地增加了pc的值，pc的值被打乱之后，所有需要pc进行计算的指令都会出错
+     ![pc should stall too](https://s2.loli.net/2023/08/03/H6QN21tXJFbnf7s.png)
+   - bug 修复：ID需要输入流水线stall的信号，在stall的时候，将当前的pc固定
+     ```verilog
+      always @(posedge clk ) begin
+          if(~resetn) begin
+              pc_instr <= 32'h80000000;
+          end
+          else if(taken_reg) begin
+              pc_instr <= pc_taken;
+          end
+          else if(~stall_i)begin // pc don't change when stall signal is high
+              pc_instr <= pc_next;
+          end
+      end
+     ```

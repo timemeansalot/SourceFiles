@@ -351,10 +351,10 @@ tags:
     ![](https://s2.loli.net/2023/08/03/ykcImVd7DbUCwYl.png)
 
     - 问题描述：spike初始化的时候，其Data Memory不是初始化为0，因此在测试`SH`, `SB`等riscv-tests测试集的时候，会出错，如下所示：
-      TODO: 增加说明图
+      ![](https://s2.loli.net/2023/08/05/tI2ZE5Nb6gahmeD.png)
     - 问题解决：修改riscv-tests测试集，在执行`SH`, `SB`之前，将`0x00000000`通过`SW`写入到Data Memory对应行，避免spike初始化跟MCU初始化不同，导致`LW`读出的结果不同
 
-      ```c
+      ```
         #define TEST_ST_OP( testnum, load_inst, store_inst, result, offset, base ) \
             TEST_CASE( testnum, x14, result, \
               la  x1, base; \
@@ -364,10 +364,10 @@ tags:
               store_inst x2, offset(x1); \
               load_inst x14, offset(x1); \
               j 8f; \
-        7:    \
+              7:    \
               /* Set up the correct result for TEST_CASE(). */ \
               mv x14, x2; \
-        8:    \
+              8:    \
             )
       ```
 
@@ -554,7 +554,7 @@ tags:
           assign msbFill=leftOrRight ? (arithOrLogic?0:d_in[DATA_WIDTH-1]) : 0;
       ```
 
-13. ID Stage没有在译码到Load指令时，将`is_load`信号发送给hazard unit，导致Load Stall失败
+13. ID Stage没有在译码到Load指令时，未将`is_load`信号发送给hazard unit，导致Load Stall失败
 
     - [x] bug 已修复
     - bug 描述：ID Stage没有给到hazard unit对应的信号，导致hazard unit无法识别load指令
@@ -648,6 +648,22 @@ tags:
    - [x] SB
    - [x] SH
    - [x] SW
+5. Multiple
+   - [ ] DIV
+   - [ ] DIVU
+   - [ ] DIVUW
+   - [ ] DIVW
+   - [ ] MUL
+   - [ ] MULH
+   - [ ] MULHSU
+   - [ ] MULHU
+   - [ ] MULW
+   - [ ] REM
+   - [ ] REMU
+   - [ ] REMUW
+   - [ ] REMW
+6. Compressed
+   - [ ] RVC
 
 ### 测试通过截图
 
@@ -729,6 +745,26 @@ tags:
 8. SW
    ![SW](https://s2.loli.net/2023/07/27/uc3dSQDjxvnhGAO.png)
 
+#### Multiple
+
+1. DIV
+2. DIVU
+3. DIVUW
+4. DIVW
+5. MUL
+6. MULH
+7. MULHSU
+8. MULHU
+9. MULW
+10. REM
+11. REMU
+12. REMUW
+13. REMW
+
+#### Compressed
+
+1. RVC
+
 # 编译32 bits的reference model
 
 ## Q: 为什么需要32 bits的reference model?
@@ -791,4 +827,15 @@ A: 在进行riscv-tests测试的时候，针对addi, xor等测试集，64 bits�
     sed -i -e 's/-g -O2/-O2/' repo/build/Makefile
     CFLAGS="-fvisibility=hidden" CXXFLAGS="-fvisibility=hidden"
     cd spike-diff && make
+```
+
+除此之外，需要将difftest里CPU_state里的gpr跟pc都更改为32bits位宽
+
+```verilog
+    typedef struct {
+      // uint64_t gpr[32];
+      // uint64_t pc;
+      uint32_t gpr[32];
+      uint32_t pc;
+    } CPU_state;
 ```
