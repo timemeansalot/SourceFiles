@@ -25,7 +25,7 @@ tags: RISC-V
 13. SRL
 14. SRA
 15. LB
-16. BH
+16. LH
 17. LW
 18. LBU
 19. LHU
@@ -69,7 +69,7 @@ tags: RISC-V
    - [ ] BGEU
 4. Memory-Type
    - [x] LB
-   - [x] BH
+   - [x] LH
    - [x] LW
    - [x] LBU
    - [x] LHU

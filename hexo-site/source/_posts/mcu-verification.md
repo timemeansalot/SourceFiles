@@ -600,7 +600,23 @@ tags:
            end
        end
       ```
-15. 概括
+15. ID Stage被flush的指令，错误地导致了重定向
+
+    - [x] bug 已修复
+    - bug 描述：ID 需要计算重定向pc跟taken，目前ID Stage在计算taken的时候，没有考虑ID Stage的flush信号，
+      导致被flush的指令，其静态分支预测的地址，被作为重定向pc，取到了错误的指令
+      ```verilog
+      // pipelineID.v
+      assign taken_d_o = ~resetn_delay | ptnt_e_i | redirection_e_i | taken;
+      ```
+      ![](https://s2.loli.net/2023/08/09/rzw7EYG4XlmuSbZ.png)
+    - bug 修复：在计算taken的时候，必须考虑flush信号
+      ```verilog
+      // pipelineID.v
+      assign taken_d_o = ~resetn_delay | ptnt_e_i | redirection_e_i | (~flush_i & taken );
+      ```
+
+16. 概括
     - [x] bug 已修复
     - bug 描述：
     - bug 修复：
@@ -631,14 +647,14 @@ tags:
    - [x] SRL
    - [x] SRA
 3. Branch-Type
-   - [ ] JALR
-   - [ ] JAL
-   - [ ] BEQ
-   - [ ] BNE
-   - [ ] BLT
-   - [ ] BGE
-   - [ ] BLTU
-   - [ ] BGEU
+   - [x] JALR
+   - [x] JAL
+   - [x] BEQ
+   - [x] BNE
+   - [x] BLT
+   - [x] BGE
+   - [x] BLTU
+   - [x] BGEU
 4. Memory-Type
    - [x] LB
    - [x] LH
