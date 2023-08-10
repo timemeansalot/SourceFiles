@@ -67,7 +67,6 @@ VGA设计文档第三版
 <!-- ![vga-v1](https://s2.loli.net/2023/07/27/2Mqdg78YAphLjQI.png) -->
 <!-- ![vga-v2](https://s2.loli.net/2023/07/31/6LrcjlnaOQKi7T9.png) -->
 
-![vga-v3](https://s2.loli.net/2023/08/07/stKHcC31azYFRTL.png)
 
 VGA模块内部设计如上图所示，主要分为3大模块，各模块功能如下：
 
@@ -77,8 +76,8 @@ VGA模块内部设计如上图所示，主要分为3大模块，各模块功能�
 
 ### 顶层接口
 
+![vga-v3](https://s2.loli.net/2023/08/07/stKHcC31azYFRTL.png)
 TODO: 顶层接口只用说明AXI、APB总线即可，具体信号线在详细设计部分里给出
-![](https://s2.loli.net/2023/08/10/7PjCWBTIU6NMYxX.png)
 
 > input and output design
 
@@ -195,6 +194,7 @@ TODO: 顶层接口只用说明AXI、APB总线即可，具体信号线在详细�
      - PPR在读取SDRAM时，不采用burst传输的方式，因为一次只有一个寄存器可以被写入
    - PPR内部的Control Unit必须控制PPR的交替写入跟读取
 3. 时序图
+   ![](https://s2.loli.net/2023/08/10/q529nohGQZp4Taz.png)
 4. 接口列表
 
    - VC相关的接口

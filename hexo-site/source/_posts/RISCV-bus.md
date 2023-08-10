@@ -160,3 +160,104 @@ The APB is a simplified interface designed for low bandwidth peripherals that do
 4. [An introduction to AMBA AXI by ARM](https://developer.arm.com/documentation/102202/0300/Transfer-behavior-and-transaction-ordering#:~:text=The%20AXI%20protocol%20supports%20out,of%20transactions%20with%20different%20IDs.)
 5. [AHB 总线协议](https://www.cnblogs.com/mikewolf2002/p/10335422.html)
 6. [APB 总线协议](https://verificationforall.wordpress.com/apb-protocol/)
+
+> 总线学习记录
+
+# AXI总线
+
+![](https://s2.loli.net/2023/08/10/qx2G7ypthUCmArQ.png)
+
+## 信号说明
+
+### 写地址信号
+
+| 信号名       | 信号源 | 信号说明        |
+| ------------ | ------ | --------------- |
+| awawid[3:0]  | master |                 |
+| awaddr[31:0] | master |                 |
+| awlen[3:0]   | master | burst传输的次数 |
+| awsize[2:0]  | master | 每次传输的位宽  |
+| awburst[1:0] | master | burst传输的类型 |
+| awlock[1:0]  | master |                 |
+| awcache[3:0] | master |                 |
+| awport[2:0]  | master | protection      |
+| awvalid      | master |                 |
+| awready      | slave  |                 |
+
+### 写数据通道
+
+| 信号名      | 信号源 | 信号说明          |
+| ----------- | ------ | ----------------- |
+| wid[3:0]    | master |                   |
+| wdata[31:0] | master |                   |
+| wstrb[3:0]  | master | byte write enable |
+| wlast       | master |                   |
+| wvalid      | master |                   |
+| wready      | slave  |                   |
+
+> ID用于支持乱序传输，在AXI4协议中发现写乱序提升性能效果不大，
+> 因此去除了WID，即去除了写乱序的操作，但保留了读乱序操作
+
+### 写反馈通道
+
+| 信号名     | 信号源 | 信号说明   |
+| ---------- | ------ | ---------- |
+| bid[3:0]   | slave  |            |
+| bresp[1:0] | slave  | 写入的状态 |
+| bvalid     | slave  |            |
+| bready     | master |            |
+
+### 读地址通道
+
+| 信号名       | 信号源 | 信号说明 |
+| ------------ | ------ | -------- |
+| arid[3:0]    | master |          |
+| araddr[31:0] | master |          |
+| arlen[3:0]   | master |          |
+| arsize[2:0]  | master |          |
+| arburst[1:0] | master |          |
+| arlock[1:0]  | master |          |
+| arcache[3:0] | master |          |
+| arprot[2:0]  | master |          |
+| arvalid      | master |          |
+| arready      | slave  |          |
+
+### 读数据通道
+
+| 信号名      | 信号源 | 信号说明         |
+| ----------- | ------ | ---------------- |
+| rid[3:0]    | slave  |                  |
+| rdata[31:0] | slave  |                  |
+| rresp[1:0]  | slave  | 读数据操作的状态 |
+| rlast       | slave  |                  |
+| rvalid      | slave  |                  |
+| rready      | master |                  |
+
+## AXI读写时序
+
+1. AXI突发读传输
+   ![](https://s2.loli.net/2023/08/10/C4RTihEGNO9r5XP.png)
+2. Overlapping突发读传输
+   ![](https://s2.loli.net/2023/08/10/3WwtfPRYnmSjzlb.png)
+   slave在第一次突发读传输完成后处理第二次突发读传输。
+   也就意味着，主机一开始传送了两个地址给设备。设备在完全处理完第一个地址的数据之后，才开始处理第二个地址的数据
+3. AXI突发写传输
+   ![](https://s2.loli.net/2023/08/10/q529nohGQZp4Taz.png)
+
+## AXI Outstanding传输
+
+> outstanding是指主机在没有收到response时可以发起多个读写transaction的能力。
+
+1. 简单讲，如果没有outstanding，则总线Master的行为如下（AHB就不支持outstanding）：
+   1）读操作：读地址命令 -> 等待读数据返回 -> 读地址命令 -> 等待读数据返回 -> ..
+   2）写操作：写地址命令->写数据->等待写响应返回->写地址命令->写数据->等待写响应返回..
+2. 如果支持outstanding，那么总线就可以在没等到response时，连续发多个读或写的命令，然后再逐个等待命令的返回：
+   1）读操作：读地址命令 -> 读地址命令 -> 读地址命令 -> 等待读数据返回 ->等待读数据返回 ->等待读数据返回..
+   2）写操作：写地址命令->写地址命令->写地址命令->写数据->写数据->等待写响应返回->写数据->等待写响应返回->等待写响应返回..
+
+## AXI乱序传输
+
+1. 由于AXI 支持Outstanding传输，因此master在收到response之前，可以发送多次传输请求
+2. 同一个id的传输，必须按顺序；不同的id的传输，可以乱序
+
+![](https://s2.loli.net/2023/08/10/wQIvHNL4qm2Pchz.png)
