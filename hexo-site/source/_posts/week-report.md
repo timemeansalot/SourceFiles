@@ -1,5 +1,5 @@
 ---
-title: 付杰周报-20230805
+title: 付杰周报-20230812
 date: 2023-03-08 14:45:34
 tags: RISC-V
 ---
@@ -10,28 +10,15 @@ tags: RISC-V
 
 ## 本周通过的测试
 
-1. SLTI
-2. SLTIU
-3. SRAI
-4. SRLI
-5. ADD
-6. SUB
-7. SLT
-8. SLTU
-9. XOR
-10. OR
-11. AND
-12. SLL
-13. SRL
-14. SRA
-15. LB
-16. LH
-17. LW
-18. LBU
-19. LHU
-20. SB
-21. SH
-22. SW
+1. jalr
+2. jal
+3. beq
+4. bne
+5. blt
+6. bge
+7. bltu
+8. bgeu
+9. mul
 
 ## 所有通过的测试
 
@@ -59,14 +46,14 @@ tags: RISC-V
    - [x] SRL
    - [x] SRA
 3. Branch-Type
-   - [ ] JALR
-   - [ ] JAL
-   - [ ] BEQ
-   - [ ] BNE
-   - [ ] BLT
-   - [ ] BGE
-   - [ ] BLTU
-   - [ ] BGEU
+   - [x] JALR
+   - [x] JAL
+   - [x] BEQ
+   - [x] BNE
+   - [x] BLT
+   - [x] BGE
+   - [x] BLTU
+   - [x] BGEU
 4. Memory-Type
    - [x] LB
    - [x] LH
@@ -79,187 +66,134 @@ tags: RISC-V
 5. Multiple
    - [ ] DIV
    - [ ] DIVU
-   - [ ] DIVUW
-   - [ ] DIVW
-   - [ ] MUL
+   - [x] MUL
    - [ ] MULH
    - [ ] MULHSU
    - [ ] MULHU
-   - [ ] MULW
    - [ ] REM
    - [ ] REMU
-   - [ ] REMUW
-   - [ ] REMW
 6. Compressed
    - [ ] RVC
 
-# 编译32版本的spike作为reference model
+# 回归测试
 
-参考了[一生一心第六期的讲义](https://ysyx.oscc.cc/docs/ics-pa/2.4.html#differential-testing)里的makefile，通过`make -nB`可以看到每`make`执行的每一条指令；  
-回到之前的difftest 框架中，参考上述的`make`指令即可编译出32bits的spike作为reference model
+> 之前测试riscv-tests时都是手动在Makefile里指定要测试的测试集，测试集不通过时会发现bug；一直修改bug直到通过测试集；
+> 为了避免修改之后之前通过的测试集反而通过不了了，每次修改之后都应该把所有的测试集跑一遍，保证之前通过的测试集依然能够通过
+
+## 目录结构介绍
 
 ```bash
-    cd nemu/tools/spike-diff
-    make -s GUEST_ISA=riscv32 SHARE=1 ENGINE=interpreter # set to build 32 bits version
-    mkdir -p repo/build
-    cd repo/build && ../configure
-    sed -i -e 's/-g -O2/-O2/' repo/build/Makefile
-    CFLAGS="-fvisibility=hidden" CXXFLAGS="-fvisibility=hidden"
-    cd spike-diff && make
+    ├── build
+    ├── csrc
+    ├── dump.vcd
+    ├── Makefile
+    ├── README.md
+    ├── result.log
+    ├── riscvtest
+    ├── so
+    └── vsrc
 ```
 
-除此之外，需要将difftest里CPU_state里的gpr跟pc都更改为32bits位宽
+本目录格式如上所示，各个部分介绍如下：
 
-```verilog
-    typedef struct {
-      // uint64_t gpr[32];
-      // uint64_t pc;
-      uint32_t gpr[32];
-      uint32_t pc;
-    } CPU_state;
-```
+1. build：执行make命令后会编译可执行文件跟中间文件，这些文件都放在build目录下
+2. csrc：difftest相关的代码
+3. vsrc：MCU的所有verilog文件
+4. riscvtest：汇编测试文件，在该目录下可以编译所有的汇编文件得到可执行的bin文件
+5. so：golden reference存放目录，该目录下有32位的spike.so文件
+6. result.log：对所有的riscvtest测试集做回归方针，每个测试集是否通过会记录在该文件下
+7. dump.vcd：波形图
 
-## 对riscv-tests测试集做的修改
+## 编译汇编文件
 
-1. riscv-tests更改load测试集
+1. 进入到riscvtest目录下
+2. 编译一个文件：在其Makefile中用EXEC指定想要编译的汇编文件名
+   - `make`：编译该汇编文件得到elf文件，并且得到bin文件
+   - `make code`：查看反汇编文件的内容
+3. 编译所有文件: `make getAll`
 
-   - 问题描述：spike初始化的时候，其Data Memory不是初始化为0, riscv-tests的load相关的测试集在执行load指令之前，都没有往对应的Data Memory地址写入数据，
-     导致spike执行load之后会取出spike初始化的Data Memory的值，mcu执行load之后会取出0，二者对不上
-     ![](https://s2.loli.net/2023/08/03/xTF8kvfjhaWwoKV.png)
-   - 问题解决：修改riscv-tests测试集，在执行之前，执行相应的Store指定往对应地址写入数据，避免spike初始化跟MCU初始化不同，导致load指令读出的结果不同
+## 仿真测试
 
-     ```bash
-      diff --git a/code/asm/riscvtest/test_macros.h b/code/asm/riscvtest/test_macros.h
-      index 7375715..c748749 100644
-      --- a/code/asm/riscvtest/test_macros.h
-      +++ b/code/asm/riscvtest/test_macros.h
-      @@ -219,6 +219,7 @@ test_ ## testnum: \
-           TEST_CASE( testnum, x14, result, \
-             li  x15, result; /* Tell the exception handler the expected result. */ \
-             la  x1, base; \
-      +      sh x15, offset(x1); \
-             inst x14, offset(x1); \
-           )
-  
-      @@ -227,7 +228,7 @@ test_ ## testnum: \
-             la  x1, base; \
-             li  x2, result; \
-             la  x15, 7f; /* Tell the exception handler how to skip this test. */ \
-      -      sw x0, offset(x1); \
-      +      sw x0, 0(x1); \
-             store_inst x2, offset(x1); \
-             load_inst x14, offset(x1); \
-             j 8f; \
-      @@ -242,6 +243,8 @@ test_ ## testnum: \
-           li  TESTNUM, testnum; \
-           li  x4, 0; \
-       1:  la  x1, base; \
-      +    li x15, result; \
-      +    sh x15, offset(x1);\
-           inst x14, offset(x1); \
-           TEST_INSERT_NOPS_ ## nop_cycles \
-           addi  x6, x14, 0; \
-      @@ -257,6 +260,8 @@ test_ ## testnum: \
-           li  x4, 0; \
-       1:  la  x1, base; \
-           TEST_INSERT_NOPS_ ## nop_cycles \
-      +    li x15, result; \
-      +    sh x15, offset(x1);\
-           inst x14, offset(x1); \
-           li  x7, result; \
-           bne x14, x7, fail; \
-     ```
-
-2. riscv-tests更改store测试集
-   ![](https://s2.loli.net/2023/08/03/ykcImVd7DbUCwYl.png)
-
-   - 问题描述：spike初始化的时候，其Data Memory不是初始化为0，因此在测试`SH`, `SB`等riscv-tests测试集的时候，会出错，如下所示：
-      ![](https://s2.loli.net/2023/08/05/tI2ZE5Nb6gahmeD.png)
-   - 问题解决：修改riscv-tests测试集，在执行`SH`, `SB`之前，将`0x00000000`通过`SW`写入到Data Memory对应行，避免spike初始化跟MCU初始化不同，导致`LW`读出的结果不同
-
-     ```
-       #define TEST_ST_OP( testnum, load_inst, store_inst, result, offset, base ) \
-           TEST_CASE( testnum, x14, result, \
-             la  x1, base; \
-             li  x2, result; \
-             la  x15, 7f; /* Tell the exception handler how to skip this test. */ \
-             sw x0, 0(x1); /*write 0 to target location first*/ \
-             store_inst x2, offset(x1); \
-             load_inst x14, offset(x1); \
-             j 8f; \
-             7:    \
-             /* Set up the correct result for TEST_CASE(). */ \
-             mv x14, x2; \
-             8:    \
-           )
-     ```
+1. 进入到verification目录下
+2. 测试一个测试集：在Makefile中用IMG指定想要测试的测试集，然后`make run`即可运行difftest，并且进入到debug模式
+   - `si`可以进行单步调试，逐行执行指令
+   - `c`可以执行所有指令，直到所有指令执行完毕、或者出现错误
+3. 回归测试（测试所有测试集）：
+   ```bash
+   make test_all
+   ```
+   所有测试集通过的情况会记录在`result.log`文件中
+   
+   > PS: <u>测试一个测试集</u>跟<u>测试所有测试集</u>，需要编译的difftest有些许不同，因此在切换测试模式之前，需要先`make clean`
 
 # 本周发现和修复的 bug
 
-1. 移位器msb计算错误
+1. ID Stage被flush的指令，错误地导致了重定向
 
    - [x] bug 已修复
-   - bug 描述：移位器默认是右移，左移是通过将`din`对折、取反、再对折来实现的；用右移来实现左移的时候，alu里shifter32的例化方式会导致左移恒补1，进而出错
+   - bug 描述：ID 需要计算重定向pc跟taken，目前ID Stage在计算taken的时候，没有考虑ID Stage的flush信号，
+     导致被flush的指令，其静态分支预测的地址，被作为重定向pc，取到了错误的指令
      ```verilog
-     // alu.v
-         shifter32 #(32,5) sft(
-          .d_in(ain),
-          .shift(bin[4:0]),
-          .arithOrLogic(srl_op), // SRA or SRL
-          .leftOrRight(sra_op|srl_op), // shift left or right
-          .d_out(sft_ans));
-     // shifter32.v
-      assign msbFill=arithOrLogic?0:d_in[DATA_WIDTH-1];
+     // pipelineID.v
+     assign taken_d_o = ~resetn_delay | ptnt_e_i | redirection_e_i | taken;
      ```
-   - bug 修复：msbFill在左移的时候，必须置0
+     ![](https://s2.loli.net/2023/08/09/rzw7EYG4XlmuSbZ.png)
+   - bug 修复：在计算taken的时候，必须考虑flush信号
      ```verilog
-     // shifter32.v
-         assign msbFill=leftOrRight ? (arithOrLogic?0:d_in[DATA_WIDTH-1]) : 0;
+     // pipelineID.v
+     assign taken_d_o = ~resetn_delay | ptnt_e_i | redirection_e_i | (~flush_i & taken );
      ```
 
-2. ID Stage没有在译码到Load指令时，未将`is_load`信号发送给hazard unit，导致Load Stall失败
+2. 乘法指令产生的stall，没有正确地被拉低
 
    - [x] bug 已修复
-   - bug 描述：ID Stage没有给到hazard unit对应的信号，导致hazard unit无法识别load指令
-     ![lw stall failed](https://s2.loli.net/2023/08/03/hYQG37NiyAHgnW1.png)
-   - bug 修复：ID需要将对应的信号给到hazard unit
-
+   - bug 描述：乘法指令执行4个周期，因此需要stall流水线，目前代码里乘法指令stall不能够正确的
+     被拉低，导致后续指令一直stall。
+     其原因在于hazard unit的代码里，通过`is_m`跟`fin`来判断乘法执行的执行状态，
+     但是`fin`为高的时候，前面的`is_m`也是为高，所以`Linst_st_keep`一直为高
      ```verilog
-       // pipelineID.v
-      // decode instance
-      decoder u_decoder(
-          //ports
-          .instruction_i  		( instru_32bits  	),
-          .alu_op_o        		( aluOperation_o 		),
-          .rs1_sel_o       		( rs1_sel_o       		),
-          .rs2_sel_o       		( rs2_sel_o       		),
-          .imm_type_o      		( imm_type_o      		),
-          .branchBType_o  		( branchBType_o  		),
-          .branchJAL_o    		( branchJAL_o    		),
-          .branchJALR_o   		( branchJALR_o   		),
-          .is_load_o              ( is_load_d_o           ),
-          .dmem_type_o     		( dmem_type_o     		),
-          .wb_src_o        		( wb_src_o        		),
-          .wb_en_o         		( wb_en_o         		),
-          .instr_illegal_o 		( decoder_instr_illegal )
-         );
+        // hazard.v
+       if((~flush)&(is_d|is_m))
+       begin
+         Linst_st_keep<=1'b1;
+       end
+       else if(fin)
+       begin
+         Linst_st_keep<=1'b0;
+       end
+     ```
+   - bug 修复：将`fin`的判断放到前面去，这样`Linst_st_keep`可以被正确地拉低
+     ```verilog
+        // hazard.v
+       if(fin)
+       begin
+         Linst_st_keep<=1'b0;
+       end
+       else if((~flush)&(is_d|is_m))
+       begin
+         Linst_st_keep<=1'b1;
+       end
      ```
 
-3. ID Stage计算指令pc的时候，没有考虑stall的情况
+3. 乘法状态机不是从0开始，从1开始，导致周期错误
+
    - [x] bug 已修复
-   - bug 描述：ID Stage负责计算每条指令对应的pc，流水线stall的时候，ID Stage依然错误地增加了pc的值，pc的值被打乱之后，所有需要pc进行计算的指令都会出错
-     ![pc should stall too](https://s2.loli.net/2023/08/03/H6QN21tXJFbnf7s.png)
-   - bug 修复：ID需要输入流水线stall的信号，在stall的时候，将当前的pc固定
+   - bug 描述：如下面波形图所示，执行完一个乘法之后，其下一次乘法的状态机不是从0开始，
+     是从1开始的，导致下次乘法只执行了3个周期
+     ![](https://s2.loli.net/2023/08/10/SeQXcm3iGvxhZlP.png)
+   - bug 修复：将判断条件从`11`变成`10`，这样每个乘法都是4个周期
      ```verilog
-      always @(posedge clk ) begin
-          if(~resetn) begin
-              pc_instr <= 32'h80000000;
-          end
-          else if(taken_reg) begin
-              pc_instr <= pc_taken;
-          end
-          else if(~stall_i)begin // pc don't change when stall signal is high
-              pc_instr <= pc_next;
-          end
-      end
+     // pipelineID.v
+       else if(aluOperation_o [10]|aluOperation_o [11]|aluOperation_o [12]|aluOperation_o [13])
+       begin
+           mul_state<=mul_next_state; 
+           if(mul_state==2'b10) // bug fix
+           begin
+               fin<=1'b1;
+           end
+           else
+           begin
+               fin<=1'b0;
+           end
+       end
      ```
