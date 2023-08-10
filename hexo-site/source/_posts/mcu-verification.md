@@ -616,7 +616,38 @@ tags:
       assign taken_d_o = ~resetn_delay | ptnt_e_i | redirection_e_i | (~flush_i & taken );
       ```
 
-16. 概括
+16. 乘法指令产生的stall，没有正确地被拉低
+
+    - [x] bug 已修复
+    - bug 描述：乘法指令执行4个周期，因此需要stall流水线，目前代码里乘法指令stall不能够正确的
+      被拉低，导致后续指令一直stall。
+      其原因在于hazard unit的代码里，通过`is_m`跟`fin`来判断乘法执行的执行状态，
+      但是`fin`为高的时候，前面的`is_m`也是为高，所以`Linst_st_keep`一直为高
+      ```verilog
+         // hazard.v
+        if((~flush)&(is_d|is_m))
+        begin
+          Linst_st_keep<=1'b1;
+        end
+        else if(fin)
+        begin
+          Linst_st_keep<=1'b0;
+        end
+      ```
+    - bug 修复：将`fin`的判断放到前面去，这样`Linst_st_keep`可以被正确地拉低
+      ```verilog
+         // hazard.v
+        if(fin)
+        begin
+          Linst_st_keep<=1'b0;
+        end
+        else if((~flush)&(is_d|is_m))
+        begin
+          Linst_st_keep<=1'b1;
+        end
+      ```
+
+17. 概括
     - [x] bug 已修复
     - bug 描述：
     - bug 修复：
