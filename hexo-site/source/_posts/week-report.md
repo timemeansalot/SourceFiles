@@ -123,8 +123,9 @@ tags: RISC-V
    make test_all
    ```
    所有测试集通过的情况会记录在`result.log`文件中
-   
    > PS: <u>测试一个测试集</u>跟<u>测试所有测试集</u>，需要编译的difftest有些许不同，因此在切换测试模式之前，需要先`make clean`
+
+4. 查看波形：`make waveform`，即可通过gtkwave打开仿真生成的波形
 
 # 本周发现和修复的 bug
 
@@ -186,7 +187,7 @@ tags: RISC-V
      // pipelineID.v
        else if(aluOperation_o [10]|aluOperation_o [11]|aluOperation_o [12]|aluOperation_o [13])
        begin
-           mul_state<=mul_next_state; 
+           mul_state<=mul_next_state;
            if(mul_state==2'b10) // bug fix
            begin
                fin<=1'b1;

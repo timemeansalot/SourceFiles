@@ -670,7 +670,44 @@ tags:
         end
       ```
 
-18. 概括
+18. 乘法运算`mulh`错误，错误选择了低32bits结果
+
+    - [x] bug 已修复
+    - bug 描述：alu错误地选择了乘法器的结果，应该选择高32bits，但是选择了低32bits
+      ![](https://s2.loli.net/2023/08/11/51tApYiDzWBdG2b.png)
+    - bug 修复：对于`mulh`,`mulhu`, `mulhsu`指令，需要选择乘法器高32bits结果
+      ```verilog
+      // alu.v
+       assign ALUout=  ({32{sub_op|add_op}}&add_ans[31:0])|
+               ({32{rem_op|remu_op}}&rem_ans)|
+               ({32{div_op|divu_op}}&div_ans) |
+               ({32{mul_op}}&mul_low) |
+               ({32{mulh_op|mulhsu_op|mulhu_op}}&mul_high) | // bug fix: choose msb, not lsb
+               ({32{or_op|and_op|xor_op}}&log_ans) |
+               ({32{sll_op|srl_op|sra_op}}&sft_ans) |
+               ({32{sltu_op|slt_op}}&{31'b0,add_ans[32]});
+      ```
+
+19. alu判断乘法指令类型错误
+    - [x] bug 已修复
+    - bug 描述：alu错误的判断了`mulhu`跟`mulhsu`，把二者搞反了
+      ![](https://s2.loli.net/2023/08/11/J8up1q76ohKHRBf.png)
+    - bug 修复：将判断逻辑替换即可
+      ```verilog
+      diff --git a/src/verification/vsrc/alu.v b/src/verification/vsrc/alu.v
+       index c86bb04..29cd15a 100644
+       --- a/src/verification/vsrc/alu.v
+       +++ b/src/verification/vsrc/alu.v
+       @@ -41,8 +41,8 @@ assign slt_op=		ALUop[8];
+        assign sltu_op= 	ALUop[9];
+        assign mul_op=		ALUop[10];
+        assign mulh_op= 	ALUop[11];
+       -assign mulhsu_op=	ALUop[12];
+       -assign mulhu_op=	ALUop[13];
+       +assign mulhu_op=	ALUop[12];
+       +assign mulhsu_op=	ALUop[13];
+      ```
+20. 概括
     - [x] bug 已修复
     - bug 描述：
     - bug 修复：
@@ -950,3 +987,4 @@ A: 在进行riscv-tests测试的时候，针对addi, xor等测试集，64 bits�
    ```
    所有测试集通过的情况会记录在`result.log`文件中
    > PS: <u>测试一个测试集</u>跟<u>测试所有测试集</u>，需要编译的difftest有些许不同，因此在切换测试模式之前，需要先`make clean`
+4. 查看波形：`make waveform`，即可通过gtkwave打开仿真生成的波形
