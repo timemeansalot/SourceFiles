@@ -22,6 +22,19 @@ VGA设计文档第四版
 1. APB总线只支持32bits的位宽
 2. VGA作为主设备访问SDRAM的时候，需要支持burst传输
 3. VGA内部ping pong register从<u>2个</u>增加为<u>2组每组32个</u>，以支持burst传输
+4. 增加了项目计划的时间节点：说明大致的工作进度安排
+
+## 工作进度安排计划
+
+![](https://s2.loli.net/2023/08/14/5HjDOoNI3WTJ82A.png)
+
+- [x] VGA调研 & 方案设计
+- [ ] 代码编写 & 模块测试：3周(8.14~9.3)
+  - [ ] VC模块：1周
+  - [ ] PPR模块：1周
+  - [ ] CU模块：1周
+- [ ] 集成测试：2周(9.4~9.17)
+- [ ] FPGA测试：2周(9.18~10.8)
 
 ## 规格设计
 
@@ -45,7 +58,7 @@ VGA设计文档第四版
 > 描述VGA现实画面的过程
 
 1. SC将每一帧需要现实的数据，通过AXI总线存储到SDRAM对应的位置`VGA_BASE`
-2. FB采用ping pong memory结构，FB通过AXI总线从SDRAM读取一帧的画面到<u>空闲的Memory</u>(没有被VC占用的Memory)
+2. PPR通过AXI总线从SDRAM读取数据到<u>空闲的regisger</u>(没有被VC占用的register)，忙的register被VC读取
 3. VC在需要显示像素的时候，会给出读取的像素的地址到FB，并且在下一个cycle得到对应的12bit数据
 
 ## 总体设计
@@ -53,7 +66,7 @@ VGA设计文档第四版
 ![data flow](https://s2.loli.net/2023/07/27/edc2HSwg5iNuXsI.png)
 如上图所示，从SoC产生数据到数据通过VGA现实在屏幕上，数据需要首先被写入到SDRAM中，VGA再从SDRAM中读取数据；常见的解决SDRAM读取竞争问题的方法，可以参考[这篇博客](https://timemeansalot.github.io/2023/08/02/vga-v2/).
 
-在第三版VGA的设计中，SC将需要展示的数据写入到SDRAM中，VC作为AXI master从SDRAM中读取数据；
+在当前VGA的设计中，SC将需要展示的数据写入到SDRAM中，VC作为AXI master从SDRAM中读取数据；
 
 - SDRAM的访问冲突由SDRAM来解决，VGA作为master只需要根据数据显示需求发出访问需求即可
 - VGA内部用两块64bits的寄存器来存储数据，当作ping pong memory
@@ -67,13 +80,13 @@ VGA设计文档第四版
 VGA模块内部设计如上图所示，主要分为3大模块，各模块功能如下：
 
 1. VGA Ctrl(VC)：主要负责计算需要输出到屏幕的rgb信号跟同步信号
-2. ping pong register：每个寄存器64bits，主要负责暂存AXI总线的读取数据，该数据会被VC使用
+2. ping pong register：每个寄存器64bits，主要负责暂存AXI总线的读取数据，该数据会被VC使用；
+   PPR一共分为两组，两组交替使用，**每一组包含32个64bits的寄存器**，通过AXI burst传输从SDRAM里读取数据
 3. CU(Config Unit)：主要是一堆可以供SC读写的控制寄存器，用于更改VGA的分辨率、base address
 
 ### 顶层接口
 
 ![vga-v3](https://s2.loli.net/2023/08/07/stKHcC31azYFRTL.png)
-TODO: 顶层接口只用说明AXI、APB总线即可，具体信号线在详细设计部分里给出
 
 > input and output design
 
@@ -111,7 +124,7 @@ TODO: 顶层接口只用说明AXI、APB总线即可，具体信号线在详细�
 | hsycn   | Output    | 1     | 水平同步              |
 | blank   | Output    | 1     | 黑屏信号              |
 
-### 关键时序
+<!-- ### 关键时序 -->
 
 ## 详细设计(分模块设计)
 
@@ -177,6 +190,7 @@ TODO: 顶层接口只用说明AXI、APB总线即可，具体信号线在详细�
 
 1. 整体框架
    ![PPR](https://s2.loli.net/2023/08/08/DT8WrXOQ4SiMa1n.png)
+   TODO: ppr每组包含32个寄存器
 2. 功能
    - 根据VC数据读取需求，返回色彩数据
      - 令ping pong register每2B存储一组色彩信息，一个64bits的寄存器可以存储4个像素点信息
@@ -222,6 +236,7 @@ TODO: 顶层接口只用说明AXI、APB总线即可，具体信号线在详细�
 
 1. 整体框架
    ![](https://s2.loli.net/2023/08/07/fWAmdgM2srpkILF.png)
+   TODO: 架构图更改，因为APB总线的数据宽度是32，因此congfig register的宽度设置为32bits
 2. 功能
 
    - 选择分辨率，VGA支持的分辨率有**320x240x60hz**, **480x272x60Hz**, **640x480x60hz**, **800x600x60hz**，
