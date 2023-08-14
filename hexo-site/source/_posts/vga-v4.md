@@ -86,7 +86,7 @@ VGA模块内部设计如上图所示，主要分为3大模块，各模块功能�
 
 ### 顶层接口
 
-![vga-v3](https://s2.loli.net/2023/08/07/stKHcC31azYFRTL.png)
+![vga-v4](https://s2.loli.net/2023/08/14/WrhqiA15wkbzSLp.png)
 
 > input and output design
 
@@ -189,8 +189,7 @@ VGA模块内部设计如上图所示，主要分为3大模块，各模块功能�
 > ping pong register主要负责通过AXI总线向SDRAM发送数据读取请求，并且根据VC请求输出对应的数据到VC
 
 1. 整体框架
-   ![PPR](https://s2.loli.net/2023/08/08/DT8WrXOQ4SiMa1n.png)
-   TODO: ppr每组包含32个寄存器
+   ![PPR](https://s2.loli.net/2023/08/14/xRBIZypbSaDzF8k.png)
 2. 功能
    - 根据VC数据读取需求，返回色彩数据
      - 令ping pong register每2B存储一组色彩信息，一个64bits的寄存器可以存储4个像素点信息
@@ -235,8 +234,7 @@ VGA模块内部设计如上图所示，主要分为3大模块，各模块功能�
 > 控制模块主要是一堆可以供SC读写的寄存器，用于存储分辨率信息、SDRAM数据起始地址
 
 1. 整体框架
-   ![](https://s2.loli.net/2023/08/07/fWAmdgM2srpkILF.png)
-   TODO: 架构图更改，因为APB总线的数据宽度是32，因此congfig register的宽度设置为32bits
+   ![CU structure](https://s2.loli.net/2023/08/14/3wNTFlvu4rpisVK.png)
 2. 功能
 
    - 选择分辨率，VGA支持的分辨率有**320x240x60hz**, **480x272x60Hz**, **640x480x60hz**, **800x600x60hz**，
