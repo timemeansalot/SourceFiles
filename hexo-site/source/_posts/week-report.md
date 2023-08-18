@@ -1,5 +1,5 @@
 ---
-title: 付杰周报-20230812
+title: 付杰周报-20230815
 date: 2023-03-08 14:45:34
 tags: RISC-V
 ---
@@ -10,15 +10,15 @@ tags: RISC-V
 
 ## 本周通过的测试
 
-1. jalr
-2. jal
-3. beq
-4. bne
-5. blt
-6. bge
-7. bltu
-8. bgeu
-9. mul
+1. mulhsu
+2. mulhu
+3. rem
+4. remu
+5. div
+6. divu
+7. mul
+8. mulh
+9. rvc
 
 ## 所有通过的测试
 
@@ -64,137 +64,116 @@ tags: RISC-V
    - [x] SH
    - [x] SW
 5. Multiple
-   - [ ] DIV
-   - [ ] DIVU
+   - [x] DIV
+   - [x] DIVU
    - [x] MUL
-   - [ ] MULH
-   - [ ] MULHSU
-   - [ ] MULHU
-   - [ ] REM
-   - [ ] REMU
+   - [x] MULH
+   - [x] MULHSU
+   - [x] MULHU
+   - [x] REM
+   - [x] REMU
 6. Compressed
-   - [ ] RVC
-
-# 回归测试
-
-> 之前测试riscv-tests时都是手动在Makefile里指定要测试的测试集，测试集不通过时会发现bug；一直修改bug直到通过测试集；
-> 为了避免修改之后之前通过的测试集反而通过不了了，每次修改之后都应该把所有的测试集跑一遍，保证之前通过的测试集依然能够通过
-
-## 目录结构介绍
-
-```bash
-    ├── build
-    ├── csrc
-    ├── dump.vcd
-    ├── Makefile
-    ├── README.md
-    ├── result.log
-    ├── riscvtest
-    ├── so
-    └── vsrc
-```
-
-本目录格式如上所示，各个部分介绍如下：
-
-1. build：执行make命令后会编译可执行文件跟中间文件，这些文件都放在build目录下
-2. csrc：difftest相关的代码
-3. vsrc：MCU的所有verilog文件
-4. riscvtest：汇编测试文件，在该目录下可以编译所有的汇编文件得到可执行的bin文件
-5. so：golden reference存放目录，该目录下有32位的spike.so文件
-6. result.log：对所有的riscvtest测试集做回归方针，每个测试集是否通过会记录在该文件下
-7. dump.vcd：波形图
-
-## 编译汇编文件
-
-1. 进入到riscvtest目录下
-2. 编译一个文件：在其Makefile中用EXEC指定想要编译的汇编文件名
-   - `make`：编译该汇编文件得到elf文件，并且得到bin文件
-   - `make code`：查看反汇编文件的内容
-3. 编译所有文件: `make getAll`
-
-## 仿真测试
-
-1. 进入到verification目录下
-2. 测试一个测试集：在Makefile中用IMG指定想要测试的测试集，然后`make run`即可运行difftest，并且进入到debug模式
-   - `si`可以进行单步调试，逐行执行指令
-   - `c`可以执行所有指令，直到所有指令执行完毕、或者出现错误
-3. 回归测试（测试所有测试集）：
-   ```bash
-   make test_all
-   ```
-   所有测试集通过的情况会记录在`result.log`文件中
-   > PS: <u>测试一个测试集</u>跟<u>测试所有测试集</u>，需要编译的difftest有些许不同，因此在切换测试模式之前，需要先`make clean`
-
-4. 查看波形：`make waveform`，即可通过gtkwave打开仿真生成的波形
+   - [x] RVC
 
 # 本周发现和修复的 bug
 
-1. ID Stage被flush的指令，错误地导致了重定向
+1. 乘法运算`mulh`错误，错误选择了低32bits结果
 
    - [x] bug 已修复
-   - bug 描述：ID 需要计算重定向pc跟taken，目前ID Stage在计算taken的时候，没有考虑ID Stage的flush信号，
-     导致被flush的指令，其静态分支预测的地址，被作为重定向pc，取到了错误的指令
+   - bug 描述：alu错误地选择了乘法器的结果，应该选择高32bits，但是选择了低32bits
+     ![](https://s2.loli.net/2023/08/11/51tApYiDzWBdG2b.png)
+   - bug 修复：对于`mulh`,`mulhu`, `mulhsu`指令，需要选择乘法器高32bits结果
      ```verilog
-     // pipelineID.v
-     assign taken_d_o = ~resetn_delay | ptnt_e_i | redirection_e_i | taken;
-     ```
-     ![](https://s2.loli.net/2023/08/09/rzw7EYG4XlmuSbZ.png)
-   - bug 修复：在计算taken的时候，必须考虑flush信号
-     ```verilog
-     // pipelineID.v
-     assign taken_d_o = ~resetn_delay | ptnt_e_i | redirection_e_i | (~flush_i & taken );
+     // alu.v
+      assign ALUout=  ({32{sub_op|add_op}}&add_ans[31:0])|
+              ({32{rem_op|remu_op}}&rem_ans)|
+              ({32{div_op|divu_op}}&div_ans) |
+              ({32{mul_op}}&mul_low) |
+              ({32{mulh_op|mulhsu_op|mulhu_op}}&mul_high) | // bug fix: choose msb, not lsb
+              ({32{or_op|and_op|xor_op}}&log_ans) |
+              ({32{sll_op|srl_op|sra_op}}&sft_ans) |
+              ({32{sltu_op|slt_op}}&{31'b0,add_ans[32]});
      ```
 
-2. 乘法指令产生的stall，没有正确地被拉低
+2. alu判断乘法指令类型错误
+   - [x] bug 已修复
+   - bug 描述：alu错误的判断了`mulhu`跟`mulhsu`，把二者搞反了
+     ![](https://s2.loli.net/2023/08/11/J8up1q76ohKHRBf.png)
+   - bug 修复：将判断逻辑替换即可
+     ```verilog
+     diff --git a/src/verification/vsrc/alu.v b/src/verification/vsrc/alu.v
+      index c86bb04..29cd15a 100644
+      --- a/src/verification/vsrc/alu.v
+      +++ b/src/verification/vsrc/alu.v
+      @@ -41,8 +41,8 @@ assign slt_op=		ALUop[8];
+       assign sltu_op= 	ALUop[9];
+       assign mul_op=		ALUop[10];
+       assign mulh_op= 	ALUop[11];
+      -assign mulhsu_op=	ALUop[12];
+      -assign mulhu_op=	ALUop[13];
+      +assign mulhu_op=	ALUop[12];
+      +assign mulhsu_op=	ALUop[13];
+     ```
+3. 乘法多计算了一个周期
 
    - [x] bug 已修复
-   - bug 描述：乘法指令执行4个周期，因此需要stall流水线，目前代码里乘法指令stall不能够正确的
-     被拉低，导致后续指令一直stall。
-     其原因在于hazard unit的代码里，通过`is_m`跟`fin`来判断乘法执行的执行状态，
-     但是`fin`为高的时候，前面的`is_m`也是为高，所以`Linst_st_keep`一直为高
+   - bug 描述：乘法本来应该在四个周期内计算出结果，但是目前乘法由于其state在ID计算，再通过pipeline register传递给EXE stage，
+     导致乘法实际上需要5个周期才可以得到对应的结果
+     ![](https://s2.loli.net/2023/08/14/kQGqA64f9TXx1tH.png)
+   - bug 修复：修改`multi`乘法的时序，将结果提前一个周期计算出来
      ```verilog
-        // hazard.v
-       if((~flush)&(is_d|is_m))
-       begin
-         Linst_st_keep<=1'b1;
-       end
-       else if(fin)
-       begin
-         Linst_st_keep<=1'b0;
-       end
-     ```
-   - bug 修复：将`fin`的判断放到前面去，这样`Linst_st_keep`可以被正确地拉低
-     ```verilog
-        // hazard.v
-       if(fin)
-       begin
-         Linst_st_keep<=1'b0;
-       end
-       else if((~flush)&(is_d|is_m))
-       begin
-         Linst_st_keep<=1'b1;
-       end
+     diff --git a/src/verification/vsrc/multi.v b/src/verification/vsrc/multi.v
+       index 57fa64b..ce645f0 100644
+       --- a/src/verification/vsrc/multi.v
+       +++ b/src/verification/vsrc/multi.v
+       +wire [63:0] real_calculation;
+       +assign real_calculation = ({64{state==2'b11}} & {ans_temp+{mul16ans,32'b0}});
+       -assign prod=ans_temp;
+       +assign prod=real_calculation;
      ```
 
-3. 乘法状态机不是从0开始，从1开始，导致周期错误
-
+4. ID Stage write_back_enable 没有考虑stall的情况
    - [x] bug 已修复
-   - bug 描述：如下面波形图所示，执行完一个乘法之后，其下一次乘法的状态机不是从0开始，
-     是从1开始的，导致下次乘法只执行了3个周期
-     ![](https://s2.loli.net/2023/08/10/SeQXcm3iGvxhZlP.png)
-   - bug 修复：将判断条件从`11`变成`10`，这样每个乘法都是4个周期
+   - bug 描述：ID Stage在执行乘法指令时，应该只在乘法第四个周期才将write_back_enable拉高；
+     但是目前ID Stage在前三个周期都将write_back_enable拉高了；
+     这样会导致hazard unit错误地计算bypass信号
+     ![](https://s2.loli.net/2023/08/14/drBTjoSpCXbWKnz.png)
+   - bug 修复：在ID Stage计算write_back_enable的时候，需要判断乘法、除法指令的周期，只在最后一个周期拉高
      ```verilog
      // pipelineID.v
-       else if(aluOperation_o [10]|aluOperation_o [11]|aluOperation_o [12]|aluOperation_o [13])
-       begin
-           mul_state<=mul_next_state;
-           if(mul_state==2'b10) // bug fix
-           begin
-               fin<=1'b1;
-           end
-           else
-           begin
-               fin<=1'b0;
-           end
-       end
+     diff --git a/src/verification/vsrc/pipelineID.v b/src/verification/vsrc/pipelineID.v
+     --- a/src/verification/vsrc/pipelineID.v
+     +++ b/src/verification/vsrc/pipelineID.v
+     +    wire        wb_en_mul_div;
+     +    // write back enable with mul and div operation
+     +    assign wb_en_mul_div = (~is_m_d_o & ~is_d_d_o & wb_en_o)|
+     +                           ( is_m_d_o & (mul_state==2'b11))|
+     +                           ( is_m_d_o & div_last);
+     -            reg_write_en_d_o  <= wb_en_o;
+     +            reg_write_en_d_o  <= wb_en_mul_div;
+     -    assign dst_en_d_o=wb_en_o;
+     +    assign dst_en_d_o=wb_en_mul_div;
      ```
+5. 乘法器计算符号的时候，没有考虑乘数为零的情况
+
+   - [x] bug 已修复
+   - bug 描述：乘法器计算的时候，如果有一个乘数为零，其结果的符号位应该为零，
+     但是当前乘法器在计算符号位的时候，没有考虑乘数为零的情况，导致符号位计算错误
+     ![](https://s2.loli.net/2023/08/14/TdfOKtmP6jwe18i.png)
+   - bug 修复：在计算符号位的时候，判断乘数，如果有乘数为零，则强制符号位为零
+     ```verilog
+           diff --git a/src/verification/vsrc/multi16.v b/src/verification/vsrc/multi16.v
+           --- a/src/verification/vsrc/multi16.v
+           +++ b/src/verification/vsrc/multi16.v
+           @@ -310,10 +310,9 @@ half_adder 	ha30_2_0(.ain(c29_1_0), .bin(s30_1_0), .sout(ans1[30]), .cout(c30_2_
+           -assign sign_out=(ss&(ain[15]^bin[15])) |
+           +assign sign_out = (ain==0 | bin ==0) ? 0 : (ss&(ain[15]^bin[15])) |
+                   (su&ain[15]) 		|
+                   (us&bin[15]);
+            `endif
+     ```
+
+6. 除法器bug
+   - [x] bug 已修复
+   - bug 描述：当前测试版本除法器bug较多，例如不能正确计算触发结果、结果出现负数时会比正确答案小1；
+   - bug 修复：已经上报给淼鸿、并且已经解决所有bug
