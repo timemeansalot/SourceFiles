@@ -707,7 +707,64 @@ tags:
        +assign mulhu_op=	ALUop[12];
        +assign mulhsu_op=	ALUop[13];
       ```
-20. 概括
+20. 乘法多计算了一个周期
+
+    - [x] bug 已修复
+    - bug 描述：乘法本来应该在四个周期内计算出结果，但是目前乘法由于其state在ID计算，再通过pipeline register传递给EXE stage，
+      导致乘法实际上需要5个周期才可以得到对应的结果
+      ![](https://s2.loli.net/2023/08/14/kQGqA64f9TXx1tH.png)
+    - bug 修复：修改`multi`乘法的时序，将结果提前一个周期计算出来
+      ```verilog
+      diff --git a/src/verification/vsrc/multi.v b/src/verification/vsrc/multi.v
+        index 57fa64b..ce645f0 100644
+        --- a/src/verification/vsrc/multi.v
+        +++ b/src/verification/vsrc/multi.v
+        +wire [63:0] real_calculation;
+        +assign real_calculation = ({64{state==2'b11}} & {ans_temp+{mul16ans,32'b0}});
+        -assign prod=ans_temp;
+        +assign prod=real_calculation;
+      ```
+
+21. ID Stage write_back_enable 没有考虑stall的情况
+    - [x] bug 已修复
+    - bug 描述：ID Stage在执行乘法指令时，应该只在乘法第四个周期才将write_back_enable拉高；
+      但是目前ID Stage在前三个周期都将write_back_enable拉高了；
+      这样会导致hazard unit错误地计算bypass信号
+      ![](https://s2.loli.net/2023/08/14/drBTjoSpCXbWKnz.png)
+    - bug 修复：在ID Stage计算write_back_enable的时候，需要判断乘法、除法指令的周期，只在最后一个周期拉高
+      ```verilog
+      // pipelineID.v
+      diff --git a/src/verification/vsrc/pipelineID.v b/src/verification/vsrc/pipelineID.v
+      --- a/src/verification/vsrc/pipelineID.v
+      +++ b/src/verification/vsrc/pipelineID.v
+      +    wire        wb_en_mul_div;
+      +    // write back enable with mul and div operation
+      +    assign wb_en_mul_div = (~is_m_d_o & ~is_d_d_o & wb_en_o)|
+      +                           ( is_m_d_o & (mul_state==2'b11))|
+      +                           ( is_m_d_o & div_last);
+      -            reg_write_en_d_o  <= wb_en_o;
+      +            reg_write_en_d_o  <= wb_en_mul_div;
+      -    assign dst_en_d_o=wb_en_o;
+      +    assign dst_en_d_o=wb_en_mul_div;
+      ```
+22. 乘法器计算符号的时候，没有考虑乘数为零的情况
+    - [x] bug 已修复
+    - bug 描述：乘法器计算的时候，如果有一个乘数为零，其结果的符号位应该为零，
+      但是当前乘法器在计算符号位的时候，没有考虑乘数为零的情况，导致符号位计算错误
+      ![](https://s2.loli.net/2023/08/14/TdfOKtmP6jwe18i.png)
+    - bug 修复：在计算符号位的时候，判断乘数，如果有乘数为零，则强制符号位为零
+      ```verilog
+            diff --git a/src/verification/vsrc/multi16.v b/src/verification/vsrc/multi16.v
+            --- a/src/verification/vsrc/multi16.v
+            +++ b/src/verification/vsrc/multi16.v
+            @@ -310,10 +310,9 @@ half_adder 	ha30_2_0(.ain(c29_1_0), .bin(s30_1_0), .sout(ans1[30]), .cout(c30_2_
+            -assign sign_out=(ss&(ain[15]^bin[15])) |
+            +assign sign_out = (ain==0 | bin ==0) ? 0 : (ss&(ain[15]^bin[15])) |
+                    (su&ain[15]) 		|
+                    (us&bin[15]);
+             `endif
+      ```
+23. 概括
     - [x] bug 已修复
     - bug 描述：
     - bug 修复：
@@ -756,14 +813,14 @@ tags:
    - [x] SH
    - [x] SW
 5. Multiple
-   - [ ] DIV
-   - [ ] DIVU
+   - [x] DIV
+   - [x] DIVU
    - [x] MUL
-   - [ ] MULH
-   - [ ] MULHSU
-   - [ ] MULHU
-   - [ ] REM
-   - [ ] REMU
+   - [x] MULH
+   - [x] MULHSU
+   - [x] MULHU
+   - [x] REM
+   - [x] REMU
 6. Compressed
    - [ ] RVC
 
@@ -854,8 +911,11 @@ tags:
 3. MUL
    ![MUL](https://s2.loli.net/2023/08/10/lGqOvfeuZWAxYLQ.png)
 4. MULH
+   ![MULH](https://s2.loli.net/2023/08/14/ILasCBXG41m3lM9.png)
 5. MULHSU
+   ![MULHSU](https://s2.loli.net/2023/08/14/f8kbUcHMoQiCVRz.png)
 6. MULHU
+   ![MULHU](https://s2.loli.net/2023/08/14/fsXcdFi2QNan6BT.png)
 7. REM
 8. REMU
 
