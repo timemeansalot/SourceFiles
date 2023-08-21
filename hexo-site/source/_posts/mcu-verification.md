@@ -1082,27 +1082,31 @@ A: 在进行riscv-tests测试的时候，针对addi, xor等测试集，64 bits�
    - 信号没有驱动：1个，已解决
    - 信号未被使用、信号某些比特未被使用：23个
 
-     | 相关信号名          | 所属文件                  | 已解决 | 解决方法               |
+     | 信号未使用字段      | 所属文件                  | 已解决 | 解决方法               |
      | ------------------- | ------------------------- | ------ | ---------------------- |
      | instr               | top                       | ✅     | difftest相关信号、忽略 |
-     | fin_d_o             | hazard                    |        |                        |
      | instrIllegal_e_o    | pipelineID                | ✅     | 预留给CSR Unit、忽略   |
-     | sram_addr           | pipelineIF_withFIFO       | ✅     | I-memory只有1k，忽略   |
-     | ceb                 | pipelineIF_withFIFO       | ✅     |                        |
-     | web                 |                           | ✅     |                        |
-     | flush_delay         |                           | ✅     |                        |
-     | alu_calculation_e_i | pipelineMEM_withloadstore | ✅     |                        |
-     | clk                 | pipelineWB                | ✅     |                        |
-     |                     |                           | ✅     |                        |
-     |                     |                           | ✅     |                        |
-     |                     |                           | ✅     |                        |
-     |                     |                           | ✅     |                        |
-     |                     |                           | ✅     |                        |
-     |                     |                           | ✅     |                        |
-     |                     |                           | ✅     |                        |
-     |                     |                           | ✅     |                        |
-     |                     |                           | ✅     |                        |
-     |                     |                           | ✅     |                        |
+     | instr_i[6:0]        | extendingUnit             | ✅     | 只用得到部分bits，忽略 |
+     | resetn              | memory_block              | ✅     | 删除该无用信号         |
+     | sram_addr           | pipelineIF_withFIFO       | ✅     | verilator错误，忽略    |
+     | ceb                 | pipelineIF_withFIFO       | ✅     | verilator错误，忽略    |
+     | web                 | pipelineIF_withFIFO       | ✅     | verilator错误，忽略    |
+     | flush_delay         | pipelineIF_withFIFO       | ✅     | 删除该无用信号         |
+     | alu_calculation_e_i | pipelineMEM_withloadstore | ✅     | D-memory只有1k，忽略   |
+     | clk                 | pipelineWB                | ✅     | 删除该无用信号         |
+     | resetn              | pipelineWB                | ✅     | 删除该无用信号         |
+     | fin_d_o             | hazard                    | ✅     |                        |
+     | ld_dst2             | hazard                    | ✅     |                        |
+     | jd2                 | hazard                    | ✅     |                        |
+     | jd_b3               | hazard                    | ✅     |                        |
+     | bptrt               | hazard                    | ✅     |                        |
+     | bptnt1              | hazard                    | ✅     |                        |
+     | bnt2                | hazard                    | ✅     |                        |
+     | resetn              | alu                       | ✅     |                        |
+     | e_last              | long_div                  | ✅     |                        |
+     | sub3_pc[34]         | long_div                  | ✅     |                        |
+     | rem[34:33]          | long_div                  | ✅     |                        |
+     | adder8[16]          | multi16                   | ✅     |                        |
 
    ```bash
     # top name not match
@@ -1126,7 +1130,6 @@ A: 在进行riscv-tests测试的时候，针对addi, xor等测试集，64 bits�
        26 | output fd_st,de_st,em_st,mw_st;
           |                          ^~~~~
                        pipelineWB.v:40:1: ... note: In file included from pipelineWB.v
-    %Error: Exiting due to 26 warning(s)
 
     # signals not used
     %Warning-UNUSEDSIGNAL: top.v:28:24: Bits of signal are not used: 'instr'[63:32]
