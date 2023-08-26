@@ -1065,6 +1065,8 @@ A: 在进行riscv-tests测试的时候，针对addi, xor等测试集，64 bits�
 3. 最终的测试报告
    ![](https://s2.loli.net/2023/08/21/XouUBkwxZa1f3MV.png)
 
+> 项目地址：`/home/fujie/Developer/verify`
+
 ### Verilator检查语法错误
 
 1. 发现的语法错误

@@ -6,174 +6,140 @@ tags: RISC-V
 
 [TOC]
 
-# 测试通过的 riscv-tests
+# Verilator检查语法错误
 
-## 本周通过的测试
+1. 发现的语法错误
 
-1. mulhsu
-2. mulhu
-3. rem
-4. remu
-5. div
-6. divu
-7. mul
-8. mulh
-9. rvc
+   ```bash
+        verilator --lint-only -Wall --top-module top top.
+   ```
 
-## 所有通过的测试
+   ![](https://s2.loli.net/2023/08/21/bnEXsfLKIQ3taZz.png)
 
-1. Immdiate Type
-   - [x] ADDI
-   - [x] SLTI
-   - [x] SLTIU
-   - [x] XORI
-   - [x] ORI
-   - [x] ANDI
-   - [x] SLLI
-   - [x] SRLI
-   - [x] SRAI
-   - [x] AUIPC
-   - [x] LUI
-2. Register-Type
-   - [x] ADD
-   - [x] SUB
-   - [x] SLT
-   - [x] SLTU
-   - [x] XOR
-   - [x] OR
-   - [x] AND
-   - [x] SLL
-   - [x] SRL
-   - [x] SRA
-3. Branch-Type
-   - [x] JALR
-   - [x] JAL
-   - [x] BEQ
-   - [x] BNE
-   - [x] BLT
-   - [x] BGE
-   - [x] BLTU
-   - [x] BGEU
-4. Memory-Type
-   - [x] LB
-   - [x] LH
-   - [x] LW
-   - [x] LBU
-   - [x] LHU
-   - [x] SB
-   - [x] SH
-   - [x] SW
-5. Multiple
-   - [x] DIV
-   - [x] DIVU
-   - [x] MUL
-   - [x] MULH
-   - [x] MULHSU
-   - [x] MULHU
-   - [x] REM
-   - [x] REMU
-6. Compressed
-   - [x] RVC
+2. 修复完top的**变量名重定义**之后，再次检测语法错误，报错的情况如下：
 
-# 本周发现和修复的 bug
+   - 文件名跟模块名不一致：1个，已解决
+   - pin没有连接：1个，已解决
+   - 信号没有驱动：1个，已解决
+   - 信号未被使用、信号某些比特未被使用：23个
 
-1. 乘法运算`mulh`错误，错误选择了低32bits结果
+     | 信号未使用字段      | 所属文件                  | 已解决 | 解决方法               |
+     | ------------------- | ------------------------- | ------ | ---------------------- |
+     | instr               | top                       | ✅     | difftest相关信号、忽略 |
+     | instrIllegal_e_o    | pipelineID                | ✅     | 预留给CSR Unit、忽略   |
+     | instr_i[6:0]        | extendingUnit             | ✅     | 只用得到部分bits，忽略 |
+     | resetn              | memory_block              | ✅     | 删除该无用信号         |
+     | sram_addr           | pipelineIF_withFIFO       | ✅     | verilator错误，忽略    |
+     | ceb                 | pipelineIF_withFIFO       | ✅     | verilator错误，忽略    |
+     | web                 | pipelineIF_withFIFO       | ✅     | verilator错误，忽略    |
+     | flush_delay         | pipelineIF_withFIFO       | ✅     | 删除该无用信号         |
+     | alu_calculation_e_i | pipelineMEM_withloadstore | ✅     | D-memory只有1k，忽略   |
+     | clk                 | pipelineWB                | ✅     | 删除该无用信号         |
+     | resetn              | pipelineWB                | ✅     | 删除该无用信号         |
+     | fin_d_o             | hazard                    | ✅     |                        |
+     | ld_dst2             | hazard                    | ✅     |                        |
+     | jd2                 | hazard                    | ✅     |                        |
+     | jd_b3               | hazard                    | ✅     |                        |
+     | bptrt               | hazard                    | ✅     |                        |
+     | bptnt1              | hazard                    | ✅     |                        |
+     | bnt2                | hazard                    | ✅     |                        |
+     | resetn              | alu                       | ✅     |                        |
+     | e_last              | long_div                  | ✅     |                        |
+     | sub3_pc[34]         | long_div                  | ✅     |                        |
+     | rem[34:33]          | long_div                  | ✅     |                        |
+     | adder8[16]          | multi16                   | ✅     |                        |
 
-   - [x] bug 已修复
-   - bug 描述：alu错误地选择了乘法器的结果，应该选择高32bits，但是选择了低32bits
-     ![](https://s2.loli.net/2023/08/11/51tApYiDzWBdG2b.png)
-   - bug 修复：对于`mulh`,`mulhu`, `mulhsu`指令，需要选择乘法器高32bits结果
-     ```verilog
-     // alu.v
-      assign ALUout=  ({32{sub_op|add_op}}&add_ans[31:0])|
-              ({32{rem_op|remu_op}}&rem_ans)|
-              ({32{div_op|divu_op}}&div_ans) |
-              ({32{mul_op}}&mul_low) |
-              ({32{mulh_op|mulhsu_op|mulhu_op}}&mul_high) | // bug fix: choose msb, not lsb
-              ({32{or_op|and_op|xor_op}}&log_ans) |
-              ({32{sll_op|srl_op|sra_op}}&sft_ans) |
-              ({32{sltu_op|slt_op}}&{31'b0,add_ans[32]});
-     ```
+   ```bash
+    # top name not match
+    %Warning-DECLFILENAME: CSA32.v:5:8: Filename 'CSA32' does not match MODULE name: 'CSA35'
+        5 | module CSA35(ain,bin,cin,sout,cout);
+          |        ^~~~~
+                           decoder.v:307:1: ... note: In file included from decoder.v
+                           pipelineIF_withFIFO.v:4:1: ... note: In file included from pipelineIF_withFIFO.v
+                           top.v:12:1: ... note: In file included from top.v
+                           ... For warning description see https://verilator.org/warn/DECLFILENAME?v=5.014
+                           ... Use "/* verilator lint_off DECLFILENAME */" and lint_on around source to disable this message.
+   
+    # pin empty
+    %Warning-PINCONNECTEMPTY: top.v:358:10: Cell pin connected by name with empty reference: 'mw_st'
+      358 |         .mw_st                  (),
+          |          ^~~~~
+   
+    # signals not driven
+    %Warning-UNDRIVEN: hazard.v:26:26: Signal is not driven: 'mw_st'
+                                     : ... In instance top.hu
+       26 | output fd_st,de_st,em_st,mw_st;
+          |                          ^~~~~
+                       pipelineWB.v:40:1: ... note: In file included from pipelineWB.v
+   
+    # signals not used
+    %Warning-UNUSEDSIGNAL: top.v:28:24: Bits of signal are not used: 'instr'[63:32]
+                                      : ... In instance top
+       28 |     input  wire [63:0] instr,
+          |                        ^~~~~
+    %Warning-UNUSEDSIGNAL: top.v:87:13: Signal is not used: 'fin_d_o'
+                                      : ... In instance top
+       87 |     wire    fin_d_o;
+          |             ^~~~~~~
+    %Warning-UNUSEDSIGNAL: top.v:99:11: Signal is not used: 'instrIllegal_e_o'
+                                      : ... In instance top
+       99 |     wire  instrIllegal_e_o;
+          |           ^~~~~~~~~~~~~~~~
+   
+   ```
 
-2. alu判断乘法指令类型错误
-   - [x] bug 已修复
-   - bug 描述：alu错误的判断了`mulhu`跟`mulhsu`，把二者搞反了
-     ![](https://s2.loli.net/2023/08/11/J8up1q76ohKHRBf.png)
-   - bug 修复：将判断逻辑替换即可
-     ```verilog
-     diff --git a/src/verification/vsrc/alu.v b/src/verification/vsrc/alu.v
-      index c86bb04..29cd15a 100644
-      --- a/src/verification/vsrc/alu.v
-      +++ b/src/verification/vsrc/alu.v
-      @@ -41,8 +41,8 @@ assign slt_op=		ALUop[8];
-       assign sltu_op= 	ALUop[9];
-       assign mul_op=		ALUop[10];
-       assign mulh_op= 	ALUop[11];
-      -assign mulhsu_op=	ALUop[12];
-      -assign mulhu_op=	ALUop[13];
-      +assign mulhu_op=	ALUop[12];
-      +assign mulhsu_op=	ALUop[13];
-     ```
-3. 乘法多计算了一个周期
+# MCU跑分
 
-   - [x] bug 已修复
-   - bug 描述：乘法本来应该在四个周期内计算出结果，但是目前乘法由于其state在ID计算，再通过pipeline register传递给EXE stage，
-     导致乘法实际上需要5个周期才可以得到对应的结果
-     ![](https://s2.loli.net/2023/08/14/kQGqA64f9TXx1tH.png)
-   - bug 修复：修改`multi`乘法的时序，将结果提前一个周期计算出来
-     ```verilog
-     diff --git a/src/verification/vsrc/multi.v b/src/verification/vsrc/multi.v
-       index 57fa64b..ce645f0 100644
-       --- a/src/verification/vsrc/multi.v
-       +++ b/src/verification/vsrc/multi.v
-       +wire [63:0] real_calculation;
-       +assign real_calculation = ({64{state==2'b11}} & {ans_temp+{mul16ans,32'b0}});
-       -assign prod=ans_temp;
-       +assign prod=real_calculation;
-     ```
+## 目前MCU的测试框架
 
-4. ID Stage write_back_enable 没有考虑stall的情况
-   - [x] bug 已修复
-   - bug 描述：ID Stage在执行乘法指令时，应该只在乘法第四个周期才将write_back_enable拉高；
-     但是目前ID Stage在前三个周期都将write_back_enable拉高了；
-     这样会导致hazard unit错误地计算bypass信号
-     ![](https://s2.loli.net/2023/08/14/drBTjoSpCXbWKnz.png)
-   - bug 修复：在ID Stage计算write_back_enable的时候，需要判断乘法、除法指令的周期，只在最后一个周期拉高
-     ```verilog
-     // pipelineID.v
-     diff --git a/src/verification/vsrc/pipelineID.v b/src/verification/vsrc/pipelineID.v
-     --- a/src/verification/vsrc/pipelineID.v
-     +++ b/src/verification/vsrc/pipelineID.v
-     +    wire        wb_en_mul_div;
-     +    // write back enable with mul and div operation
-     +    assign wb_en_mul_div = (~is_m_d_o & ~is_d_d_o & wb_en_o)|
-     +                           ( is_m_d_o & (mul_state==2'b11))|
-     +                           ( is_m_d_o & div_last);
-     -            reg_write_en_d_o  <= wb_en_o;
-     +            reg_write_en_d_o  <= wb_en_mul_div;
-     -    assign dst_en_d_o=wb_en_o;
-     +    assign dst_en_d_o=wb_en_mul_div;
-     ```
-5. 乘法器计算符号的时候，没有考虑乘数为零的情况
+> 目前MCU测试主要使用到了riscvtests跟difftest
 
-   - [x] bug 已修复
-   - bug 描述：乘法器计算的时候，如果有一个乘数为零，其结果的符号位应该为零，
-     但是当前乘法器在计算符号位的时候，没有考虑乘数为零的情况，导致符号位计算错误
-     ![](https://s2.loli.net/2023/08/14/TdfOKtmP6jwe18i.png)
-   - bug 修复：在计算符号位的时候，判断乘数，如果有乘数为零，则强制符号位为零
-     ```verilog
-           diff --git a/src/verification/vsrc/multi16.v b/src/verification/vsrc/multi16.v
-           --- a/src/verification/vsrc/multi16.v
-           +++ b/src/verification/vsrc/multi16.v
-           @@ -310,10 +310,9 @@ half_adder 	ha30_2_0(.ain(c29_1_0), .bin(s30_1_0), .sout(ans1[30]), .cout(c30_2_
-           -assign sign_out=(ss&(ain[15]^bin[15])) |
-           +assign sign_out = (ain==0 | bin ==0) ? 0 : (ss&(ain[15]^bin[15])) |
-                   (su&ain[15]) 		|
-                   (us&bin[15]);
-            `endif
-     ```
+1. riscvtests是由Berkeley设计的测试汇编程序，其覆盖了每种指令需要考虑的情况
+2. difftest是YSYX提供的测试框架，其主要引入了如下三个部分:
+   - golden model：符合riscv手册规范的参考模型
+   - difftest框架：MCU每次执行一条指令，若该指令有效，都会让golden model指令相同的指令；然后比较二者的pc跟register file
 
-6. 除法器bug
-   - [x] bug 已修复
-   - bug 描述：当前测试版本除法器bug较多，例如不能正确计算触发结果、结果出现负数时会比正确答案小1；
-   - bug 修复：已经上报给淼鸿、并且已经解决所有bug
+![](https://s2.loli.net/2023/08/25/EKlSq2HC36XPjOf.png)
+
+> 总结：目前MCU只支持**单纯的计算任务**
+
+## YSYX的测试框架
+
+> 在现有测试框架的基础上，在MCU的testbench里增加了相应的IO输出函数，但是仍然无法实现打印到终端的功能，其原因在于：编译microbench得到的bin文件，其不同于汇编文件编写的程序（只包含指令），还包含一些初始化的全局部变量、堆栈的初始化，因此需要**<u>搭建c环境</u>**，才能够编译c代码运行在MCU上
+
+不同于riscvtest，microbench等测试程序是由c代码编写的，这些c代码需要调用一些库函数，例如`printf`。
+
+假如像microbench这样的应用程序，需要在程序结束之后打印相关的结果到屏幕，则需要MCU提供相应的API支持，
+这样应用程序才可以通过调用这些API的方式来实现打印的功能。
+
+YSYX根据应用程序的需求，将其API进行分为如下五类，并且整合成一个库称为AM：
+
+- TRM(Turing Machine) - 图灵机, 最简单的运行时环境, 为程序提供基本的计算能力
+- IOE(I/O Extension) - 输入输出扩展, 为程序提供输出输入的能力
+- CTE(Context Extension) - 上下文扩展, 为程序提供上下文管理的能力
+- VME(Virtual Memory Extension) - 虚存扩展, 为程序提供虚存管理的能力
+- MPE(Multi-Processor Extension) - 多处理器扩展, 为程序提供多处理器通信的能力
+
+![](https://s2.loli.net/2023/08/25/9POAqdpwyQBukrx.png)
+
+如果我们的处理器需要支持microbench打印跑分结果，则需要支持IOE扩展，主要分为以下的步骤：
+
+1. 提供c程序运行所需要的API:
+   - heap：指定堆栈的起始跟末尾、因为c程序里的函数调用、局部变量都是放在堆栈里的，跟指令是不同的
+   - putch：输出一个字符
+   - halt：结束程序的运行（汇编程序的结束是通过ebreak指令结束的，但是c程序需要该API才能够正常退出）
+   - init：初始化MCU
+2. 编译可以在MCU上运行的benchmark
+   - riscv-gcc对benchmark.c文件进行编译得到目标文件
+   - riscv-gcc对包含API的c文件进行编译得到目标文件
+   - 编写链接脚本，该脚本需要指明每个节的末尾, 栈顶位置, 堆区的起始和末尾
+   - 链接器将前面得到的目标文件链接成为可执行文件
+3. MCU支持外设，以IO外设为例子
+   - c程序本质上通过store指令完成写数据到屏幕的操作，因此MCU需要在MEM Stage根据地址，选择写入到Data Memory还是IO端口
+   - MCU通过DPI-C函数，在MEM Stage声明一个DPI-C函数，实现写出到屏幕的功能
+4. 拟完成YSYX实验0~实验2内容
+   - 不了解其实现原理，很难移植其相关代码到MCU，仅增加串口耗时较久；
+   - 完成实验2可以得到一个32bits的NEMU，后续可以作为reference model使用，
+     Spike目前在测试riscvtest的时候还能够用，后续需要测试外部中断的时候，由于Spike
+     内部细节不知道，因此在使用difftest测试中断的时候将会很麻烦（因为不知道Spike内部细节）
+   - 预计耗时2~3周，现在耗费时间掌握相关代码细节及原理，有助于后续MCU的集成测试
