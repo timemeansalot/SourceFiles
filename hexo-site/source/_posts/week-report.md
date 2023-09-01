@@ -28,6 +28,29 @@ tags: RISC-V
    - 提供对printf的重映射支持：在测试完成之后，需要在中断打印测试分数
    - 提供一个足够精准的时间测量手段：CoreMark的评价标准是<u>单位时间内运行的CoreMark程序次数是</u>
 
+## benchmark教程
+
+![image-20230901102612409](https://s2.loli.net/2023/09/01/u7KWcOMmr4DFwq5.png)
+
+![](https://s2.loli.net/2023/09/01/PgHoDackpyq5jlU.png)
+Benchmark需要一个计算时间的手段，因为benchmark需要比较单位时间内执行程序的数量，从而给出一个评分
+
+- [ ] 增加代码说明timing
+
+![](https://s2.loli.net/2023/09/01/wTJSViA4HcXqPD5.png)
+
+> 你的中央处理器有多快？
+> 当然，这是一个毫无意义的问题。处理器在一段时间内完成的工作量取决于很多因素，包括编译器(及其优化级别)、等待状态、可能窃取周期的后台活动(如 DMA)等等。然而，许多人试图建立基准，以使某种程度的比较成为可能。其中的原则是德里斯通。
+
+> Scores are expressed as raw CoreMark, CoreMark/MHz (more interesting to me), and CoreMark/Core (for multi-core devices). There are two types of results - those submitted from vendors, and those certified by EEMBC's staff (for a charge).
+> Results range from 0.03 CoreMark/MHz for a PIC18F97J60 to 168 for a Tilera TILEPro64 running 64 threads. The single-threaded max is 5.1 for a Fujitsu SPARK64V(8).
+> But away from speed demons like Pentium-class or SPARC machines, the highest score is for Atmel's SAM4S16CAU - a Cortex M4 device - which notches in at 3.38 CoreMark/MHz. That beats out a lot of high-end devices.
+> **Clock rates do matter**, and while the Intel Core i5 gets a score of 5.09 CoreMark/MHz, its raw result, at 2500 MHz, is 12715, or 6458 CoreMark/core. That thrashes the Atmel device which was tested to 21 MHz, where it netted 71 CoreMark.
+
+Coremark的分数受访存的影响很大，因为从cache里读数据跟从flash里读数据花的时间是大大不同的，因此会严重影响时间、进而严重影响分数: The nearly-shocking news that the Core i5 is less than two times the score/MHz for a Cortex M4
+
+## 在模拟器上跑分的时候，通过IPC更能体现性能
+
 ## Microbench
 
 # Spyglass

@@ -254,7 +254,7 @@ tags:
         +++ b/npc/csrc/npc_cpu/npc_exec.c
         @@ -24,13 +24,13 @@ const char *regs[] = {
          };
-
+   
          // 一个输出RTL中通用寄存器的值的示例
         -uint64_t *cpu_gpr = NULL;
         +uint32_t *cpu_gpr = NULL;
@@ -317,7 +317,7 @@ tags:
       +      sh x15, offset(x1); \
              inst x14, offset(x1); \
            )
-
+  
       @@ -227,7 +228,7 @@ test_ ## testnum: \
              la  x1, base; \
              li  x2, result; \
@@ -456,7 +456,7 @@ tags:
         +++ b/npc/vsrc/pipelineEXE.v
         @@ -21,6 +21,7 @@ module pipelineEXE (
         +    input wire        btype_d_i,       // instruction is branch type instruction
-
+  
         @@ -128,7 +129,7 @@ module pipelineEXE (
              end
              assign redirection_e_o = st_e_i? redirection_r :
@@ -1120,19 +1120,19 @@ A: 在进行riscv-tests测试的时候，针对addi, xor等测试集，64 bits�
                            top.v:12:1: ... note: In file included from top.v
                            ... For warning description see https://verilator.org/warn/DECLFILENAME?v=5.014
                            ... Use "/* verilator lint_off DECLFILENAME */" and lint_on around source to disable this message.
-
+   
     # pin empty
     %Warning-PINCONNECTEMPTY: top.v:358:10: Cell pin connected by name with empty reference: 'mw_st'
       358 |         .mw_st                  (),
           |          ^~~~~
-
+   
     # signals not driven
     %Warning-UNDRIVEN: hazard.v:26:26: Signal is not driven: 'mw_st'
                                      : ... In instance top.hu
        26 | output fd_st,de_st,em_st,mw_st;
           |                          ^~~~~
                        pipelineWB.v:40:1: ... note: In file included from pipelineWB.v
-
+   
     # signals not used
     %Warning-UNUSEDSIGNAL: top.v:28:24: Bits of signal are not used: 'instr'[63:32]
                                       : ... In instance top
