@@ -8,10 +8,14 @@ tags: RISC-V
 
 # Benchmarks
 
-- [ ] 原理
+- [ ] 原理, main function
 - [ ] 一些开源项目是怎么做Coremark的
-- [ ] 源码（说明coremark跑分跟时间有关）
+- [x] 源码（说明coremark跑分跟时间有关）
 - [ ] IPC怎么计算，IPC其实更能展示处理器的性能
+
+## 什么是基准测试
+1. 目的：测试处理器运行的速度，从而评价处理器的性能
+2. 影响因素：
 
 ## CoreMark
 
@@ -25,8 +29,15 @@ tags: RISC-V
    - CoreMark支持8 bits到64 bits的微处理器
 
 2. MCU移植CoreMark：
+
    - 提供对printf的重映射支持：在测试完成之后，需要在中断打印测试分数
    - 提供一个足够精准的时间测量手段：CoreMark的评价标准是<u>单位时间内运行的CoreMark程序次数是</u>
+
+3. source code
+   - Microbench
+     ![](https://s2.loli.net/2023/09/01/pVzw6s8hkRtgLMO.png)
+   - Coremark
+     ![](https://s2.loli.net/2023/09/01/9xMLikWUq7KjXFB.png)
 
 ## benchmark教程
 
@@ -35,7 +46,7 @@ tags: RISC-V
 ![](https://s2.loli.net/2023/09/01/PgHoDackpyq5jlU.png)
 Benchmark需要一个计算时间的手段，因为benchmark需要比较单位时间内执行程序的数量，从而给出一个评分
 
-- [ ] 增加代码说明timing
+- [x] 增加代码说明timing
 
 ![](https://s2.loli.net/2023/09/01/wTJSViA4HcXqPD5.png)
 
