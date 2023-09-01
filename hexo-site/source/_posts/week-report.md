@@ -58,3 +58,4 @@ Coremark的分数受访存的影响很大，因为从cache里读数据跟从flas
 # 参考文献
 
 1. [Core Github](https://github.com/eembc/coremark)
+2. [How fast is your CPU, By Jack Ganssle](http://www.ganssle.com/rants/coremark.html)
