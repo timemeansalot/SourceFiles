@@ -1261,9 +1261,16 @@ A: 在进行riscv-tests测试的时候，针对addi, xor等测试集，64 bits�
 
 # Benchmarks
 
+- [ ] 原理
+- [ ] 一些开源项目是怎么做Coremark的
+- [ ] 源码（说明coremark跑分跟时间有关）
+- [ ] IPC怎么计算，IPC其实更能展示处理器的性能
+- [ ] Spyglass
+
 ## CoreMark
 
 1. 基础介绍，[网站主页](https://www.eembc.org/coremark/)
+
    - CoreMark主要用于测试**嵌入式系统**的MCU跟CPU的性能，
      测试标准是在配置参数的组合下<u>单位时间内运行的CoreMark程序次数（单位：CoreMark/MHz）</u>，该数字值越大则说明测试的性能越好
    - 诞生于2009年，目的是作为Dhrystone的替代品（Dhrystone其实主要测试的是编译器的性能），
@@ -1274,6 +1281,5 @@ A: 在进行riscv-tests测试的时候，针对addi, xor等测试集，64 bits�
 2. MCU移植CoreMark：
    - 提供对printf的重映射支持：在测试完成之后，需要在中断打印测试分数
    - 提供一个足够精准的时间测量手段：CoreMark的评价标准是<u>单位时间内运行的CoreMark程序次数是</u>
-    
 
 ## Microbench
