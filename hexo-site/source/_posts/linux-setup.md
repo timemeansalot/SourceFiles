@@ -181,6 +181,9 @@ sudo apt-get install pandoc -y # used by hexo
      ```bash
         # config neovim
         sudo apt-get install ripgrep -y
+        sudo apt install cargo -y
+        cargo install stylua # lua formatter
+        cargo install svls   # system verilog lsp
         sudo apt remove cmdtest
         sudo apt remove yarn
         npm install -g prettier # used by neovim

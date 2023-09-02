@@ -6,156 +6,105 @@ tags: RISC-V
 
 [TOC]
 
-# 语法测试
+# 1 Benchmarks
 
-## Spyglass检查语法错误
+## 1.1 什么是基准测试
 
-1. Top文件里，变量先使用后定义导致的错误
-   ![](https://s2.loli.net/2023/08/21/4yrnpiKZPGIfAov.png)
-2. Difftest函数导致的报错
-   ![](https://s2.loli.net/2023/08/21/hx7tBJq1vgPDcHu.png)
-3. 最终的测试报告
-   ![](https://s2.loli.net/2023/08/21/XouUBkwxZa1f3MV.png)
+1. 目的：测试处理器运行的速度，从而评价处理器的性能
+2. 影响处理器单位时间内工作的因素有很多，如：编译器性能、访存的时间、应用的种类
+3. 基准测试：精心设计的一套程序用于覆盖一些通用的计算场景，如列表操作、矩阵计算等
+4. 测试原理：比较处理器完成基准测试的时间，时间越快越好
 
-> 项目地址：`/home/fujie/Developer/verify`
+## 1.2 CoreMark
 
-## Verilator检查语法错误
+网站主页](https://www.eembc.org/coremark/)
 
-1. 发现的语法错误
+- CoreMark主要用于测试**嵌入式系统**的MCU跟CPU的性能，
+  测试标准是在配置参数的组合下<u>单位时间内运行的CoreMark程序次数（单位：CoreMark/MHz）</u>，该数字值越大则说明测试的性能越好
+- 诞生于2009年，目的是作为Dhrystone的替代品（Dhrystone其实主要测试的是编译器的性能），
+  为了避免编译器优化导致预先计算出结果，基准测试中的每个操作都会派生一个在编译时不可用的值。
+- CoreMark由C编写，包含的测试集主要有：==列表处理（列表搜索、排序）、矩阵操作、状态机测试、CRC测试==
+- CoreMark支持8 bits到64 bits的微处理器
 
-   ```bash
-        verilator --lint-only -Wall --top-module top top.
-   ```
+## 1.3 Microbench
 
-   ![](https://s2.loli.net/2023/08/21/bnEXsfLKIQ3taZz.png)
+> 每个benchmark都记录以`REF_CPU`为基础测得的运行时间微秒数。每个benchmark的评分是相对于`REF_CPU`的运行速度，与基准处理器一样快的得分为`REF_SCORE=100000`。
+> 所有benchmark的平均得分是整体得分。
 
-2. 修复完top的**变量名重定义**之后，再次检测语法错误，报错的情况如下：
+1. 需要实现==TRM==和==IOE==的API。
+2. 在IOE的全部实现均留空的情况下仍可运行。如果有正确实现的`AM_TIMER_UPTIME`，可以输出正确的统计时间。若这个功能没有实现(返回`0`)，仍可进行正确性测试。
+3. 使用`putch(ch)`输出。
+4. 堆区`heap`必须初始化(堆区可为空)。如果`heap.start == heap.end`，即分配了空的堆区，只能运行不使用堆区的测试程序。每个基准程序会预先指定堆区的大小，堆区不足的基准程序将被忽略。
+5. 主要包含的测试程序：
 
-   - 文件名跟模块名不一致：1个，已解决
-   - pin没有连接：1个，已解决
-   - 信号没有驱动：1个，已解决
-   - 信号未被使用、信号某些比特未被使用：23个
+   | 名称  | 描述                                        | ref堆区使用 | huge堆区使用 |
+   | ----- | ------------------------------------------- | ----------- | ------------ |
+   | qsort | 快速排序随机整数数组                        | 640KB       | 16MB         |
+   | queen | 位运算实现的n皇后问题                       | 0           | 0            |
+   | bf    | Brainf\*\*k解释器，快速排序输入的字符串     | 32KB        | 32KB         |
+   | fib   | Fibonacci数列f(n)=f(n-1)+…+f(n-m)的矩阵求解 | 256KB       | 2MB          |
+   | sieve | Eratosthenes筛法求素数                      | 2MB         | 10MB         |
+   | 15pz  | A\*算法求解4x4数码问题                      | 2MB         | 64MB         |
+   | dinic | Dinic算法求解二分图最大流                   | 680KB       | 2MB          |
+   | lzip  | Lzip数据压缩                                | 4MB         | 64MB         |
+   | ssort | Skew算法后缀排序                            | 4MB         | 64MB         |
+   | md5   | 计算长随机字符串的MD5校验和                 | 10MB        | 64MB         |
 
-     | 信号未使用字段      | 所属文件                  | 已解决 | 解决方法               |
-     | ------------------- | ------------------------- | ------ | ---------------------- |
-     | instr               | top                       | ✅     | difftest相关信号、忽略 |
-     | instrIllegal_e_o    | pipelineID                | ✅     | 预留给CSR Unit、忽略   |
-     | instr_i[6:0]        | extendingUnit             | ✅     | 只用得到部分bits，忽略 |
-     | resetn              | memory_block              | ✅     | 删除该无用信号         |
-     | sram_addr           | pipelineIF_withFIFO       | ✅     | verilator错误，忽略    |
-     | ceb                 | pipelineIF_withFIFO       | ✅     | verilator错误，忽略    |
-     | web                 | pipelineIF_withFIFO       | ✅     | verilator错误，忽略    |
-     | flush_delay         | pipelineIF_withFIFO       | ✅     | 删除该无用信号         |
-     | alu_calculation_e_i | pipelineMEM_withloadstore | ✅     | D-memory只有1k，忽略   |
-     | clk                 | pipelineWB                | ✅     | 删除该无用信号         |
-     | resetn              | pipelineWB                | ✅     | 删除该无用信号         |
-     | fin_d_o             | hazard                    | ✅     | 删除该无用信号         |
-     | ld_dst2             | hazard                    | ✅     | 删除该无用信号         |
-     | jd2                 | hazard                    | ✅     | 删除该无用信号         |
-     | jd_b3               | hazard                    | ✅     | 删除该无用信号         |
-     | bptrt               | hazard                    | ✅     | 删除该无用信号         |
-     | bptnt1              | hazard                    | ✅     | 删除该无用信号         |
-     | bnt2                | hazard                    | ✅     | 删除该无用信号         |
-     | resetn              | alu                       | ✅     | 删除该无用信号         |
-     | e_last              | long_div                  | ✅     | 删除该无用信号         |
-     | sub3_pc[34]         | long_div                  | ✅     | 保留进位位宽，暂未删除 |
-     | rem[34:33]          | long_div                  | ✅     | 保留进位位宽，暂未删除 |
-     | adder8[16]          | multi16                   | ✅     | 保留进位位宽，暂未删除 |
+## 1.4 Source Code
 
-   ```bash
-    # top name not match
-    %Warning-DECLFILENAME: CSA32.v:5:8: Filename 'CSA32' does not match MODULE name: 'CSA35'
-        5 | module CSA35(ain,bin,cin,sout,cout);
-          |        ^~~~~
-                           decoder.v:307:1: ... note: In file included from decoder.v
-                           pipelineIF_withFIFO.v:4:1: ... note: In file included from pipelineIF_withFIFO.v
-                           top.v:12:1: ... note: In file included from top.v
-                           ... For warning description see https://verilator.org/warn/DECLFILENAME?v=5.014
-                           ... Use "/* verilator lint_off DECLFILENAME */" and lint_on around source to disable this message.
+- Microbench
+  ![](https://s2.loli.net/2023/09/01/pVzw6s8hkRtgLMO.png)
+- Coremark
+  ![](https://s2.loli.net/2023/09/01/9xMLikWUq7KjXFB.png)
 
-    # pin empty
-    %Warning-PINCONNECTEMPTY: top.v:358:10: Cell pin connected by name with empty reference: 'mw_st'
-      358 |         .mw_st                  (),
-          |          ^~~~~
+## 1.5 MCU移植CoreMark：
 
-    # signals not driven
-    %Warning-UNDRIVEN: hazard.v:26:26: Signal is not driven: 'mw_st'
-                                     : ... In instance top.hu
-       26 | output fd_st,de_st,em_st,mw_st;
-          |                          ^~~~~
-                       pipelineWB.v:40:1: ... note: In file included from pipelineWB.v
+- 提供对printf的重映射支持：在测试完成之后，需要在中断打印测试分数
+- 提供一个足够精准的时间测量手段：CoreMark的评价标准是<u>单位时间内运行的CoreMark程序次数是</u>
 
-    # signals not used
-    %Warning-UNUSEDSIGNAL: top.v:28:24: Bits of signal are not used: 'instr'[63:32]
-                                      : ... In instance top
-       28 |     input  wire [63:0] instr,
-          |                        ^~~~~
-    %Warning-UNUSEDSIGNAL: top.v:87:13: Signal is not used: 'fin_d_o'
-                                      : ... In instance top
-       87 |     wire    fin_d_o;
-          |             ^~~~~~~
-    %Warning-UNUSEDSIGNAL: top.v:99:11: Signal is not used: 'instrIllegal_e_o'
-                                      : ... In instance top
-       99 |     wire  instrIllegal_e_o;
-          |           ^~~~~~~~~~~~~~~~
+![](https://s2.loli.net/2023/09/01/PgHoDackpyq5jlU.png)
 
-   ```
+# 2 Benchmark vs ==CPI==
 
-# MCU跑分
+## 2.1 影响Benchmark得分的因素
 
-## 目前MCU的测试框架
+Benchmark的跑分需要计算一个关键的数据，即**程序的运行时间**，处理器微架构一模一样的情况下：
 
-> 目前MCU测试主要使用到了riscvtests跟difftest
+1.  模拟器上跑benchmark：将处理器编译成模拟器在x86主机上运行，该模拟器运行benchmark的时间，受**x86主机性能**的影响
+    ![](https://s2.loli.net/2023/09/01/JRcsUmGWtadbI4p.png)
+2.  在FPGA上跑benchmark：将RTL移植到FPGA上运行benchmark程序，运行的时间受**频率**的影响
+    ![](https://s2.loli.net/2023/09/01/wTJSViA4HcXqPD5.png)
+    - 如上图所示：coremark官网上跑分排行榜里的处理器得分，会给出`CoreMark`跟`Coremark/MHz`，其实后者更有意义
+    - 例如：Intel Core I5在2500MHz下的CoreMark得分为12725分、Atmel的设备在21MHz下的得分为71分，因此频率对于CoreMark得分影响很大
+    - 开源项目如蜂鸟以及Coremark官网上的跑分排行榜，都是在硬件上得出来的，而且会附上频率
+3.  除此之外
+    - Benchmarks得分受访存的影响很大，访问慢速存储器会导致程序的运行时间大大增加，从而严重降低得分
+    - Benchmarks不能完整测试处理器所有的性能，例如尽管Intel I5相比Arm M4有更好的浮点运算能力，但是其在Benchmarks里的`CoreMark/MHz`得分却比后者低了2倍
 
-1. riscvtests是由Berkeley设计的测试汇编程序，其覆盖了每种指令需要考虑的情况
-2. difftest是YSYX提供的测试框架，其主要引入了如下三个部分:
-   - golden model：符合riscv手册规范的参考模型
-   - difftest框架：MCU每次执行一条指令，若该指令有效，都会让golden model指令相同的指令；然后比较二者的pc跟register file
+## 2.2 在模拟器上跑分的时候，通过CPI更能体现性能
 
-![](https://s2.loli.net/2023/08/25/EKlSq2HC36XPjOf.png)
+1. 在处理器微架构确定的情况下，处理器运行同一套benchmark的CPI是恒定的
+2. CPI(Clock Per Instructions)在MCU上如何计算?
+   - 在TOP里设置两个计数器: `cycle_register`, `instruction_register`
+   - 每个时钟上升沿都将cycle_register加一
+   - 在一条指令提交的时候才将instruction_register加一，被flush的指令不会导致instruction_register加一
+   - 在MCU上跑benchmark程序，结束后即可计算CPI: `CPI=cycle_register/instruction_register`
 
-> 总结：目前MCU只支持**单纯的计算任务**
+# 3 Spyglass License Failure
 
-## YSYX的测试框架
+> source了您目录下的`.bashrc`文件，依然会License Failure
 
-> 在现有测试框架的基础上，在MCU的testbench里增加了相应的IO输出函数，但是仍然无法实现打印到终端的功能，其原因在于：编译microbench得到的bin文件，其不同于汇编文件编写的程序（只包含指令），还包含一些初始化的全局部变量、堆栈的初始化，因此需要**<u>搭建c环境</u>**，才能够编译c代码运行在MCU上
+1. 通过`make all`启动spyglass
+   ![](https://s2.loli.net/2023/09/02/VYR3FdzOMunmHAC.png)
 
-不同于riscvtest，microbench等测试程序是由c代码编写的，这些c代码需要调用一些库函数，例如`printf`。
+2. 通过`spyglass -gui`启动spyglass图形化界面
 
-假如像microbench这样的应用程序，需要在程序结束之后打印相关的结果到屏幕，则需要MCU提供相应的API支持，
-这样应用程序才可以通过调用这些API的方式来实现打印的功能。
+   ![image-20230902080311122.png](https://s2.loli.net/2023/09/02/huytiDNSjUmgw7A.png)
+   
+   ![](https://s2.loli.net/2023/09/02/arGoXQCi5dOj3LI.png)
 
-YSYX根据应用程序的需求，将其API进行分为如下五类，并且整合成一个库称为AM：
+# 4 参考文献
 
-- TRM(Turing Machine) - 图灵机, 最简单的运行时环境, 为程序提供基本的计算能力
-- IOE(I/O Extension) - 输入输出扩展, 为程序提供输出输入的能力
-- CTE(Context Extension) - 上下文扩展, 为程序提供上下文管理的能力
-- VME(Virtual Memory Extension) - 虚存扩展, 为程序提供虚存管理的能力
-- MPE(Multi-Processor Extension) - 多处理器扩展, 为程序提供多处理器通信的能力
-
-![](https://s2.loli.net/2023/08/25/9POAqdpwyQBukrx.png)
-
-如果我们的处理器需要支持microbench打印跑分结果，则需要支持IOE扩展，主要分为以下的步骤：
-
-1. 提供c程序运行所需要的API:
-   - heap：指定堆栈的起始跟末尾、因为c程序里的函数调用、局部变量都是放在堆栈里的，跟指令是不同的
-   - putch：输出一个字符
-   - halt：结束程序的运行（汇编程序的结束是通过ebreak指令结束的，但是c程序需要该API才能够正常退出）
-   - init：初始化MCU
-2. 编译可以在MCU上运行的benchmark
-   - riscv-gcc对benchmark.c文件进行编译得到目标文件
-   - riscv-gcc对包含API的c文件进行编译得到目标文件
-   - 编写链接脚本，该脚本需要指明每个节的末尾, 栈顶位置, 堆区的起始和末尾
-   - 链接器将前面得到的目标文件链接成为可执行文件
-3. MCU支持外设，以IO外设为例子
-   - c程序本质上通过store指令完成写数据到屏幕的操作，因此MCU需要在MEM Stage根据地址，选择写入到Data Memory还是IO端口
-   - MCU通过DPI-C函数，在MEM Stage声明一个DPI-C函数，实现写出到屏幕的功能
-
-> 拟完成YSYX实验0~实验2内容
-
-- 不了解其实现原理(如AM)，很难移植其相关代码到MCU，仅增加串口就花了很多时间，
-  但是如果知道是AM是怎么组织的，则移植的时候速度会快很多。
-- 完成实验2可以得到一个32bits的NEMU，后续可以作为reference model使用，
-  Spike目前在测试riscvtest的时候还能够用，后续需要测试外部中断的时候，由于Spike
-  内部细节不知道，因此在使用difftest测试中断的时候将会很麻烦（因为不知道Spike内部细节）
-- 预计耗时2~3周，现在耗费时间掌握相关代码细节及原理，有助于后续MCU的集成测试
+1. [Core Github](https://github.com/eembc/coremark)
+2. [How fast is your CPU, By Jack Ganssle](http://www.ganssle.com/rants/coremark.html)
+3. [Spyglass的Lint检查 by WenGalois123](https://www.cnblogs.com/WenGalois123/p/17455352.html)
