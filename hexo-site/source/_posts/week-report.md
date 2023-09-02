@@ -6,7 +6,20 @@ tags: RISC-V
 
 [TOC]
 
-# Verilator检查语法错误
+# 语法测试
+
+## Spyglass检查语法错误
+
+1. Top文件里，变量先使用后定义导致的错误
+   ![](https://s2.loli.net/2023/08/21/4yrnpiKZPGIfAov.png)
+2. Difftest函数导致的报错
+   ![](https://s2.loli.net/2023/08/21/hx7tBJq1vgPDcHu.png)
+3. 最终的测试报告
+   ![](https://s2.loli.net/2023/08/21/XouUBkwxZa1f3MV.png)
+
+> 项目地址：`/home/fujie/Developer/verify`
+
+## Verilator检查语法错误
 
 1. 发现的语法错误
 
@@ -36,18 +49,18 @@ tags: RISC-V
      | alu_calculation_e_i | pipelineMEM_withloadstore | ✅     | D-memory只有1k，忽略   |
      | clk                 | pipelineWB                | ✅     | 删除该无用信号         |
      | resetn              | pipelineWB                | ✅     | 删除该无用信号         |
-     | fin_d_o             | hazard                    | ✅     |                        |
-     | ld_dst2             | hazard                    | ✅     |                        |
-     | jd2                 | hazard                    | ✅     |                        |
-     | jd_b3               | hazard                    | ✅     |                        |
-     | bptrt               | hazard                    | ✅     |                        |
-     | bptnt1              | hazard                    | ✅     |                        |
-     | bnt2                | hazard                    | ✅     |                        |
-     | resetn              | alu                       | ✅     |                        |
-     | e_last              | long_div                  | ✅     |                        |
-     | sub3_pc[34]         | long_div                  | ✅     |                        |
-     | rem[34:33]          | long_div                  | ✅     |                        |
-     | adder8[16]          | multi16                   | ✅     |                        |
+     | fin_d_o             | hazard                    | ✅     | 删除该无用信号         |
+     | ld_dst2             | hazard                    | ✅     | 删除该无用信号         |
+     | jd2                 | hazard                    | ✅     | 删除该无用信号         |
+     | jd_b3               | hazard                    | ✅     | 删除该无用信号         |
+     | bptrt               | hazard                    | ✅     | 删除该无用信号         |
+     | bptnt1              | hazard                    | ✅     | 删除该无用信号         |
+     | bnt2                | hazard                    | ✅     | 删除该无用信号         |
+     | resetn              | alu                       | ✅     | 删除该无用信号         |
+     | e_last              | long_div                  | ✅     | 删除该无用信号         |
+     | sub3_pc[34]         | long_div                  | ✅     | 保留进位位宽，暂未删除 |
+     | rem[34:33]          | long_div                  | ✅     | 保留进位位宽，暂未删除 |
+     | adder8[16]          | multi16                   | ✅     | 保留进位位宽，暂未删除 |
 
    ```bash
     # top name not match
@@ -59,19 +72,19 @@ tags: RISC-V
                            top.v:12:1: ... note: In file included from top.v
                            ... For warning description see https://verilator.org/warn/DECLFILENAME?v=5.014
                            ... Use "/* verilator lint_off DECLFILENAME */" and lint_on around source to disable this message.
-   
+
     # pin empty
     %Warning-PINCONNECTEMPTY: top.v:358:10: Cell pin connected by name with empty reference: 'mw_st'
       358 |         .mw_st                  (),
           |          ^~~~~
-   
+
     # signals not driven
     %Warning-UNDRIVEN: hazard.v:26:26: Signal is not driven: 'mw_st'
                                      : ... In instance top.hu
        26 | output fd_st,de_st,em_st,mw_st;
           |                          ^~~~~
                        pipelineWB.v:40:1: ... note: In file included from pipelineWB.v
-   
+
     # signals not used
     %Warning-UNUSEDSIGNAL: top.v:28:24: Bits of signal are not used: 'instr'[63:32]
                                       : ... In instance top
@@ -85,7 +98,7 @@ tags: RISC-V
                                       : ... In instance top
        99 |     wire  instrIllegal_e_o;
           |           ^~~~~~~~~~~~~~~~
-   
+
    ```
 
 # MCU跑分
@@ -137,9 +150,12 @@ YSYX根据应用程序的需求，将其API进行分为如下五类，并且整�
 3. MCU支持外设，以IO外设为例子
    - c程序本质上通过store指令完成写数据到屏幕的操作，因此MCU需要在MEM Stage根据地址，选择写入到Data Memory还是IO端口
    - MCU通过DPI-C函数，在MEM Stage声明一个DPI-C函数，实现写出到屏幕的功能
-4. 拟完成YSYX实验0~实验2内容
-   - 不了解其实现原理，很难移植其相关代码到MCU，仅增加串口耗时较久；
-   - 完成实验2可以得到一个32bits的NEMU，后续可以作为reference model使用，
-     Spike目前在测试riscvtest的时候还能够用，后续需要测试外部中断的时候，由于Spike
-     内部细节不知道，因此在使用difftest测试中断的时候将会很麻烦（因为不知道Spike内部细节）
-   - 预计耗时2~3周，现在耗费时间掌握相关代码细节及原理，有助于后续MCU的集成测试
+
+> 拟完成YSYX实验0~实验2内容
+
+- 不了解其实现原理(如AM)，很难移植其相关代码到MCU，仅增加串口就花了很多时间，
+  但是如果知道是AM是怎么组织的，则移植的时候速度会快很多。
+- 完成实验2可以得到一个32bits的NEMU，后续可以作为reference model使用，
+  Spike目前在测试riscvtest的时候还能够用，后续需要测试外部中断的时候，由于Spike
+  内部细节不知道，因此在使用difftest测试中断的时候将会很麻烦（因为不知道Spike内部细节）
+- 预计耗时2~3周，现在耗费时间掌握相关代码细节及原理，有助于后续MCU的集成测试

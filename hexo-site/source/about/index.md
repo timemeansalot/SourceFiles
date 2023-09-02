@@ -32,3 +32,7 @@ Distiny prediction:
 - 2038 年、2039 年、2048 年、2058 年比较恼火，2058 年最凶
 - 有金舆贵人
 - 我：三火，三土，二木；梦婷：四金、二土、一火、一木
+
+Exercise Times **I will not make the same mistake again!!!!!**
+
+1. Thu Aug 31 11:36:26 PM CST 2023
