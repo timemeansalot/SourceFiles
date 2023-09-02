@@ -23,7 +23,7 @@ tags: RISC-V
   测试标准是在配置参数的组合下<u>单位时间内运行的CoreMark程序次数（单位：CoreMark/MHz）</u>，该数字值越大则说明测试的性能越好
 - 诞生于2009年，目的是作为Dhrystone的替代品（Dhrystone其实主要测试的是编译器的性能），
   为了避免编译器优化导致预先计算出结果，基准测试中的每个操作都会派生一个在编译时不可用的值。
-- CoreMark由C编写，包含的测试集主要有：列表处理（列表搜索、排序）、矩阵操作、状态机测试、CRC测试
+- CoreMark由C编写，包含的测试集主要有：==列表处理（列表搜索、排序）、矩阵操作、状态机测试、CRC测试==
 - CoreMark支持8 bits到64 bits的微处理器
 
 ## 1.3 Microbench
@@ -31,7 +31,7 @@ tags: RISC-V
 > 每个benchmark都记录以`REF_CPU`为基础测得的运行时间微秒数。每个benchmark的评分是相对于`REF_CPU`的运行速度，与基准处理器一样快的得分为`REF_SCORE=100000`。
 > 所有benchmark的平均得分是整体得分。
 
-1. 需要实现TRM和IOE的API。
+1. 需要实现==TRM==和==IOE==的API。
 2. 在IOE的全部实现均留空的情况下仍可运行。如果有正确实现的`AM_TIMER_UPTIME`，可以输出正确的统计时间。若这个功能没有实现(返回`0`)，仍可进行正确性测试。
 3. 使用`putch(ch)`输出。
 4. 堆区`heap`必须初始化(堆区可为空)。如果`heap.start == heap.end`，即分配了空的堆区，只能运行不使用堆区的测试程序。每个基准程序会预先指定堆区的大小，堆区不足的基准程序将被忽略。
@@ -64,7 +64,7 @@ tags: RISC-V
 
 ![](https://s2.loli.net/2023/09/01/PgHoDackpyq5jlU.png)
 
-# 2 Benchmark vs CPI
+# 2 Benchmark vs ==CPI==
 
 ## 2.1 影响Benchmark得分的因素
 
