@@ -6,18 +6,16 @@ tags: RISC-V
 
 [TOC]
 
-# Benchmarks
+# 1 Benchmarks
 
-## 什么是基准测试
-
-![image-20230901102612409](https://s2.loli.net/2023/09/01/u7KWcOMmr4DFwq5.png)
+## 1.1 什么是基准测试
 
 1. 目的：测试处理器运行的速度，从而评价处理器的性能
 2. 影响处理器单位时间内工作的因素有很多，如：编译器性能、访存的时间、应用的种类
 3. 基准测试：精心设计的一套程序用于覆盖一些通用的计算场景，如列表操作、矩阵计算等
 4. 测试原理：比较处理器完成基准测试的时间，时间越快越好
 
-## CoreMark
+## 1.2 CoreMark
 
 网站主页](https://www.eembc.org/coremark/)
 
@@ -28,7 +26,7 @@ tags: RISC-V
 - CoreMark由C编写，包含的测试集主要有：列表处理（列表搜索、排序）、矩阵操作、状态机测试、CRC测试
 - CoreMark支持8 bits到64 bits的微处理器
 
-## Microbench
+## 1.3 Microbench
 
 > 每个benchmark都记录以`REF_CPU`为基础测得的运行时间微秒数。每个benchmark的评分是相对于`REF_CPU`的运行速度，与基准处理器一样快的得分为`REF_SCORE=100000`。
 > 所有benchmark的平均得分是整体得分。
@@ -52,23 +50,23 @@ tags: RISC-V
    | ssort | Skew算法后缀排序                            | 4MB         | 64MB         |
    | md5   | 计算长随机字符串的MD5校验和                 | 10MB        | 64MB         |
 
-## MCU移植CoreMark：
-
-- 提供对printf的重映射支持：在测试完成之后，需要在中断打印测试分数
-- 提供一个足够精准的时间测量手段：CoreMark的评价标准是<u>单位时间内运行的CoreMark程序次数是</u>
-
-![](https://s2.loli.net/2023/09/01/PgHoDackpyq5jlU.png)
-
-## Source Code
+## 1.4 Source Code
 
 - Microbench
   ![](https://s2.loli.net/2023/09/01/pVzw6s8hkRtgLMO.png)
 - Coremark
   ![](https://s2.loli.net/2023/09/01/9xMLikWUq7KjXFB.png)
 
-# Benchmark vs CPI
+## 1.5 MCU移植CoreMark：
 
-## 影响Benchmark得分的因素
+- 提供对printf的重映射支持：在测试完成之后，需要在中断打印测试分数
+- 提供一个足够精准的时间测量手段：CoreMark的评价标准是<u>单位时间内运行的CoreMark程序次数是</u>
+
+![](https://s2.loli.net/2023/09/01/PgHoDackpyq5jlU.png)
+
+# 2 Benchmark vs CPI
+
+## 2.1 影响Benchmark得分的因素
 
 Benchmark的跑分需要计算一个关键的数据，即**程序的运行时间**，处理器微架构一模一样的情况下：
 
@@ -83,7 +81,7 @@ Benchmark的跑分需要计算一个关键的数据，即**程序的运行时间
     - Benchmarks得分受访存的影响很大，访问慢速存储器会导致程序的运行时间大大增加，从而严重降低得分
     - Benchmarks不能完整测试处理器所有的性能，例如尽管Intel I5相比Arm M4有更好的浮点运算能力，但是其在Benchmarks里的`CoreMark/MHz`得分却比后者低了2倍
 
-## 在模拟器上跑分的时候，通过CPI更能体现性能
+## 2.2 在模拟器上跑分的时候，通过CPI更能体现性能
 
 1. 在处理器微架构确定的情况下，处理器运行同一套benchmark的CPI是恒定的
 2. CPI(Clock Per Instructions)在MCU上如何计算?
@@ -92,9 +90,21 @@ Benchmark的跑分需要计算一个关键的数据，即**程序的运行时间
    - 在一条指令提交的时候才将instruction_register加一，被flush的指令不会导致instruction_register加一
    - 在MCU上跑benchmark程序，结束后即可计算CPI: `CPI=cycle_register/instruction_register`
 
-# Spyglass
+# 3 Spyglass License Failure
 
-# 参考文献
+> source了您目录下的`.bashrc`文件，依然会License Failure
+
+1. 通过`make all`启动spyglass
+   ![](https://s2.loli.net/2023/09/02/VYR3FdzOMunmHAC.png)
+
+2. 通过`spyglass -gui`启动spyglass图形化界面
+
+   ![image-20230902080311122.png](https://s2.loli.net/2023/09/02/huytiDNSjUmgw7A.png)
+   
+   ![](https://s2.loli.net/2023/09/02/arGoXQCi5dOj3LI.png)
+
+# 4 参考文献
 
 1. [Core Github](https://github.com/eembc/coremark)
 2. [How fast is your CPU, By Jack Ganssle](http://www.ganssle.com/rants/coremark.html)
+3. [Spyglass的Lint检查 by WenGalois123](https://www.cnblogs.com/WenGalois123/p/17455352.html)
