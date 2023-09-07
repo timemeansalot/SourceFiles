@@ -1,7 +1,6 @@
 ---
 title: 关于我自己
-date: 2022-09-07 10:28:29
----
+date: 2022-09-07 10:28:29 ---
 
 **AI, Robots and Chips** is the key for current world
 
@@ -36,3 +35,4 @@ Distiny prediction:
 Exercise Times **I will not make the same mistake again!!!!!**
 
 1. Thu Aug 31 11:36:26 PM CST 2023
+1. Thu Spt 07 01:23:18 PM CST 2023
