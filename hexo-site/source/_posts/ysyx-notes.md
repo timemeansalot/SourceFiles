@@ -37,3 +37,4 @@ tags:
 
 - [ ] [Chisel](https://ysyx.oscc.cc/docs/2306/prestudy/0.5.html)
 - [ ] [数字电路基础实验](https://nju-projectn.github.io/dlco-lecture-note/index.html)
+- [ ] [Linux C编程一站式学习](https://docs.huihoo.com/c/linux-c-programming/)
