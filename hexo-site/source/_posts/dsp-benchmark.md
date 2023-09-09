@@ -8,7 +8,9 @@ tags: DSP
 
 <!--more-->
 
-# 1 什么是DSP Benchmark
+# DSP Benchmark
+
+## 什么是DSP Benchmark
 
 1.  定义: Benchmark是一个用于<u>定量评估</u>计算机<u>软硬件资源</u>的程序
 2.  作用: 人们通过选择合适的Benchmark可以判断一个系统是否符合设计预期，具体为：
@@ -30,12 +32,12 @@ tags: DSP
 
     > DSP对比CPU的不同，导致CPU的Benchmark并不能很好地评估DSP的优劣
 
-# 2 DSP Benchmark的特点
+## DSP Benchmark的特点
 
 > 一开始DSP Benchmark主要有设备厂商如TI、摩托罗拉等公司给出；
 > 后来有了一些独立的DSP Benchmark如BDTIMark, EDN Benchmarks, DSPStone.
 
-## 2.1 DSP Benchmark 分类
+### DSP Benchmark 分类
 
 DSP Benchmark可以分为如下三类：
 
@@ -49,7 +51,7 @@ DSP Benchmark可以分为如下三类：
    - Benchmark由高级语言编写
    - 通过运行的性能来整体评估处理器跟编译器的性能
 
-## 2.2 Benchmark评估途径
+### Benchmark评估途径
 
 1. 单看指标(Metrics):
    - 单看DSP Benchmark跑分，如MIPS(Million Instruction per Seconds)
@@ -63,18 +65,18 @@ DSP Benchmark可以分为如下三类：
    - 这些计算在DSP处理中占用了大量的执行时间
    - 从DSP应用程序里提取出专门的计算部分
 
-## 2.3 Benchmark评估的指标
+### Benchmark评估的指标
 
 1. 周期数(Cycle Count)
 2. 内存使用(Program Memory Usage & Data Memory Usage)
 3. 程序执行时间(Execution Time)
 4. 功耗(Power Consumption)
 
-# 3 DSP常见的Benchmark
+## DSP常见的Benchmark
 
 > 由于DSP系统的多样性，设计一款适合所有DSP系统的Benchmark不容易
 
-## 3.1 Dhrystone Benchmark
+### Dhrystone Benchmark
 
 1. [Dhrystone官网](https://github.com/search?q=Dhrystone&type=repositories)
 2. 并不主要是DSP的Benchmark，主要是CPU Benchmark
@@ -83,9 +85,9 @@ DSP Benchmark可以分为如下三类：
    - 测试程序权重差异太大，strcpy, strcmp占据了30%~40%的执行时间
    - 程序调用太浅，函数调用主要是3层
 
-<!-- ## EDN's DSP Benchmark -->
+<!-- ### EDN's DSP Benchmark -->
 
-## 3.2 ※EEMBC Benchmark
+### ※EEMBC Benchmark
 
 1. [EEMBC官网](https://www.eembc.org/)
 2. 由C编写、其测试用例包括：自动驾驶、物联网、机器学习、**数字通信**等行业
@@ -93,18 +95,18 @@ DSP Benchmark可以分为如下三类：
 4. 包含很多Benchmark以针对不用的应用场景：
    ![](https://s2.loli.net/2023/09/08/EPngJXj74zOiK6a.png)
 
-## 3.3 ※BDTI Benchmark
+### ※BDTI Benchmark
 
 > BDTI DSP 内核基准测试是世界上使用最广泛的数字信号处理基准测试。几乎每个 DSP 处理器的主要供应商或买家都使用此基准测试套件。
 
-1. [BDTI官网](https://www.bdti.com/services/bdti-dsp-kernel-benchmarks#:~:text=The%20BDTI%20DSP%20Kernel%20Benchmarks%20are%20a%20suite%20of%20twelve,in%20most%20signal%20processing%20applications)
+1. [BDTI官网](https://www.bdti.com/services/bdti-dsp-kernel-benchmarks##:~:text=The%20BDTI%20DSP%20Kernel%20Benchmarks%20are%20a%20suite%20of%20twelve,in%20most%20signal%20processing%20applications)
 2. 由汇编编写，测试Processor的性能，不评估 I/O、外设或外部存储器的影响
 3. 包含12个 DSP 算法内核基准测试的套件，如FIR, IIR filters, LMS filter, convolutional encoder和FFT的算术性能
    ![](https://s2.loli.net/2023/09/08/LQaIDsocKSU7d3j.png)
 4. Benchmark结构默认是所有测试项的平均分，但是用户可以根据应用的倾向为测试分配权重
 5. Benchmark跑分受处理器数据格式影响，例如定点数的处理器跑分会高于浮点数处理器
 
-## 3.4 ※DSPStone Benchmark
+### ※DSPStone Benchmark
 
 1. [DSPStone官网](https://www.ice.rwth-aachen.de/research/tools-projects/closed-projects/dspstone)
 2. 测试Platform的性能(Processor & Compiler):
@@ -112,7 +114,7 @@ DSP Benchmark可以分为如下三类：
    - 处理器性能评估：Benchmark代码执行的效率
 3. 专门针对DSP的Benchmark
 
-# 4 参考文献
+## 参考文献
 
 1. [BDTI DSP Kernel Benchmarks](https://www.bdti.com/services/bdti-dsp-kernel-benchmarks)
 2. [Genutis, M., E. Kazanavicius, and O. Olsen. "Benchmarking in DSP." Ultragarsas/Ultrasound 39.2 (2001): 13-17.](https://www.ultragarsas.ktu.lt/index.php/USnd/article/view/8050/4009)
