@@ -1,4 +1,5 @@
 ---
+
 title: 关于我自己
 date: 2022-09-07 10:28:29 ---
 
@@ -35,4 +36,5 @@ Distiny prediction:
 Exercise Times **I will not make the same mistake again!!!!!**
 
 1. Thu Aug 31 11:36:26 PM CST 2023
-1. Thu Spt 07 01:23:18 PM CST 2023
+2. Thu Spt 07 01:23:18 PM CST 2023
+3. Mon Sep 18 15:26:51 CST 2023
