@@ -261,3 +261,6 @@ The APB is a simplified interface designed for low bandwidth peripherals that do
 2. 同一个id的传输，必须按顺序；不同的id的传输，可以乱序
 
 ![](https://s2.loli.net/2023/08/10/wQIvHNL4qm2Pchz.png)
+
+# 参考资料
+1. [AXI总线总结 by lizhirui](https://www.lzrnote.cn/2021/10/08/axi%E6%80%BB%E7%BA%BF%E6%80%BB%E7%BB%93/)
