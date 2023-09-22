@@ -70,6 +70,7 @@ tags: RISC-V
    - trap.S: 主要包括<u>系统初始化</u>，<u>中断处理程序</u>
    - test.S: 主要包括<u>测试程序</u>跟<u>trap_handler</u>
 
+   > 代码在interrupt分支下: [FAST_INTR_CPU/src/verification/riscvtest/interrupt/](https://github.com/ChipDesign/FAST_INTR_CPU/tree/interrupt/src/verification/riscvtest/interrupt)
 ## 运行截图
 
 目前对软件中断进行了测试，经过测试证明testcase代码逻辑能够按照预期运行到`_test`里的ebreak指令，从而退出difftest;
