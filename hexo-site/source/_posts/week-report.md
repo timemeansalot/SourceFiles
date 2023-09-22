@@ -75,8 +75,7 @@ tags: RISC-V
 
 目前对软件中断进行了测试，经过测试证明testcase代码逻辑能够按照预期运行到`_test`里的ebreak指令，从而退出difftest;
 各个函数的执行顺序如下图所示:
-![](https://s2.loli.net/2023/09/23/QUaBvA7zX6EweKJ.png)
-
+![](https://s2.loli.net/2023/09/23/DysNzvjB1PAIrCh.png)
 运行截图如下：
 ![](https://s2.loli.net/2023/09/23/E4N6C1UwifdZ7Oz.png)
 
