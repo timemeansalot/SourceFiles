@@ -1,5 +1,5 @@
 ---
-title: 付杰周报-20230815
+title: 付杰周报-20230923
 date: 2023-03-08 14:45:34
 tags: RISC-V
 ---
@@ -25,7 +25,7 @@ tags: RISC-V
    - 保存系统状态，即保存重要的csr寄存器的值到栈上
    - 将gpr进行压栈，避免gpr被trap_handler程序覆盖
    - 跳转到trap_handler: `jal trap_handler`
-   - 将grp出栈
+   - 将gpr出栈
    - 从栈里恢复csr寄存器的值
    - 调用mret返回
 
@@ -38,8 +38,9 @@ tags: RISC-V
    可以由汇编编写、也可以由c编写。
 
    - 在testcase里，trap_handler只是一个在中断处理程序中的**跳转地址**，
-   - 通过`jal trap_handler`进入具体的中断处理代码，通过`ret`返回到中断处理程序
-     剩余部分
+   - 通过`jal trap_handler`进入具体的中断处理代码，通过`ret`返回到中断处理程序剩余部分
+   - 如果trap_handler需要处理的中断类型比较多，则需要通过a0~a7寄存器为其传递参数，如
+     `mcause`, `mtval`等寄存器的值
 
 ## 测试程序
 
@@ -69,7 +70,8 @@ tags: RISC-V
    testcase主要包含两个代码文件:
    - trap.S: 主要包括<u>系统初始化</u>，<u>中断处理程序</u>
    - test.S: 主要包括<u>测试程序</u>跟<u>trap_handler</u>
-
+   - os.txt：整个testcase的反汇编代码
+   
    > 代码在interrupt分支下: [FAST_INTR_CPU/src/verification/riscvtest/interrupt/](https://github.com/ChipDesign/FAST_INTR_CPU/tree/interrupt/src/verification/riscvtest/interrupt)
 ## 运行截图
 
@@ -89,6 +91,3 @@ tags: RISC-V
 1. [YSYX PA3](https://ysyx.oscc.cc/docs/ics-pa/3.2.html#%E8%AE%BE%E7%BD%AE%E5%BC%82%E5%B8%B8%E5%85%A5%E5%8F%A3%E5%9C%B0%E5%9D%80)
 2. [riscv-operating-system-mooc](https://gitee.com/unicornx/riscv-operating-system-mooc?_from=gitee_search)
 
-```
-
-```
