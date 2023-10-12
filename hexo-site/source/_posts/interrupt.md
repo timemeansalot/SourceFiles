@@ -139,13 +139,18 @@ tags: RISC-V
 2. 中断目标: 生成一根中短线发送给Core，这根线就称作为中断目标
    ![](https://s2.loli.net/2023/10/12/gBTxzArW12EqlGp.png)
 3. 中断源:
-    - RISC-V默认支持4096个中断源
-    - 每个中断源有如下参数:
-        - 编号(ID): 0~18被预留为内核使用，其余的中断ID从19开始
-        - 使能位(IE) 
-        - Pending位(IP)
-        - 级别跟优先级(Level and Priority) 
-        - 向量或非向量处理(Vector or Non-Vector Mode)
+   - RISC-V默认支持4096个中断源
+   - 每个中断源有如下参数:
+     - 编号(ID): 0~18被预留为内核使用，其余的中断ID从19开始
+     - 使能位(IE)
+     - Pending位(IP)
+     - 级别跟优先级(Level and Priority)
+     - 向量或非向量处理(Vector or Non-Vector Mode)
+4. 阈值：仲裁出的中断源，其Level必须大于阈值，才会最终被发送给Core
+5. 仲裁原理:
+   - 中断源参与仲裁的条件: `enable & pending ==1`
+   - 仲裁原理：先比较Level，再比较Priority，在比较ID（数字都是越大越好）
+
 # 参考文献
 
 1. [RISC-V 手册 10.3](http://riscvbook.com/chinese/RISC-V-Reader-Chinese-v2p1.pdf)
