@@ -9,6 +9,8 @@ tags:
 
 > 一生一芯学习讲义
 
+<!--more-->
+
 # 环境配置相关
 
 1. [安装Ubuntu教程](https://timemeansalot.github.io/2023/08/30/linux-setup/)
