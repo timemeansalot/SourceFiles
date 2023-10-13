@@ -6,88 +6,105 @@ tags: RISC-V
 
 [TOC]
 
-# 构建中断testcase
+# 中断的硬件实现原理
 
-## 初始化系统
+## Core的硬件支持
 
-1. 初始化所有的gpr，避免difftest报错
-2. 设置`mtvec`的值:
-   - `mtvec`存放<u>中断处理程序的</u>地址
-   - 当中断(interrupt)异常(exception)发生的时候，
-     程序会在硬件控制下跳转到`mtvec`，即`pc=csr[mtvec]`
-3. 设置栈空间：中断处理程序需要保存上下文到栈里，栈大小设置为1024
-4. 跳转到测试程序：系统基本设置好了之后，就跳转到测试程序处执行`jal _test`
+![image-20231013212119766](https://s2.loli.net/2023/10/13/O3tbTVYWXhvn1dy.png)
 
-## 准备中断处理程序
+> PS: 目前Core可以顺序的执行I-Memory里的指令，并且可以对Branch、Jump指令正确地跳转到对应PC，
+>
+> 现在需要增加对中断的支持；中断=中断(Interrupt)+异常(Exception)
 
-2. 中断处理程序(软件)，主要做了如下的工作
+### Core对中断进行处理，需要增加如下的功能:
 
-   - 保存系统状态，即保存重要的csr寄存器的值到栈上
-   - 将gpr进行压栈，避免gpr被trap_handler程序覆盖
-   - 跳转到trap_handler: `jal trap_handler`
-   - 将gpr出栈
-   - 从栈里恢复csr寄存器的值
-   - 调用mret返回
+1. 接受中断发生的信号
+2. 中断发生时，跳转到对应的处理程序的能力
+3. 辨别不同类型的中断的能力
 
-   > ps: ecall->硬件修改csr寄存器的值，如mstatus, mepc, `pc=csr[mtvec]`
-   > 进入到中断处理程序
-   > mret->硬件修改csr寄存器的值，`pc=csr[mepc]`
+> PS: 对中断处理的主要动作是**当中断发生的时候->停止当前的工作流->按照中断的类型完成对应的处理->恢复之前的工作流**。
 
-3. trap_handler
-   顾名思义，是用于处理不同的中断、异常的程序，本质上是一段程序，
-   可以由汇编编写、也可以由c编写。
+### Core需要提供的硬件支持
 
-   - 在testcase里，trap_handler只是一个在中断处理程序中的**跳转地址**，
-   - 通过`jal trap_handler`进入具体的中断处理代码，通过`ret`返回到中断处理程序剩余部分
-   - 如果trap_handler需要处理的中断类型比较多，则需要通过a0~a7寄存器为其传递参数，如
-     `mcause`, `mtval`等寄存器的值
+> 为了实现上述3种功能，Core需要在原来五级流水线的基础上增加如下的硬件支持
 
-## 测试程序
+#### 接受中断信号
 
-一段正常的测试程序:
+1. Core需要接受一个中断发生的信号，以通知Core当前发生了中断
+   > 具体指**ID Stage**需要接受信号、知道中断发生了，因为ID Stage负责PC的更新
 
-为了测试中断处理程序，有如下两种途径：
+![image-20231013220122658](https://s2.loli.net/2023/10/13/wivUfa6KOAXTej2.png)
 
-1. 软件中断(YSYX的例子，其中断处理过程如下)：
+2. RISC-V规定了3种类型的中断，分别是：外部中断、软件中断、定时器中断，其来源会在下文`mcause`部分介绍
 
-   - 初始化系统，跳转到测试程序第一条指令处执行
-   - 测试程序有一条`ecall`指令
-   - ecall指令触发软件中断，pc跳转到mtvec位置，进入到中断处理程序
-   - 中断处理程序处理器状态、保存上下文
-   - 进入到trap_handler，具体针对中断进行处理
-   - trap_handler调用ret返回
-   - 中断能处理程序恢复处理器状态、恢复上下文
-   - 调用mret，pc跳转到之前程序的位置执行
+#### 🌟CSR寄存器及其操作
 
-2. 外部中断(测试plic):
-   跟软件中断的过程很像，不同之处在于pc跳转到mtvec不是因为ecall指令，而是因为
-   plic发过来了一个中断
+1. 记录中断的发生:
 
-> PS：需要注意的是，由于多了初始化系统的部分，所以`0x80000000`不是存放测试程序第一条指令，
-> 测试程序第一条指令在初始化完成之后通过`jal`跳转
+   ![image-20231013211942338](https://s2.loli.net/2023/10/13/PmEjCzUnF93lo1c.png)
 
-3. 代码分析
-   testcase主要包含两个代码文件:
-   - trap.S: 主要包括<u>系统初始化</u>，<u>中断处理程序</u>
-   - test.S: 主要包括<u>测试程序</u>跟<u>trap_handler</u>
-   - os.txt：整个testcase的反汇编代码
-   
-   > 代码在interrupt分支下: [FAST_INTR_CPU/src/verification/riscvtest/interrupt/](https://github.com/ChipDesign/FAST_INTR_CPU/tree/interrupt/src/verification/riscvtest/interrupt)
-## 运行截图
+   > 中断使能位在`CSR.mie`寄存器中配置
 
-目前对软件中断进行了测试，经过测试证明testcase代码逻辑能够按照预期运行到`_test`里的ebreak指令，从而退出difftest;
-各个函数的执行顺序如下图所示:
-![](https://s2.loli.net/2023/09/23/DysNzvjB1PAIrCh.png)
-运行截图如下：
-![](https://s2.loli.net/2023/09/23/E4N6C1UwifdZ7Oz.png)
+   - CSR.mip寄存器用于记录各种pending的中断
+     ![image-20231013131939115](https://s2.loli.net/2023/10/13/HPoTsMuENjwJQbV.png)
+   - PLIC检测到外部中断之后，会发送一个`notify`信号到CSR单元，表明外部中断发生; 导致`CSR.mip[11]=1;`
+   - Timer触发时钟中断之后，也会发送一个`notify`信号到CSR单元，表明时钟中断发送; 导致`CSR.mip[7]=1;`
+   - 软件中断（通常用于向另一个核发送），此时可以通过MMIO的方式往另一个核的CSR单元写入; 导致`CSR.mip[3]=1;`
 
-目前中断测试存在下面一些问题：
+2. 判断中断发生
+   ![image-20231013212029071](https://s2.loli.net/2023/10/13/5iTmZIa8ESzwrR1.png)
 
-1. 目前对于`ecall`的指令功能没有实现完全，导致`csr[mepc]=pc`功能没有实现，进而导致`mret`指令不能正常运行
-2. 对于其他csr寄存器的功能正确性，需要进一步测试，现在difftest发现很多寄存器的值都对不上，需要找到哪里实现有问题
+   > 如上所述：3种中断发生之后，都会通过硬件在1个cycle内记录到`CSR.mip`寄存器中，现在可以对中断进行处理了
 
-# 参考资料
+   - 中断判断在`trap_handler`单用中完成（为了代码结构清晰)，它通过输入`CSR.mip, CSR.mie`信号，判断中断是否发生;
+     若发生中断，则会将`Trap`信号拉高，该信号会被ID Stage使用, `Trap=mip[x] & mie[x], x=3,7,11`
+   - `Trap`信号会发送给Core跟CSR单元，完成相应的硬件操作以支撑中断
 
-1. [YSYX PA3](https://ysyx.oscc.cc/docs/ics-pa/3.2.html#%E8%AE%BE%E7%BD%AE%E5%BC%82%E5%B8%B8%E5%85%A5%E5%8F%A3%E5%9C%B0%E5%9D%80)
-2. [riscv-operating-system-mooc](https://gitee.com/unicornx/riscv-operating-system-mooc?_from=gitee_search)
+3. 记录中断的类型&更改处理器状态
+
+   ![image-20231013213455624](https://s2.loli.net/2023/10/13/WOxugf3lM5KEwty.png)
+
+   - 在中断发生的时候，硬件会自动更新CSR.mcause寄存器，保存中断的原因
+     ![](https://img2023.cnblogs.com/blog/1653979/202307/1653979-20230712210012313-359133103.png)
+   - 例如“外部中断发生”之后，`CSR.mcause`寄存器的`Exception Code`字段会被写入`0x80000800`
+   - 中断处理程序(Interrupt Service Routine, ISR)通过查询`CSR.mcause`，就可以知道中断的原因，进而做想要的操作
+     ![](https://s2.loli.net/2023/10/13/uN9Spx3VnsyX5Oc.png)
+   - 中断判定之后，需要修改`CSR.mstatus`寄存器以更改处理器状态，
+     硬件默认会将`CSR.mstatus.mpie=CSR.mstatus.mie, CSR.mstatus.mie=0`，默认不支持中断嵌套
+   - <u>中断嵌套</u>: 进入ISR后，可以通过CSR指令(如CSRRW)将`CSR.mstatus.mie`置1从而再次打开中断，实现中断嵌套
+
+4. 跳转到ISR执行
+
+   > 中断处理核心的工作就是更改PC，从而跳转到ISR并且从ISR返回
+
+   ![image-20231013214933645](https://s2.loli.net/2023/10/13/SJgC6qd7husZ1BL.png)
+
+   - `CSR.mtvec`存放ISR的地址: 上面的`Trap`信号被拉高之后，ID会将`pc_instr`更新为`mtvec`的值，起到跳转到ISR的功能;
+     `CSR.mtvec`会在<u>系统初始化</u>的时候被CSR指令写入
+   - 记录ISR返回的pc到`CSR.mepc`中: `mepc = interrupt ? pc_next : pc;`
+   - 在ISR中，需要通过指令来保存上下文到D-Memory（栈区），栈指针有`CSR.mscratch`寄存器给出
+     ![](https://s2.loli.net/2023/10/13/JQqOlPz9WfN4GBU.png)
+
+5. 从ISR返回
+
+   > 中断处理结束之后，ID需要将pc更换为mepc的值，从而继续之前的任务
+
+   ![image-20231013222648570](https://s2.loli.net/2023/10/13/cwpuMHThDAoKYU7.png)
+
+   - 从ISR返回的条件是执行到了`mret`指令（在此之前，ISR已经通过指令完成了上下文的恢复才会调用`mret`指令）
+   - ID Stage会将pc替换为`CSR.mepc`的值，并且CSR相关的`status`, `mip`寄存器会被硬件恢复为中断之前的状态
+   - PLIC同样需要接受mret信号，从而判定当前中断已经处理完成、去仲裁新的外部中断
+
+## 中断发生时，硬件自动完成的操作
+
+> 有了上述硬件支持之后，中断发生之后，下述操作会有硬件自动完成：
+
+
+
+- 异常指令的 PC 被保存在 mepc 中，PC 被设置为 mtvec
+- 根据异常来源设置 mcause
+- 把控制状态寄存器 mstatus 中的 MIE 位置零以禁用中断，并把先前的 MIE 值保 留到 MPIE 中
+- 发生异常之前的权限模式保留在 mstatus 的 MPP 域中，再把权限模式更改为 M(咱们只实现了M模式，故这一步可以省略)
+
+# ecall指令测试结果
 
