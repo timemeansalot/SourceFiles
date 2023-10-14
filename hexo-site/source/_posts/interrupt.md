@@ -151,6 +151,105 @@ tags: RISC-V
    - 中断源参与仲裁的条件: `enable & pending ==1`
    - 仲裁原理：先比较Level，再比较Priority，在比较ID（数字都是越大越好）
 
+# 我们的实现
+
+## CORE的硬件支持
+
+![IMAGE-20231013212119766](HTTPS://S2.LOLI.NET/2023/10/13/O3TBTVYWXHVN1DY.PNG)
+
+> PS: 目前CORE可以顺序的执行I-MEMORY里的指令，并且可以对BRANCH、JUMP指令正确地跳转到对应PC，
+>
+> 现在需要增加对中断的支持；中断=中断(INTERRUPT)+异常(EXCEPTION)
+
+### CORE对中断进行处理，需要增加如下的功能:
+
+1. 接受中断发生的信号
+2. 中断发生时，跳转到对应的处理程序的能力
+3. 辨别不同类型的中断的能力
+
+> PS: 对中断处理的主要动作是**当中断发生的时候->停止当前的工作流->按照中断的类型完成对应的处理->恢复之前的工作流**。
+
+### CORE需要提供的硬件支持
+
+> 为了实现上述3种功能，CORE需要在原来五级流水线的基础上增加如下的硬件支持
+
+#### 接受中断信号
+
+1. CORE需要接受一个中断发生的信号，以通知CORE当前发生了中断
+
+   > 具体指**ID STAGE**需要接受信号、知道中断发生了，因为ID STAGE负责PC的更新
+
+![IMAGE-20231013220122658](HTTPS://S2.LOLI.NET/2023/10/13/WIVUFA6KOAXTEJ2.PNG)
+
+2. RISC-V规定了3种类型的中断，分别是：外部中断、软件中断、定时器中断，其来源会在下文`MCAUSE`部分介绍
+
+#### 🌟CSR寄存器及其操作
+
+1. 记录中断的发生:
+
+   ![IMAGE-20231013211942338](HTTPS://S2.LOLI.NET/2023/10/13/PMEJCZUNF93LO1C.PNG)
+
+   > 中断使能位在`CSR.MIE`寄存器中配置
+
+   - CSR.MIP寄存器用于记录各种PENDING的中断
+     ![IMAGE-20231013131939115](HTTPS://S2.LOLI.NET/2023/10/13/HPOTSMUENJWJQBV.PNG)
+   - PLIC检测到外部中断之后，会发送一个`NOTIFY`信号到CSR单元，表明外部中断发生; 导致`CSR.MIP[11]=1;`
+   - TIMER触发时钟中断之后，也会发送一个`NOTIFY`信号到CSR单元，表明时钟中断发送; 导致`CSR.MIP[7]=1;`
+   - 软件中断（通常用于向另一个核发送），此时可以通过MMIO的方式往另一个核的CSR单元写入; 导致`CSR.MIP[3]=1;`
+
+2. 判断中断发生
+   ![IMAGE-20231013212029071](HTTPS://S2.LOLI.NET/2023/10/13/5ITMZIA8ESZWRR1.PNG)
+
+   > 如上所述：3种中断发生之后，都会通过硬件在1个CYCLE内记录到`CSR.MIP`寄存器中，现在可以对中断进行处理了
+
+   - 中断判断在`TRAP_HANDLER`单用中完成（为了代码结构清晰)，它通过输入`CSR.MIP, CSR.MIE`信号，判断中断是否发生;
+     若发生中断，则会将`TRAP`信号拉高，该信号会被ID STAGE使用, `TRAP=MIP[X] & MIE[X], X=3,7,11`
+   - `TRAP`信号会发送给CORE跟CSR单元，完成相应的硬件操作以支撑中断
+
+3. 记录中断的类型&更改处理器状态
+
+   ![IMAGE-20231013213455624](HTTPS://S2.LOLI.NET/2023/10/13/WOXUGF3LM5KEWTY.PNG)
+
+   - 在中断发生的时候，硬件会自动更新CSR.MCAUSE寄存器，保存中断的原因
+     ![](HTTPS://IMG2023.CNBLOGS.COM/BLOG/1653979/202307/1653979-20230712210012313-359133103.PNG)
+   - 例如“外部中断发生”之后，`CSR.MCAUSE`寄存器的`EXCEPTION CODE`字段会被写入`0X80000800`
+   - 中断处理程序(INTERRUPT SERVICE ROUTINE, ISR)通过查询`CSR.MCAUSE`，就可以知道中断的原因，进而做想要的操作
+     ![](HTTPS://S2.LOLI.NET/2023/10/13/UN9SPX3VNSYX5OC.PNG)
+   - 中断判定之后，需要修改`CSR.MSTATUS`寄存器以更改处理器状态，
+     硬件默认会将`CSR.MSTATUS.MPIE=CSR.MSTATUS.MIE, CSR.MSTATUS.MIE=0`，默认不支持中断嵌套
+   - <U>中断嵌套</U>: 进入ISR后，可以通过CSR指令(如CSRRW)将`CSR.MSTATUS.MIE`置1从而再次打开中断，实现中断嵌套
+
+4. 跳转到ISR执行
+
+   > 中断处理核心的工作就是更改PC，从而跳转到ISR并且从ISR返回
+
+   ![IMAGE-20231013214933645](HTTPS://S2.LOLI.NET/2023/10/13/SJGC6QD7HUSZ1BL.PNG)
+
+   - `CSR.MTVEC`存放ISR的地址: 上面的`TRAP`信号被拉高之后，ID会将`PC_INSTR`更新为`MTVEC`的值，起到跳转到ISR的功能;
+     `CSR.MTVEC`会在<U>系统初始化</U>的时候被CSR指令写入
+   - 记录ISR返回的PC到`CSR.MEPC`中: `MEPC = INTERRUPT ? PC_NEXT : PC;`
+   - 在ISR中，需要通过指令来保存上下文到D-MEMORY（栈区），栈指针有`CSR.MSCRATCH`寄存器给出
+     ![](HTTPS://S2.LOLI.NET/2023/10/13/JQQOLPZ9WFN4GBU.PNG)
+
+5. 从ISR返回
+
+   > 中断处理结束之后，ID需要将PC更换为MEPC的值，从而继续之前的任务
+
+   ![IMAGE-20231013222648570](HTTPS://S2.LOLI.NET/2023/10/13/CWPUMHTHDAOKYU7.PNG)
+
+   - 从ISR返回的条件是执行到了`MRET`指令（在此之前，ISR已经通过指令完成了上下文的恢复才会调用`MRET`指令）
+   - ID STAGE会将PC替换为`CSR.MEPC`的值，并且CSR相关的`STATUS`, `MIP`寄存器会被硬件恢复为中断之前的状态
+   - PLIC同样需要接受MRET信号，从而判定当前中断已经处理完成、去仲裁新的外部中断
+
+## 中断发生时，硬件自动完成的操作
+
+> 有了上述硬件支持之后，中断发生之后，下述操作会有硬件自动完成：
+
+- 异常指令的 PC 被保存在 MEPC 中，PC 被设置为 MTVEC
+- 根据异常来源设置 MCAUSE
+- 把控制状态寄存器 MSTATUS 中的 MIE 位置零以禁用中断，并把先前的 MIE 值保 留到 MPIE 中
+- 发生异常之前的权限模式保留在 MSTATUS 的 MPP 域中，再把权限模式更改为 M(咱们只实现了M模式，故这一步可以省略)
+
 # 参考文献
 
 1. [RISC-V 手册 10.3](http://riscvbook.com/chinese/RISC-V-Reader-Chinese-v2p1.pdf)

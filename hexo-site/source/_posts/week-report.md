@@ -141,3 +141,44 @@ tags: RISC-V
    ![](https://s2.loli.net/2023/10/14/zjdlVZNM7KQrUF3.png)
 3. 测试通过
    ![](https://s2.loli.net/2023/10/14/Bo1tWMh6gpLNidb.png)
+
+# 后续工作安排
+
+1. 在testcase里增加更加复杂的测试用例测试，例如增加随机输入
+2. 对外部中断进行Difftest测试
+
+## 附录：必须实现的8个ÇSR寄存器
+
+1. mstatus：指令处理器核的状态信息
+   ![](https://img2023.cnblogs.com/blog/1653979/202307/1653979-20230712210012932-1184025042.png)
+   - MIE是对应特权级下全局中断使能位
+   - xPIE, xPP, xIE举例：从s特权级产生中断进入到m特权级时
+     ```bash
+        mPIE=mIE; # 存储trap发生之前的中断使能位
+        mPP=s     # trap发生之前，处理器所处的特权级
+        mIE=0     # 关闭中断
+     ```
+2. mtvec:
+   - 可以配置向量模式跟非向量模式，向量模式下中断响应最快
+   - 非向量模式下(参考[该文章](https://www.rvmcu.com/quickstart-show-id-1.html#38)5.13):
+     - mtvt2[0]==0: 中断跟异常都通过mtvec指定地址
+     - mtvt2[0]==1: 中断通过mtvt2指定地址
+3. mepc
+4. mcause：指令trap的原因；mcause[31]==1表示是外部中断、否则是异常；
+   <!-- ![](https://img2023.cnblogs.com/blog/1653979/202307/1653979-20230712210012313-359133103.png) -->
+   mcause代码参考[该文章](https://www.rvmcu.com/quickstart-show-id-1.html#38)的3.4.2节
+   ![20231012172130.png](https://s2.loli.net/2023/10/12/1waFnRdjViUW7fx.png)  
+   trap发生的时候, `mcause`会被硬件写入，记录trap发生的原因
+5. mie: 针对各种类型的指令，指明当前处理器会处理哪些中断、忽视哪些中断
+6. mip: 列出目前正准备处理的中断
+7. mtval: 保存了陷入（trap）的附加信息，当触发硬件断点、地址未对齐、access fault、page fault 时，mtval 记录的是引发这些问题的虚拟地址；如果是由非法指令造成的异常，则将该指令的指令编码更新到mtval寄存器中
+8. mscratch: 暂时存放一个字大小的数据
+   > 将所有三个控制状态寄存器 虑，如果 `mstatus.MIE = 1，mie[7] = 1，且 mip[7] = 1`，则可以处理机器的时钟中断
+
+# 参考文献
+
+1. [RISC-V 手册 10.3](http://riscvbook.com/chinese/RISC-V-Reader-Chinese-v2p1.pdf)
+2. [详解RISC v中断](https://www.cnblogs.com/harrypotterjackson/p/17548837.html)
+3. [Nuclei_N级别指令架构手册](https://www.rvmcu.com/quickstart-show-id-1.html#38)
+4. [RISC-V 中断子系统分析——CPU 中断处理](https://tinylab.org/riscv-irq-analysis-part3-interrupt-handling-cpu/)
+5. [RISC-V 中断子系统分析——硬件及其初始化](https://tinylab.org/riscv-irq-analysis/)
