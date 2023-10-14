@@ -31,6 +31,7 @@ tags: RISC-V
 #### 接受中断信号
 
 1. Core需要接受一个中断发生的信号，以通知Core当前发生了中断
+
    > 具体指**ID Stage**需要接受信号、知道中断发生了，因为ID Stage负责PC的更新
 
 ![image-20231013220122658](https://s2.loli.net/2023/10/13/wivUfa6KOAXTej2.png)
@@ -99,8 +100,6 @@ tags: RISC-V
 
 > 有了上述硬件支持之后，中断发生之后，下述操作会有硬件自动完成：
 
-
-
 - 异常指令的 PC 被保存在 mepc 中，PC 被设置为 mtvec
 - 根据异常来源设置 mcause
 - 把控制状态寄存器 mstatus 中的 MIE 位置零以禁用中断，并把先前的 MIE 值保 留到 MPIE 中
@@ -108,3 +107,37 @@ tags: RISC-V
 
 # ecall指令测试结果
 
+1. 对ecall指令进行译码，产生ecall_inst信号传送给CSR，令`CSR.mip=1`；记录软件中断产
+
+   ```verilog
+    // trap_handler.v
+    always @(posedge clk ) begin
+        if(~resetn) begin
+            soft_pending <= 1'b0;
+        end else begin
+            soft_pending <= inst_ecall;
+        end
+    end
+
+    // file: CSR.v
+    always @(posedge clk)
+    begin
+        if(~resetn)
+        begin
+            CSRs[14] <= 32'b0;
+        end
+        else
+        begin
+            // update CSR.mip register
+            CSRs[14][3]<= soft_pending;
+            CSRs[14][7]<= time_pending;
+            CSRs[14][11]<= test_ext_pending;
+        end
+
+    end
+   ```
+
+2. 测试代码
+   ![](https://s2.loli.net/2023/10/14/zjdlVZNM7KQrUF3.png)
+3. 测试通过
+   ![](https://s2.loli.net/2023/10/14/Bo1tWMh6gpLNidb.png)
