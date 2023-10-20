@@ -765,11 +765,38 @@ tags:
              `endif
       ```
 23. 除法器bug
-    - [ ] bug 已修复
+    - [x] bug 已修复
     - bug 描述：当前测试版本除法器bug较多，例如不能正确计算除法结果、
       结果出现负数时会比正确答案小1；
     - bug 修复：已经上报给淼鸿、并且已经解决所有bug
-24. 概括
+24. CSR wdata选择错误
+
+    - [x] bug 已修复
+    - bug 描述：写入到CSR寄存器的时候，`CSR[x] = rs1`，当前代码错误地选择了ALU的计算结果作为写回值
+      ```verilog
+        // file top.v
+        CSR csru(
+            .raddr                  ( CSR_addr_d_o_w        ),
+            .waddr                  ( CSR_addr_d_o          ),
+            .wdata                  ( alu_calculation_e_o   ), // wrong
+            .resetn                 ( resetn                ),
+            .clk                    ( clk                   ),
+      ```
+
+    - bug 修复：写入到CSR的数据选择rs1即可，`CSR[x] = rs1`
+
+      ```verilog
+        // file top.v
+        CSR csru(
+            .raddr                  ( CSR_addr_d_o_w        ),
+            .waddr                  ( CSR_addr_d_o          ),
+            .wdata                  (    ),
+            .resetn                 ( resetn                ),
+            .clk                    ( clk                   ),
+
+      ```
+
+25. 概括
     - [x] bug 已修复
     - bug 描述：
     - bug 修复：
