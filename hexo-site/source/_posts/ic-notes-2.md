@@ -42,3 +42,17 @@ IC笔记2
 
 ![](https://s2.loli.net/2023/10/23/MgkdGxQAlyKbnZo.png)
 
+## 如何计算最大频率
+
+1. $f=1/T$, 找到满足时序约束的最小的T即可
+2. 如上所述，T跟$T_{hold}$没有关系，只跟$T_{setup}$有关系:  
+   $T>T_{logic}+T_{setup}-T_{skew}\rightarrow f<1/T=1/(T_{logic}+T_{setup}-T_{skew})$
+
+# Latch to FF(Flip Flop)
+
+1. 结构
+   - Latch(PS: Latch 其实有多种实现结构)
+     ![](https://electronicsforu.com/wp-contents/uploads/2017/08/SR-latch.jpg)
+   - FF
+     ![](https://www.electronicsforu.com/wp-contents/uploads/2017/08/SR-flip-flop.png)
+
