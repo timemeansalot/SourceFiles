@@ -1,206 +1,160 @@
 ---
-title: 付杰周报-20230923
+title: 付杰周报-20231028
 date: 2023-03-08 14:45:34
 tags: RISC-V
 ---
 
 [TOC]
 
-# 测试外部中断
+# 取指Ping Pong FIFO设计
 
-1. 在spike中关闭其中断(编译spike的已经完成)
-2. 在top里将PLIC的外部中断信号拉一根信号`ext_interrup`出去，在testbench里需要使用该信号
-   ```cpp
-    static void execute(uint64_t n) {
-      for (; n > 0; n--) {
-        g_nr_guest_inst++;
-        exec_once(); // dut run 1 cycle
-        cpu.pc = top->pc; // pc存入cpu结构体
-        dump_gpr();       // 寄存器值存入cpu结构体
-        if (top->commit_en) {
-          difftest_step(top->pc, top->ext_interrupt); // spike run 1 cycle
-        }
-        if (npc_state.state != NPC_RUNNING)
-          break;
-      }
-    }
-   ```
-3. 修改Difftest框架，传入`ext_interupt`信号，当该信号为高的时候，让Spike也触发外部中断
-   ```cpp
-        void difftest_step(uint64_t pc, int ext_interrupt) {
-          CPU_state ref_r;
-          ref_difftest_exec(1);
-          if(ext_interrupt){ // if external interrupt happen, make Spike interrupt happen
-                difftest_interrupt(pc);
-            }
-          ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT); // 从ref中拷贝寄存器状态
-          checkregs(&ref_r, pc);
-        }
-   ```
+## 问题描述
 
-![](https://s2.loli.net/2023/10/21/rYo47BPARDbwOeQ.png)
+> IF Stage的FIFO在遇到指令重定向到时候，会导致冲刷掉其内部所有的预取指令，是很大的浪费
 
-# 发现的问题
+![image-20231028053834305](../../../../../../Pictures/Typora/image-20231028053834305.png)
 
-1. CSR寄存器写入的cycle晚了1个cycle
+1. 由于FIFO容量是5\*16，当所有指令都是压缩指令的时候，指令的冲刷会导致至多4条有效指令被浪费了
 
-   - [x] bug 已修复
-   - bug 描述：
+2. 单一FIFO的重定向逻辑如下:
 
-     ```asmble
-        _start:
-           nop
-           nop
-           nop
-           la a5, _ISR
-           csrw	mtvec, a5
-           ecall
-           nop
-           nop
-           nop
-     ```
+   ![image-20231028073735678](../../../../../../Pictures/Typora/image-20231028073735678.png)
 
-     `csrw mtvec, a5`将a5的值写入到`CSRs[8]`寄存器中，`ecall`指令执行的时候会触发软件中断，
-     将pc的值替换成`mtvec`的值，但是`mtvec`得更新迟了1个cycle，导致pc没有更新为正确的`mtvec`的值
-     ![](https://s2.loli.net/2023/10/18/FEwxjb9VWT8mdfk.png)
+   - cycle0发生重定向
+   - cycle1冲刷掉FIFO里所有的指令，并且从I-Memory里按照sequential_pc取出指令放到FIFO头部(该指令在流水线上的指令可能会被Hazard Unit控制冲刷掉)
+   - cycle2按照redirection_pc从I-Memory里取出指令放到FIFO头部
 
-     ```verilog
-      // file: CSR.v
-      //mtvec
-      always @(posedge clk)
-      begin
-          if(~resetn)
-          begin
-          CSRs[8] <= 32'h80000000;//initialized as zero, to be reset by booting software
-          end
-          else if(wen2&waddr2 == 12'h305)
-          begin
-          CSRs[8] <= wdata2;
-          end
-      end
-     ```
+## 改进设计
 
-   - bug 修复：将CSR写入逻辑提前1个cycle
-     ```verilog
-       // file: CSR.v
-       //mtvec
-       always @(posedge clk)
-       begin
-           if(~resetn)
-           begin
-           CSRs[8] <= 32'h80000000;//initialized as zero, to be reset by booting software
-           end
-           else if(wen1&waddr1 == 12'h305)
-           // else if(wen2&waddr2 == 12'h305)
-           begin
-           CSRs[8] <= wdata1;
-           end
-       end
-     ```
-     ![](https://s2.loli.net/2023/10/18/i4O8qsXAT7JjYKt.png)
+> 核心思想是：尽可能保存预取指令，避免浪费
 
-2. trap发生的时候，mepc没有根据中断或异常做选择
+### Ping Pong FIFO(PPF)思想
 
-   - [x] bug 已修复
-   - bug 描述：当中断发生的时候，mepc应该写入next_pc的值；当异常发生的时候，mepc应当写入当前指令的pc值，目前版本mepc没有做选择，都是写入的当前pc的值
-     ![](https://s2.loli.net/2023/10/18/sPFRDW3Iw1qHao5.png)
-   - bug 修复：mepc需要区分外部中断、内部异常
-     `mepc=interrupt ? pc_next : pc`
+1. 采用2个FIFO取指队列，当重定向产生导致FIFO需要冲刷的时候，暂时不要冲刷FIFO；
+   将指令暂时写入到另一个空闲的FIFO当中
+2. 重定向返回的时候，从之前的FIFO的去指令，利用预取的指令
 
-3. trap发生的时候，hazard unit没有产生相应的flush信号，flush后续的指令
+### 硬件实现
 
-   - [x] bug 已修复
-   - bug 描述：外部中断产生到Trap信号拉高再到从中断处理程序取出第一条指令，一共有3条
-     无用的信号，需要被flush掉，但是hazard unit没有将对应flush信号拉高
-     ![](https://s2.loli.net/2023/10/19/bT3RBCZKkFqW9AG.png)
-   - bug 修复：hazard需要考虑外部中断跟软件中断的情况，然后拉高相应的flush信号
+1. 硬件上为了支持PPF需要实现的功能有:
 
-# RISC-V 问题思考&解决方法
+   - 额外的FIFO(5\*16bits寄存器)
+   - 指令PC计算逻辑 & 旧指令选择逻辑
+     - 重定向发生的时候，提前根据重定向类型，将重定向返回时的指令对应的pc存储起来，
+       那么在重定向返回的时候，可以通过该寄存器的值快速得到指令对应的pc
+     - 旧指令选择逻辑需要根据重定向
+   - ping pong FIFO控制逻辑
 
-1.  目前中断发现到Trap信号拉高，一共有2个cycle，感觉可以优化掉1个cycle
-    ![](https://s2.loli.net/2023/10/20/C2QsfOlAbaj3W8n.png)
+     - 使用free[1:0]寄存器来表示ping pong FIFO里的内容是否有效
+     - **重定向发生的时候**: 如果一个FIFO里的内容是无效的，则可以在重定向发生的时候，将新的指令写入到该FIFO里
+     - **重定向发生的时候**，假如另一个FIFO空闲，其free寄存器对应字段拉低
+     - **重定向返回的时候**，将当前FIFO对应的free寄存器位拉高
 
-    - 目前的逻辑是：ID Stage译码到`ecall`指令、或者是PLIC发来外部中断信号之后，会修改`CSR.mip`寄存器的值，将对应的pending位拉高
+2. 硬件实现
 
-      ```verilog
-      // write CSR.mip
-      always @(posedge clk)
-      begin
-          if(~resetn)
-          begin
-              CSRs[14] <= 32'b0;
-          end
-          else
-          begin
-              CSRs[14][3]<= soft_pending;
-              CSRs[14][7]<= time_pending;
-              CSRs[14][11]<= test_ext_pending;
-          end
-      end
-      ```
+   ![image-20231028074746545](../../../../../../Pictures/Typora/image-20231028074746545.png)
 
-      然后`htrap_handler`会通过`CSR.mip`寄存器的对应<u>中断位</u>来产生Trap信号、发送到各个功能部件
+   - 2个5\*16的FIFO
+   - pc_instr寄存器用于记录FIFO头部的指令对应的pc
+   - free寄存器用于记录FIFO是否空闲，假如FIFO内部没有有效数据，则FIFO空闲
+   - waiting_for寄存器记录FIFO内指令对应内容，用于判断重定向的返回
 
-      ```verilog
-          else if(mstatus[3]) // 全局中断使能
-          begin
-              ex_happen<=1'b0;
-              if(mip[11]&mie[11]) // 外部中断发生&外部中断使能
-              begin
-                  cause<={1'b1,19'b0,1'b1,11'b0};
-                  trap_flush<=1'b1;
-                  intr_happen<=1'b1; // 进行中断处理信号拉高
-                  intr_triggered<=1'b1;
-              end
-      ```
+3. 举例说明
 
-      > 其核心逻辑在于**检测到了中断->修改`CSR.mip`寄存器->htrap_handler触发Trap信号**
+   ![image-20231028080113030](../../../../../../Pictures/Typora/image-20231028080113030.png)
 
-    - <u>解决办法</u>：`htrap_handler`可以不通过检测CSRs寄存器的值再判断软件中断发生，直接从ID Stage将
-      `ecall`信号传给`htrap_handler`(或者从PLIC将`external_interrupt`信号传给`htrap_handler`)，这样`Trap`信号的拉高可以提前1个cycle
+   - 针对SBP导致的重定向，其waing_for寄存器应该是EXE Stage的PTNT信号
 
-2. ID Stage有很多的重定向发生，例如分支预测、分支预测错误、中断异常等:
+     - 若下一个cycle没有得到该信号，则表示重定向正确，当前FIFO里的指令确实是无效指令，则free当前FIFO
 
-   - 重定向发生的时候，ID Stage产生的重定向pc需要2个cycle才可以取到对应的指令进行译码
-   - 重定向的时候，FIFO里的指令都需要被flush掉，浪费了一些有用的指令，例如ecall后面的指令在FIFO里，但是ecall执行的时候，会flush掉FIFO;
-     mret的时候，有需要从I-Memory里重新取出指令
+   - 针对中断&异常，会进入到中断服务程序去处理
 
-     ```assembly
-       _start:
-          ecall
-          li x1, 1
-          li x2, 2
-          li x3, 3
-          li x4, 4
-          li x5, 5
-     
-       _ISR:
-          li x1, 11
-          li x2, 12
-          li x3, 13
-          li x4, 14
-          li x5, 15
-          mret
-     ```
+     - 如果ISR指令很多，则mret指令迟迟不能遇到->waiting_for信号迟迟不能拉高
 
-     ![](https://s2.loli.net/2023/10/21/HBfNqmeJKTRa2Ud.png)
-     如上面的指令流，ecall导致跳转到中断处理程序，但是跳转的时候并不是立刻能够取到`li x1, 11`指令，而是会多取3条指令，这3条指令都会被flush掉
+     - 此时一个FIFO相当于一直都是not free的，此时PPF退化成单一FIFO
 
-   - <u>解决办法</u>：改善flush的逻辑，尽可能保存取出来的指令，而不是直接flush掉，这样函数返回的时候，可以快速有指令可以译码、还可以减少访问I-Memory的次数
-     _例如：在进行中断处理的时候，将预取的指令保存在另一组寄存器里（pc 也需要保存），mret返回的时候，则用这组寄存器的值替换FIFO里的指令，从而避免指令的反复读取并且可以在返回的时候更快得到指令_
-     ![](https://s2.loli.net/2023/10/21/kyczjql149AvWZV.png)
-     
-     > PS：静态分支预测器判断跳转导致flush的时候，也可以采用该优化方法
+     - 设置一个Timer计数器，当Timer达到一定值的时候，丢弃FIFO里的内容
 
-3.  复杂度上升之后的验证问题
-    - 简单的功能模块，设计人员在设计完成之后，可以通过编写testbench来进行测试
-    - 复杂的硬件，其测试向量(testcase)构建也更加复杂，需要精心设计以满足测试的全面
-    - 复杂的模块很难通过人为设计testbench来验证功能的正确性，有如下一些原因:
-      - 本身复杂：处理器核本身就比某个功能模块复杂
-      - 交互复杂：各个模块、pipeline stage连线到一起之后，彼此之间会有一些交互，会互相影响，例如
-        ID译码到ecall指令的时候，会修改CSR寄存器，CSR寄存器修改导致htrap_handler触发中断，中断又导致ID Stage产生重定向pc
-      - Difftest框架失效（实现Difftest很困难）：在只验证处理器核的时候，由现成的开源处理器核如spike, nemu等可以作为Difftest的golden model，
-        但是当引入外部中断的时候，没有相应的PLIC、CLINT单元可以作为Difftest的golden model，只能够通过比较处理器核的CSR寄存器来大概判断中断是否正确；或者是自己写相应的golden model
-4.  TODO: 能否解决LW Stall，从而避免一个cycle的硬stall？
-5.  TODO: 取指部分考虑到Cache时有什么设计？不要限制在ITCM的框架里
-6.  TODO: 低功耗方面有什么设计？
+       > 有利于分支指令、不利于ISR的返回
+
+       ![image-20231028081111125](../../../../../../Pictures/Typora/image-20231028081111125.png)
+
+# 访存Leftover Buffer & Prefetch Buffer
+
+## 问题描述
+
+> 在访存的时候，若果存在lw+add这种的指令序列，由于没有MEM Stage->EXE Stage的bypass，则add指令需要等个1个cycle，造成1个bubble；
+> 能否通过寄存器缓存D-Memory的内容，从而避免这个cycle的时间浪费？
+
+## Leftover Buffer
+
+### 思想
+
+1. 将上次从D-Memory中取出的指令保存在寄存器里
+2. 下次访问同样地址时，可以直接从该寄存器里读数
+
+### 硬件实现
+
+1. 硬件需要支持的功能：
+   - 保存上次访存的内容
+   - 访存是判断需要访问的地址对应的数据是否在Leftover buffer里
+   - 在D-Memory跟Leftover Buffer里选择数据
+2. 硬件实现:
+
+![image-20231028083903963](../../../../../../Pictures/Typora/image-20231028083903963.png)
+
+3. 优点:
+   - 在特定情况下能解决lw stall问题
+   - 并且可以避免D-Memory访问，节约功耗
+4. 缺陷：
+   - D-Memory访问很随机、因此不太可能访问到上次访问的数据
+   - 增加了组合逻辑，增加了MEM Stage的周期
+
+## Prefetch Buffer
+
+### 思想
+
+1. 每次取数据的时候，取64bits的数据，放入到一个Prefetch Buffer中
+2. 在顺序访问D-Memory的时候，每个cycle都可以直接从Prefetch Buffer里取，并且更新Prefetch Buffer
+
+### 硬件实现
+
+1. 硬件需要支持的功能：
+
+   - 每次取64bits数据
+   - 存放预取的32bits数据，更新Prefetch Buffer
+   - 在D-Memory跟Prefetch Buffer里选择数据
+
+2. 硬件实现:
+
+   ![image-20231028083851150](../../../../../../Pictures/Typora/image-20231028083851150.png)
+
+3. 优点:在顺序访问D-Memory的内存下（例如数组遍历）时，Prefetch Buffer能够连续地发挥作用，解决lw stall
+
+# 综合结果
+
+1. read_file.tcl没有读进去文件
+
+   ![image-20231027233257343](../../../../../../Pictures/Typora/image-20231027233257343.png)
+
+   ![image-20231028091548022](../../../../../../Pictures/Typora/image-20231028091548022.png)
+
+   ![image-20231027233040588](../../../../../../Pictures/Typora/image-20231027233040588.png)
+
+   ![image-20231027233325726](../../../../../../Pictures/Typora/image-20231027233325726.png)
+
+2. 手动读取文件
+
+   ![image-20231028091655026](../../../../../../Pictures/Typora/image-20231028091655026.png)
+
+3. 面积报告
+
+   ![image-20231028091722792](../../../../../../Pictures/Typora/image-20231028091722792.png)
+
+4. 功耗报告
+
+   ![image-20231028092019593](../../../../../../Pictures/Typora/image-20231028092019593.png)
+
+5. timing报告
+
+   ![image-20231028092251194](../../../../../../Pictures/Typora/image-20231028092251194.png)
