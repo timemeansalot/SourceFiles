@@ -79,82 +79,70 @@ tags: RISC-V
 
        ![image-20231028081111125](../../../../../../Pictures/Typora/image-20231028081111125.png)
 
-# 访存Leftover Buffer & Prefetch Buffer
+## 性能分析
 
-## 问题描述
+TODO: add math analysis
+TODO: 每种指令的比例，每种类型的指令的影响单独分析，列出参考的文献
 
-> 在访存的时候，若果存在lw+add这种的指令序列，由于没有MEM Stage->EXE Stage的bypass，则add指令需要等个1个cycle，造成1个bubble；
-> 能否通过寄存器缓存D-Memory的内容，从而避免这个cycle的时间浪费？
+1. RISC-V中各种分支指令的比例:
+   - JAL：一定跳转，且跳转地址可以通过pc+offset得到, 占比
+   - JALR：一定跳转，且跳转地址需要将pc+register才可以得到, 占比
+   - Branch(条件分支指令): 跳转与否取决于跟寄存器值的比较, 占比
+   - ecall
+   - mret
+   - TODO: 增加占比，编译所有的benchmark里面的指令，得到反汇编文件里的指令占比
+   - TODO: 也可以用xyz等符号来表示
 
-## Leftover Buffer
+### 指令应用场景
 
-### 思想
+1. 说明函数调用会涉及到什么指令
+2. 函数调用的时候会用到哪些指令（RISC-V各个分支指令的主要用法）
 
-1. 将上次从D-Memory中取出的指令保存在寄存器里
-2. 下次访问同样地址时，可以直接从该寄存器里读数
+### 访存减少
 
-### 硬件实现
+1. 针对JAL指令，由于JAL 100%跳转，因此JAL指令后面预取的指令，肯定都是应该被冲刷掉的指令
+2. 结论：~~针对JAL指令，采用singel FIFO跟dual FIFO，性能是一样的~~
+3. 结论：对于JAL指令，如果采用dual FIFO保存预取的指令，则返回的时候可以利用预取的指令
 
-1. 硬件需要支持的功能：
-   - 保存上次访存的内容
-   - 访存是判断需要访问的地址对应的数据是否在Leftover buffer里
-   - 在D-Memory跟Leftover Buffer里选择数据
-2. 硬件实现:
+TODO: add Pic 1
 
-![image-20231028083903963](../../../../../../Pictures/Typora/image-20231028083903963.png)
+### 中断返回加速
 
-3. 优点:
-   - 在特定情况下能解决lw stall问题
-   - 并且可以避免D-Memory访问，节约功耗
-4. 缺陷：
-   - D-Memory访问很随机、因此不太可能访问到上次访问的数据
-   - 增加了组合逻辑，增加了MEM Stage的周期
+# RISC-V Verification
 
-## Prefetch Buffer
+> TODO: quite hard
 
-### 思想
-
-1. 每次取数据的时候，取64bits的数据，放入到一个Prefetch Buffer中
-2. 在顺序访问D-Memory的时候，每个cycle都可以直接从Prefetch Buffer里取，并且更新Prefetch Buffer
-
-### 硬件实现
-
-1. 硬件需要支持的功能：
-
-   - 每次取64bits数据
-   - 存放预取的32bits数据，更新Prefetch Buffer
-   - 在D-Memory跟Prefetch Buffer里选择数据
-
-2. 硬件实现:
-
-   ![image-20231028083851150](../../../../../../Pictures/Typora/image-20231028083851150.png)
-
-3. 优点:在顺序访问D-Memory的内存下（例如数组遍历）时，Prefetch Buffer能够连续地发挥作用，解决lw stall
+1. TODO: sv
+2. TODO: UVM
+   - testcase
+   - checker
+3. 中断如何测试
 
 # 综合结果
 
-1. read_file.tcl没有读进去文件
+TODO: 时钟约束在哪里设置？
 
-   ![image-20231027233257343](../../../../../../Pictures/Typora/image-20231027233257343.png)
+1. 综合的时候，不支持`===`操作
 
-   ![image-20231028091548022](../../../../../../Pictures/Typora/image-20231028091548022.png)
+   ![](https://s2.loli.net/2023/11/01/jd1G5b9QyfJSKuz.png)
 
-   ![image-20231027233040588](../../../../../../Pictures/Typora/image-20231027233040588.png)
+   TODO: add picture of `===`
 
-   ![image-20231027233325726](../../../../../../Pictures/Typora/image-20231027233325726.png)
+2. 如何将memory替换成库里的文件: 之前老师给了库里的内存模块，后面写代码前仿的时候实际上用的是32\*1024的寄存器组
+   ![](https://s2.loli.net/2023/11/01/zpwtdjN5nL6kFDm.png)
+   在综合的时候，会提示如下内容
+   ![](https://s2.loli.net/2023/11/01/voIgC8Bd17SUcTD.png)
+   感觉综合的时候，所有寄存器都会提示`will be removed`，如下所示：
+   ![](https://s2.loli.net/2023/11/01/iqnwXAbZa7GFtJg.png)
 
-2. 手动读取文件
+3. mcu面积
+   ![](https://s2.loli.net/2023/11/01/vn7sCHbeyw8lKTa.png)
 
-   ![image-20231028091655026](../../../../../../Pictures/Typora/image-20231028091655026.png)
+4. mcu功耗参考
+   ![](https://s2.loli.net/2023/11/01/1TpoBeOgbcz3SY6.png)
 
-3. 面积报告
+5. mcu频率
 
-   ![image-20231028091722792](../../../../../../Pictures/Typora/image-20231028091722792.png)
+# 参考资料
 
-4. 功耗报告
-
-   ![image-20231028092019593](../../../../../../Pictures/Typora/image-20231028092019593.png)
-
-5. timing报告
-
-   ![image-20231028092251194](../../../../../../Pictures/Typora/image-20231028092251194.png)
+1. [基本的时序路径约束](https://cloud.tencent.com/developer/article/1653346)
