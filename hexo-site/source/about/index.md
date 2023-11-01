@@ -2,6 +2,7 @@
 
 title: 关于我自己
 date: 2022-09-07 10:28:29 ---
+---> I am a joker: Wed Nov 1 14:21:43 CST 2023
 
 **start time:** Thu Oct 12 10:45:49 CST 2023
 **AI, Robots and Chips** is the key for current world

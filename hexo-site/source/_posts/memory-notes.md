@@ -1,7 +1,9 @@
 ---
 title: 计算机内存
 date: 2023-05-16 20:30:50
-tags: CA
+tags: 
+    - CA
+    - NOTES
 ---
 
 计算机内存是处理器数据的存储仓库: processor <-- communication --> memory
@@ -91,7 +93,7 @@ tags: CA
       - software approaches
     - reduce miss penalty
       - multi-level cache
-      - crucial word first: when cache block is to large, don't wait the whole
+      - crucial word first: when cache block is too large, don't wait the whole
         cache block, just feed the processor with most important words first to save time
       - sub-blocking: divide the cache block to smaller sub-blocks, so the cache replacement
         can happen in sub-blocks
@@ -101,7 +103,7 @@ tags: CA
 
 1. 1T1C: made of 1 transistor and 1 capacitor
    - capacitor leaks, this is why DRAM is **dynamic**
-   - need refresh at least 1 once in 64ms
+   - need refresh at least once in 64ms
    - higher density than SRAM(6T)
    - DRAM is in 2D structure, while NVEM is in 3D structure,
      DRAM can be 16 GB, while NVEM can be 2TB, but DRAM is 3000 times faster.
@@ -176,7 +178,7 @@ tags: CA
      can share the whole physical memory
      ![](https://s2.loli.net/2023/05/18/QZ5MiNx6cT2gfHG.png)
 3. memory size can't be to small, or the complexity of manage virtual/physical mapping is difficult.
-   modern processor has virtual memory page size equal to 64b
+   modern processor has virtual memory page size equal to 4096 Byte 
 4. we need TLB(which is a cache) to accelerate the translation from virtual memory to physical memory
 5. virtual memory space is much larger than physical memory space.
 6. trashing: if physical memory is too small, then some virtual memory page must be swap in and out,
