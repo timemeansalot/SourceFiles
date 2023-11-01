@@ -4,6 +4,17 @@ title: 关于我自己
 date: 2022-09-07 10:28:29 ---
 ---> I am a joker: Wed Nov 1 14:21:43 CST 2023
 
+Exercise Times **I will not make the same mistake again!!!!!**
+
+Latest Wrong Time: **Mon Oct 30 02:28:14 PM CST 2023**
+
+1. Thu Aug 31 23:36:26 CST 2023
+2. Thu Spt 07 13:23:18 CST 2023
+3. Mon Sep 18 15:26:51 CST 2023
+4. Thu Sep 21 16:37:35 CST 2023
+   Last Time to make such mistakes
+5. Sat Sep 23 02:18:31 CST 2023
+
 **start time:** Thu Oct 12 10:45:49 CST 2023
 **AI, Robots and Chips** is the key for current world
 
@@ -51,18 +62,3 @@ Others:
 - [ ] 《三略六涛》
 - [ ] 《资治通鉴》
 - [ ] 《司马法》
-
-Distiny prediction:
-
-- 2038 年、2039 年、2048 年、2058 年比较恼火，2058 年最凶
-- 有金舆贵人
-- 我：三火，三土，二木；梦婷：四金、二土、一火、一木
-
-Exercise Times **I will not make the same mistake again!!!!!**
-
-1. Thu Aug 31 23:36:26 CST 2023
-2. Thu Spt 07 13:23:18 CST 2023
-3. Mon Sep 18 15:26:51 CST 2023
-4. Thu Sep 21 16:37:35 CST 2023
-   Last Time to make such mistakes
-5. Sat Sep 23 02:18:31 CST 2023
