@@ -4,9 +4,10 @@ title: 关于我自己
 date: 2022-09-07 10:28:29 ---
 
 
-Exercise Times **I will not make the same mistake again!!!!!**
----> Latest Wrong Time: **Mon Oct 30 02:28:14 PM CST 2023**
----> I am a joker: Wed Nov 1 14:21:43 CST 2023, I fail in 2 days!!!
+> Exercise Times **I will not make the same mistake again!!!!!**
+> Latest Wrong Time: **Mon Oct 30 02:28:14 PM CST 2023**
+> I am a joker: Wed Nov 1 14:21:43 CST 2023, I fail in 2 days!!!
+
 1. Thu Aug 31 23:36:26 CST 2023
 2. Thu Spt 07 13:23:18 CST 2023
 3. Mon Sep 18 15:26:51 CST 2023
