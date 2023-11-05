@@ -4,7 +4,6 @@ title: 关于我自己
 date: 2022-09-07 10:28:29 ---
 
 Exercise Times **I will not make the same mistake again!!!!!**
-
 Latest Wrong Time: **Mon Oct 30 02:28:14 PM CST 2023**
 ---> I am a joker: Wed Nov 1 14:21:43 CST 2023, I fail in 2 days!!!
 
