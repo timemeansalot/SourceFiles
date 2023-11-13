@@ -104,7 +104,6 @@ RISCV 5 级流水线“取指”部分设计
      							(taken_d_i == 1'b1) ? redirection_d_i : pc_register;
    ```
 
-
 ### PC 重定向
 
 1. IF 没有分支预测，PC+=2  
@@ -328,7 +327,6 @@ IF Stage 可能的取指地址有如下一些情况，其优先级：`TOP > EXE 
 
      > PS: 根据 CSR 设计不同，上述四个 addr 可能会存在相同的情况
 
-
 ![verification](https://s2.loli.net/2023/06/01/NrQDle4aohYsRmc.png)
 测试的情况有：
 
@@ -339,7 +337,6 @@ IF Stage 可能的取指地址有如下一些情况，其优先级：`TOP > EXE 
   - [x] ID 读取压缩指令（16bits)
   - [x] ID 读取整数指令（32bits）
   - [x] 流水线 stall（0bits）
-
 
 # Dual FIFO
 
@@ -417,7 +414,6 @@ IF Stage 可能的取指地址有如下一些情况，其优先级：`TOP > EXE 
        ![image-20231028081111125](https://s2.loli.net/2023/11/03/BHGQX4CUYs6IrEz.png)
 
 ### 性能分析
-
 
 1. RISC-V中各种分支指令的比例:
 
@@ -526,6 +522,12 @@ int main() {
    - 提前2个cycle取到顺序执行的指令
 
 ### 数学量化
+
+- 25% loads
+- 10% stores
+- 11% branches
+- 2% jumps
+- 52% R-type or I-type
 
 1. 假设程序里指令出现的概率如下所示:
 

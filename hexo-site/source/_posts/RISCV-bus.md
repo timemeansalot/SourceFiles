@@ -43,6 +43,14 @@ The AHB is the backbone of the system and is designed specifically for high perf
 
 ### APB（Advanced Peripheral Performance Bus）
 
+![](https://s2.loli.net/2023/11/10/beu2BDMzqdvrTlc.png)
+
+传输控制3个重要信号：
+
+1. sel
+2. enable: sel信号一定会拉高
+3. ready
+
 <img src="/Users/fujie/Pictures/typora/image-20230419184200401.png" alt="image-20230419184200401" style="zoom:33%;" />
 
 1. 优点
@@ -263,4 +271,5 @@ The APB is a simplified interface designed for low bandwidth peripherals that do
 ![](https://s2.loli.net/2023/08/10/wQIvHNL4qm2Pchz.png)
 
 # 参考资料
+
 1. [AXI总线总结 by lizhirui](https://www.lzrnote.cn/2021/10/08/axi%E6%80%BB%E7%BA%BF%E6%80%BB%E7%BB%93/)
