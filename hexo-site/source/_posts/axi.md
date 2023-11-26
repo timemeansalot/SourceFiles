@@ -1,10 +1,54 @@
 ---
-title: 付杰周报-20231028
-date: 2023-03-08 14:45:34
-tags: RISC-V
+title: axi
+date: 2023-11-24 23:45:16
+tags:
+  - RISC-V
+  - Bus
+  - AXI
 ---
 
-[TOC]
+AXI笔记
+
+<!--more-->
+
+Core需要支持以下的AXI传输特性:
+
+1. 多个Slave访问：arbiter, buffer
+2. Out of Order: ID
+3. Outstanding transaction
+4. multi-clock domain for low power
+5. stall the pipeline before finish transaction
+6. register slice to pipeline: make this a TODO as I don't fully understand AXI pipeline
+
+- [ ] 给出MEM模块针对AXI的架构图
+- [ ] 说明架构图中的模块对应实现了上述AXI的什么特性
+- [ ] 查看别的Core支持AXI时做的实现
+- [ ] store the config data in internal shadow registers and trigger DMA to pass the data to ACC
+- [ ] **能否将AXI改为半双工？**因为我们的顺序核一次要么读、要么写；并且方便的链接到AXI协议
+
+## method 1
+
+1. ACC serves as AXI slave, DMA serves as AXI master, DRAM serves as AXI slave
+2. every time ACC needs write/read to SDRAM, CPU triggers the DMA to pass the data from/to ACC
+3. bad:
+   - every transaction need CPU
+   - it sucks when ACC need small amount of data very often, CPU has to trigger DMA very often
+
+## method 2
+
+1. ACC create the write/read request and stores the request in a FIFO
+2. the DMA can read from the FIFO and do the data transaction if there is a request
+3. bad:
+   - transaction TIMING issue
+   - another hardware which watch the FIFO to see if there is a transaction needed
+
+## method 3
+
+1. ACC serves as AXI master, and direction write/read to DRAM
+2. ways to do this:
+   - write RTL of AXI in your ACC
+   - use IP of AXI in your ACC
+   - use Vivado HLS in your ACC
 
 # AXI Master设计
 
@@ -71,8 +115,6 @@ tags: RISC-V
 
 ## MCU设计方案
 
-![image-20231125092722847](../../../../../../Pictures/Typora/image-20231125092722847.png)
-
 1. 采用burst方式对ACC进行读写:
 
    - 减少地址传输
@@ -91,8 +133,7 @@ tags: RISC-V
 <!-- 4. 根据2、3，可知应采取**bursting, multiple channel**的AXI Master架构 -->
 
 4. 根据2、3，可知，write to ACC应采取**bursting, multiple channel**, read from ACC应该采用**bursting, single channel**
-   
-   ![image-20231125092707616](../../../../../../Pictures/Typora/image-20231125092707616.png)
+   ![image-20231125092501904](../../../../../../Pictures/Typora/image-20231125092501904.png)
 
 ### 问题
 
