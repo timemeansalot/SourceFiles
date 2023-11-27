@@ -3,7 +3,9 @@ title: 关于我自己
 date: 2022-09-07 10:28:29 ---
 ---
 
-选择同行的人很重要
+1. 选择<u>同行的人</u>很重要
+2. 我再也不会浪费时间在bilibili跟zhihu上面了，现在开始这两个平台的娱乐相关的推送，我都不看了，拿他们当学习平台使用。如果需要打发时间，我会选择看小说或者是看书、锻炼身体。
+3. 锻炼身体、开源<u>**节流**</u>
 
 > Exercise Times **I will not make the same mistake again!!!!!**
 > Latest Wrong Time: **Mon Oct 30 02:28:14 PM CST 2023**
