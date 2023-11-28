@@ -10,4 +10,10 @@ Outlook/.deploy_git
 *.aux
 *.fls
 *.out
-
+*.bbl
+*.bcf
+*.blg 
+*.lof 
+*.lot 
+*.toc 
+*.run.xml
