@@ -95,7 +95,12 @@ export https_proxy=http://127.0.0.1:7890 http_proxy=http://127.0.0.1:7890 all_pr
     verilator --version
 ```
 
-顺手安装一个gtkwave: `sudo apt-get install gtkwave -y`
+顺手安装一个gtkwave:
+
+    ```bash
+     brew install --HEAD randomplum/gtkwave/gtkwave
+     sudo cpan install Switch
+    ```
 
 ## 安装RISC-V编译工具链
 

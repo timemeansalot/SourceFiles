@@ -262,7 +262,11 @@ Follow this [guid](https://www.josean.com/posts/tmux-setup) to config tmux.
 
 ## Config for Verilog
 
-1. gtkwave: go to [thie website](https://gtkwave.sourceforge.net/), clike **Download** the sourcecode tar.gz file, unzip the file, copy it to Application folder in your Macbook
+1. gtkwave: in order to install gtkwave on MacOS 14 or later
+   ```bash
+    brew install --HEAD randomplum/gtkwave/gtkwave
+    sudo cpan install Switch
+   ```
 2. [iverilog](https://github.com/steveicarus/iverilog): `brew install icarus-verilog`
 3. [verilator](https://verilator.org/guide/latest/): `brew install verilator`
 4. [RISC-V Toolchain](https://github.com/riscv-software-src/homebrew-riscv/blob/main/README.md): follow the link to install RISC-V Toolchain to mac is very easy. The key point is that: _if your are using WiFi, it may fail, you can use your phone's hotpot instead_.
