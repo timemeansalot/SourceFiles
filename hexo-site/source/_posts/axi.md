@@ -101,11 +101,11 @@ Core需要支持以下的AXI传输特性:
 1. 特点: 通过ID实现乱序传输:
 
    - outstanding but in order 读写：
-     ![image-20231125082444175](../../../../../../Pictures/Typora/image-20231125082444175.png)
+     ![image-20231125082444175](https://s2.loli.net/2023/12/01/iDRV5AxdF9hObBw.png)
    - OoO写：不同ID的写传输，其Response可以乱序，但是Wdata不能interleaving
-     ![image-20231125080220026](../../../../../../Pictures/Typora/image-20231125080220026.png)
+     ![image-20231125080220026](https://s2.loli.net/2023/12/01/Hr37RSFp9wxvXAf.png)
    - OoO读：不同ID的读传输，其Rdata可以interleaving
-     ![image-20231125080234460](../../../../../../Pictures/Typora/image-20231125080234460.png)
+     ![image-20231125080234460](https://s2.loli.net/2023/12/01/jhB7O3A4MCoLPT2.png)
 
 2. 实现:
    - master需要支持reorder buffer
@@ -122,18 +122,10 @@ Core需要支持以下的AXI传输特性:
 
    > PS: ACC配置寄存器场景，寄存器地址是否连续？
 
-2. write to ACC: burst传输结束后不需要等待ACC response就可以开启下一笔传输
-3. read from ACC（涉及到pipeline stall）:
+2. write to ACC: 采用single beat pipelined来写ACC寄存器
+3. read from PPM(ping-pong-memory): bursting, single channel
 
-   - 顺序：只能顺序读取ACC
-   - 乱序：可以同时读取多个ACC，busy的ACC不会影响别的ACC
-
-   > PS: 即使当前读取到busy的ACC，MCU有切换到其他ACC进行读取的能力吗，例如指令流跳转?
-
-<!-- 4. 根据2、3，可知应采取**bursting, multiple channel**的AXI Master架构 -->
-
-4. 根据2、3，可知，write to ACC应采取**bursting, multiple channel**, read from ACC应该采用**bursting, single channel**
-   ![image-20231125092501904](../../../../../../Pictures/Typora/image-20231125092501904.png)
+4. AXI总线的拓扑结构采用一主多从的架构，其中主设备是MCU，从设备是ACC跟PPM
 
 ### 问题
 
