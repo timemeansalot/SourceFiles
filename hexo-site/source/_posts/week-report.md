@@ -6,99 +6,89 @@ tags: RISC-V
 
 [TOC]
 
-# AXI Master设计
+# 1 MCU设计方案
 
-## 4种AXI Master类型
+![](https://s2.loli.net/2023/12/02/1S3R8MJuh5F6LKA.png)
 
-1. single beat
-2. single beat pipelined
-3. bursting, single channel
-4. bursting, multiple channel
+## 1.1 单发射流水线MCU集成AXI需要的场景
 
-### single beat
+1. 写到ACC的时候，由于地址不保证连续，所以不能采用burst写
+2. 从PPM(ping pong memory)读的时候，地址是连续的，可以采用burst读
 
-1. 特点：burst size等于0，给出地址及控制信号后只包含**一次数据传输**，传输完成之后再发送下一次地址跟控制信号
-2. 实现:
-   - AxLEN=0
-   - WLAST=1, ignore RLAST
-   - ignore AxBURST：不需要关注burst类型，也不需要关心burst地址是否跨越4kB边界
-3. 优点：功能上是可用的
-4. 缺点带宽(throughput)很低: data bus利用率很低，基本上都是空cycle
+### 1.1.1 什么场景下会触发AXI Burst传输
 
-![](https://zipcpu.com/img/wbm2axisp/single-master-reads.svg)
+1. 对于顺序处理器核而言，每个cycle至多有一条riscv load指令
+2. 访问PPM的延迟比访问D-Memory的延迟高
+3. 配置ACC的指令流:
+   - 情形1
+     ```bash
+     load rd, PPM[addr]
+     store rd, ACC[addr]
+     ...
+     load rd, PPM[addr]
+     store rd, ACC[addr]
+     ```
+   - 情形2
+     ```bash
+     load rd, PPM[addr]
+     load rd, PPM[addr]
+     ...
+     store rd, ACC[addr]
+     store rd, ACC[addr]
+     ```
+     > PS: 从PPM read指令后面，还需要对read的数据进行解析得到addr跟data，才可以写入到ACC
+4. burst传输的场景:
+   - 通过burst读，顺序地读取多个地址的数据(预读取)
+   - **Optional**: read操作不会stall流水线
 
-### single beat pipelined
+### 1.1.2 顺序单发射处理器核如何支持burst传输
 
-1. 特点支持outstanding传输：传输反馈(response)没有收到之前就可以发送下一次传输的地址跟控制信号
-2. 实现:
-   - issue状态机
-   - response状态机
-   - 同步状态机
-   - counter & FIFO用于记录request，并且在收到response的时候使用
-   - AxID是常量：保证所有传输是顺序的
-3. 优点: data bus带宽理论上可以吃满
-4. 缺点: 对Slave要求过于理想（要求slave的两个burst传输之间没有空闲）；  
-   eg: Xilinx’s AXI block RAM interface每次burst传输需要`3+N`个cycle，若N=0，则带宽利用率为25%
-5. 适用场景：传输地址不是连续（访问image的列数据)、或者下次传输地址未知的场景
+1. 需要在MCU跟AXI Channel之间增加AXI Master Interface
+2. Interface用于:
+   - 支持read burst
+   - 避免burst传输时MCU stall
+   - 支持write pipeline
+   - 解决MCU跟ACC、PPM之间的跨时钟域问题
 
-### bursting, single channel
+### 1.1.3 哪条指令会触发burst传输
 
-1. 特点：支持burst传输（一次地址&控制信号，多次data传输）
-2. 实现:
-   - 记录当前已经传输的beats数
-   - WLAST在最后一次写的时候拉高
-3. 地址:
-   - wrap & fixed, beats <= 16; increment, beats <= 256
-   - 地址不能跨越4kB: 通过配置AxLEN保证
-   - <u>PS: 尽可能在一次burst传输中传输尽可能多的beats</u>
+1. CORTEX-A9有ldm/stm(load multiple, store multiple)指令来触发AXI burst操作
+2. MCU可以根据load指令&地址范围处于PPM来触发burst read，`burst length=16`
+3. 增加自定义指令来支持对PPM的burst读:
+   - 修改decoder
+   - 修改编译器
+   - 灵活
 
-### bursting, multiple channel
+### 1.1.4 burst传输时MCU是否会Stall
 
-1. 特点: 通过ID实现乱序传输:
+1. 处理器是否支持Out-of-Order
+2. 指令之间的相关性
+3. AXI Interface设计
 
-   - outstanding but in order 读写：
-     ![image-20231125082444175](../../../../../../Pictures/Typora/image-20231125082444175.png)
-   - OoO写：不同ID的写传输，其Response可以乱序，但是Wdata不能interleaving
-     ![image-20231125080220026](../../../../../../Pictures/Typora/image-20231125080220026.png)
-   - OoO读：不同ID的读传输，其Rdata可以interleaving
-     ![image-20231125080234460](../../../../../../Pictures/Typora/image-20231125080234460.png)
+## 1.2 MCU AXI的设计总结
 
-2. 实现:
-   - master需要支持reorder buffer
-3. 优点: 适用于一个Master需要同时访问多个slave的场景
+![](https://s2.loli.net/2023/12/02/jOINcTw9LEFDpg2.png)
 
-4. 缺点: 对AXI Interconnect要求比较高，master可以并行访问slaves时才好用
+1. 采用burst对PPM进行读取:
 
-## MCU设计方案
+   - 当地址空间对应PPM时，Interface会对PPM发起16个beat的Burst读
+   - 读回的data会被存放在Interface的异步`Read_FIFO`中
+   - FIFO头元素的地址跟MCU的read addr相时，FIFO头部元素pop
 
-![image-20231125092722847](../../../../../../Pictures/Typora/image-20231125092722847.png)
+2. 采用pipeline的方式对ACC进行写:
 
-1. 采用burst方式对ACC进行读写:
+   - MCU执行到MEM Stage的时候，会判断地址范围，不会写入到D-Memory，而是通过AXI写通道写到ACC
+   - AXI Interface接收MCU发的write addr, write data, write control等信号
+   - 写的时候不用收到ACC的反馈即可发起下一笔写
+   - Interface若收到AXI Slave的Error信号，会发送给MCU，触发Exception
 
-   - 减少地址传输
-   - 提高带宽
+3. Interface跟Slave之间采用1主多从的拓扑结构:
+   - 有译码器根据地址选择slave
+   - 没有仲裁器
 
-   > PS: ACC配置寄存器场景，寄存器地址是否连续？
+# 2 Coding
 
-2. write to ACC: burst传输结束后不需要等待ACC response就可以开启下一笔传输
-3. read from ACC（涉及到pipeline stall）:
-
-   - 顺序：只能顺序读取ACC
-   - 乱序：可以同时读取多个ACC，busy的ACC不会影响别的ACC
-
-   > PS: 即使当前读取到busy的ACC，MCU有切换到其他ACC进行读取的能力吗，例如指令流跳转?
-
-<!-- 4. 根据2、3，可知应采取**bursting, multiple channel**的AXI Master架构 -->
-
-4. 根据2、3，可知，write to ACC应采取**bursting, multiple channel**, read from ACC应该采用**bursting, single channel**
-   
-   ![image-20231125092707616](../../../../../../Pictures/Typora/image-20231125092707616.png)
-
-### 问题
-
-1. 如何配置AxLEN？根据经验吗还是由软件来配置AXI Master？
-
-# AXI Interconnect Part
-
-1. 我们需要实现AXI Interconnect？还是T502有现成的可以用?
-2. Interconnect是否需要仲裁？因为每一个cycle只有一条指令访存
+- [x] MCU跟Interface交互的代码
+- [ ] AXI Master Interface
+- [ ] AXI 总线拓扑结构：译码器
+- [ ] Slave跟Interface交互代码
