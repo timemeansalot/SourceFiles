@@ -17,10 +17,10 @@ date: 2022-09-07 10:28:29 ---
 2. Thu Spt 07 13:23:18 CST 2023
 3. Mon Sep 18 15:26:51 CST 2023
 4. Thu Sep 21 16:37:35 CST 2023
-   Last Time to make such mistakes
 5. Sat Sep 23 02:18:31 CST 2023
 6. Wed Nov 22 13:31:47 CST 2023
 7. Mon Nov 27 14:19:47 CST 2023
+8. Mon Dec  4 13:51:15 CST 2023
 
 **start time:** Thu Oct 12 10:45:49 CST 2023
 **AI, Robots and Chips** is the key for current world
