@@ -76,7 +76,7 @@
 本研究课题主要的内容是设计一款低功耗微控制器对5G基带芯片内部的加速器进行调度，
 要求微控制器本身的计算性能满足加速器调度的需求、并且满足低功耗的特性；在此基础上该微处理器需要针对
 微控制器需要对数十个加速器调度的应用场景做专门的优化。MCU在基带芯片中的位置如图\ref{fig:pic1}粉色虚线框部分所示。
-\begin{figure}[h]
+\begin{figure}[ht]
   \centering
   \includegraphics[scale=0.25]{./images/mcu_location.pdf}
   \caption{所设计微控制器在5G基带芯片中的位置}
@@ -87,7 +87,7 @@
 \section{研究内容及当前进度}%
 本课题主要目标是基于RISC-V指令集开发MCU，用于控制5G基带芯片内部的加速器。
 需要满足快速响应及低功耗的特征。本课题的研究内容主要有三个方面，如图\ref{fig:research_topics}所示。
-\begin{figure}[h]
+\begin{figure}[ht]
   \centering
   \includegraphics[width=0.8\linewidth]{./images/research_topics.pdf}
   \caption{本课题研究内容}
@@ -112,8 +112,7 @@
 微控制器功能特性确定之后，按照五级流水线架构对微处理器进行了实现，其中模块集级验证采用了testbench进行简单验证；微控制器系统级验证采用了Difftest框架进行验证，验证通过了所有的RISC-V TESTS测试集，在一定程度上保证了微控制器是正确实现了RISC-V手册规范的。
 
 在处理器核功能正确的基础上，针对加速器调度的场景以及低功耗需求进行了优化设计，主要特现在：取指部分针对整数指令地址不对齐做了优化；译码部分实现了分支预测器以及地址重定向的仲裁；访存部分针对加速器配置信息下发做了优化。优化设计完成之后对微控制器再次进行Difftest测试，保证微控制器优化设计之后依然符合RISC-V手册规范、检查优化之后的微控制器设计是否取得了设计的性能提升。
-
-最后，将微控制器集成到5G基带芯片内做功能测试，对微控制器的功能跟性能进行测试。
+% 最后，将微控制器集成到5G基带芯片内做功能测试，对微控制器的功能跟性能进行测试。
   
 \newpage
 \subsection{研究方法}%
@@ -135,21 +134,47 @@ ITCM由于需要匹配微控制器的速度，其容量不能做到很大，因�
   \caption{采用odd even ITCM跟取指FIFO解决整数指令跟压缩指令混合存储时整数指令取指问题}
   \label{fig:if_design_features}
 \end{figure}
+
+\begin{itemize}
+  \item \textbf{odd even ITCM}：
+    指令的取指地址可能是4B对齐也可能是2B对齐的，地址2B对齐的时候需要访问两次ITCM才可以才可以从ITCM里取出整数指令的高16bits跟低16bits，再通过拼接电路完成整数指令的拼接。\\ 
+    当地址是连续递增的时候可以采用\textit{leftover buffer}存储上一次访问ITCM得到的高16 bits数据,如图\ref{fig:if_leftover_buffer}所示。当地址2B对齐的时候可以利用\textit{leftover buffer}里的内容实现整数指令的拼接。\textit{但是这种方法在地址出现跳转时会失效}。
+    \begin{figure}[ht]
+      \centering
+      \includegraphics[width=0.8\linewidth]{./images/if_leftover_buffer.pdf}
+      \caption{采用leftover buffer来实现整数指令的拼接}
+      \label{fig:if_leftover_buffer}
+    \end{figure}
+    本课题采用\textit{odd even ITCM}可以解决指令跳转后出现地址不是4B对齐时的整数指令的取指问题。其核心思想在于\textbf{将ITCM分为odd, even}两部分，两部分可以独立的访问。当地址不是4B对齐的时候，\textit{even ITCM}访问地址比\textit{odd ITCM}高一位，并且将\textit{even ITCM}里的数据当作高16 bits，\textit{odd ITCM}里的数据当低16 bits完成指令的拼接；当地址是4B对齐的时候，两块ITCM的访问地址一样，并且\textit{even ITCM}的数据当作低16 bits完成指令的拼接。具体操作原理如图TBD所示。
+  \item \textbf{取指FIFO}
+    在访问ITCM的时候，只能根据地址是否是4B对齐控制访问ITCM的动作，但是从ITCM里取出的指令可能的组合有如下五种情况TBD 增加论文ref:
+    \begin{enumerate}
+      \item 取出的32 bits数据是一条整数指令
+      \item 取出的32 bits数据是两条压缩指令
+      \item 取出的32 bits数据是一条压缩指令跟一条整数指令的低16 bits
+      \item 取出的32 bits数据是一条整数指令高16 bits跟一条压缩指令
+      \item 取出的32 bits数据是一条整数指令高16 bits跟一条整数指令低16 bits
+    \end{enumerate}
+为了判断具体指令的类型，需要复杂的硬件电路来从上述五种可能的情况里判断出取出的数据具体属于哪种类型，然后根据当前指令的类型来更新下一次取指地址的值。这会导致如下的缺陷：
+\begin{enumerate}
+  \item 取指级的周期变长：取出来的数据需要复杂的硬件电路才可以判断出指令的类型，这会增减组合逻辑电路的延时；下一次取指的地址需要根据当前指令的类型选择加4或者加2。
+  \item 在可能的组合2、4中，高16 bits的压缩指令会被重复取出，因为这两种情况下取指地址会加2，导致了额外的访存功耗。
+\end{enumerate}
+基于上述硬件电路的缺点，本课题提出了\textit{5*16}的取指FIFO，用于存储从ITCM中取出的数据、完成指令类型的判断以及整数指令的拼接，其结构如图TBD所示；其操作逻辑如下：
+\begin{enumerate}
+  \item FIFO总容量为5，表示其内部的5个16 bits的寄存器。容量设计为5是为了避免写入到FIFO的时候出现overflow。
+  \item 从ITCM中每次都会得到32 bits的数据，当FIFO容量$\le 3$的时候FIFO允许被写入，取出的32 bits数据会被push到FIFO中。
+  \item 当译码级没有被stall的时候，每个cycle会译码一条指令，译码的时候会判断FIFO头部寄存器的低2 bits是否是\textit{11}。根据RISC-V规定，指令低2 bits如果是11则表示当前指令是一条整数指令，此时会从FIFO头部pop出2个16bits的数据，即一条整数指令；反之如果低2 bits不是11，则说明当前指令是一条压缩指令，此时只需要pop出FIFO头部一条指令即可。
+\end{enumerate}
+  \item \textbf{Dual FIFO}
+\end{itemize}
+
+
 \subsubsection{译码部分}
   
 
 \newpage
 \section{未来工作计划}%
-
-
-\newpage
-\section{MCU}%
-  \label{sec:MCU}
-  \begin{enumerate}
-    \item DMA效率更高，但是灵活性不足，(每个ACC都需要一个DMA?)
-    \item MCU灵活更高，但是效率不高，实现比较复杂（例如OoO）
-    \item 通过MCU调度DMA完成对ACC的配置，兼顾二者;可能需要魔改DMA，支持addr, config这种pattern
-  \end{enumerate}
 
 
 
