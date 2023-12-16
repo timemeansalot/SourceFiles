@@ -201,6 +201,8 @@ TODO: 数学公式说明优化的收益
 
 1. Read的时候数据来源可能有D-Memory, Cache, ACC，根据地址空间对地址译码，产生片选信号，避免Memory的访问
 
+## 实施性
+Write to ACC register fast，从而保证写入的实时性。
 
 
 # 综合结果
