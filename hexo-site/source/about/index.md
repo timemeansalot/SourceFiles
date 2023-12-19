@@ -22,7 +22,7 @@ date: 2022-09-07 10:28:29 ---
 7. Mon Nov 27 14:19:47 CST 2023
 8. Mon Dec  4 13:51:15 CST 2023
 9. Fri Dec  8 16:20:05 CST 2023
-10. Tue Dec 12 13:32:59 CST 2023
+10. Tue Dec 12 13:32:59 CST 2023 <- I have been sticking to it for 7 days 😊 Tue Dec 19 14:26:56 CST 2023
 
 **start time:** Thu Oct 12 10:45:49 CST 2023
 **AI, Robots and Chips** is the key for current world
