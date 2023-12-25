@@ -7,12 +7,13 @@
 \usepackage{graphicx} % 引入图片时需要的包
 \usepackage{float}    % 插入图片的时候支持`H`这个位置选项
 \usepackage{subcaption} % 插入多张图片到一个figure域中
-\usepackage{hyperref}   % 插入超链接、TOC支持链接
+\usepackage[draft]{hyperref}   % 插入超链接、TOC支持链接, draft make hyperref doesn't jump
 \usepackage{amsmath,bm} % 一些数序符号、字符
 \usepackage{listings}   % 插入代码块
 \usepackage{geometry}   % 设置页面四周的边距
 \usepackage{booktabs}   % 插入三线表
 \usepackage{setspace}
+
 % ==== 对引入的package配置 ====
 \graphicspath{{images/}} % 配置graphicx这个包：指定图片存储的地方
 \hypersetup{
