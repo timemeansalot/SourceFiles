@@ -10,8 +10,6 @@ tags: RISC-V
 
 ![image-20231229161242442](../../../../../../Pictures/Typora/image-20231229161242442.png)
 
-
-
 ## 读一次
 
 ![image-20231229230534620](../../../../../../Pictures/Typora/image-20231229230534620.png)
@@ -28,11 +26,8 @@ tags: RISC-V
 
 ![image-20231230000039829](../../../../../../Pictures/Typora/image-20231230000039829.png)
 
-
-
 ## 读写stall
 
 ![image-20231230001138329](../../../../../../Pictures/Typora/image-20231230001138329.png)
 
 ## Spyglass
-

@@ -8,10 +8,46 @@ tags:
 ---
 
 AXI笔记
+[TOC]
 
 <!--more-->
 
-Core需要支持以下的AXI传输特性:
+# AXI 自定义指令
+
+## MCU配置ACC的两种方式
+
+![](https://s2.loli.net/2024/01/05/FB3KARlpNTwn1D4.png)
+
+1. 通过MCU直接配置加速器的配置寄存器:
+   - MCU从Config Memory读取配置信息
+   - MCU将配置信息写入到加速器内部的配置寄存器
+2. MCU通过自定义指令:
+   - 自定义指令用于配置ACC的DMA控制器
+     - 每一个ACC都有一个DMA
+     - 从配置加速器寄存器的角度来看，DMA的效率更高、但是不够灵活
+   - MCU用于配置ACC内部的DMA，增加DMA的灵活性
+     - DMA搬运数据的起始地址
+     - DMA搬运开始信号
+   - 通过软件来执行自定义指令: 控制DMA -> 配置ACC
+
+# 加速器配置自定义指令集
+
+1. Instruction Format
+   1. rd: dma address
+   2. rs1: config memory start
+   3. rs2: config memory stop
+2. start
+3. feature:
+   1. don't need ALU calculation
+4. write to DMA: Custom from store instruction
+   1. Base(Config Memory Space), Offset(ACC Register Space), Valid
+   2. Q: why don't just use SW to write to DMA
+      A: Don't know yet, maybe some cycle benefits?
+      More clear function of the instruction
+
+====================================== 分割线 ============================================
+
+# AXI Master类型
 
 1. 多个Slave访问：arbiter, buffer
 2. Out of Order: ID
@@ -114,6 +150,7 @@ Core需要支持以下的AXI传输特性:
 # MCU设计方案
 
 ![](https://s2.loli.net/2023/12/02/FhNOpysj8SG1XmA.png)
+
 ## 单发射流水线MCU集成AXI需要的场景
 
 1. 写到ACC的时候，由于地址不保证连续，所以不能采用burst写
