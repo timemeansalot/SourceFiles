@@ -25,6 +25,7 @@ date: 2022-09-07 10:28:29 ---
 10. Tue Dec 12 13:32:59 CST 2023 <- I have been sticking to it for 7 days 😊 Tue Dec 19 14:26:56 CST 2023
 11. Thu Dec 21 19:25:13 CST 2023 <- fail again, **I stick for about 9 days**
 12. Fri Dec 22 14:43:52 CST 2023 <- fail again, **I stick for about 1 day**, I won't watch any of that information for 30 days!
+13. Thu Jan  4 13:05:15 CST 2024
 
 **start time:** Thu Oct 12 10:45:49 CST 2023
 **AI, Robots and Chips** is the key for current world
