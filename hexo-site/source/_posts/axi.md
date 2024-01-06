@@ -29,17 +29,21 @@ AXI笔记
    - 通过软件来执行自定义指令: 控制DMA -> 配置ACC
      - 对比LW指令没有明显的提升
 
-# 加速器配置自定义指令集
+## 加速器配置自定义指令集
 
-![](https://s2.loli.net/2024/01/05/FB3KARlpNTwn1D4.png)
+![](https://s2.loli.net/2024/01/06/yufs1jWIL8m3v7J.png)
 
-## 硬件支持
+### 硬件支持
 
 1. 修改MCU ID以译码该自定义指令
 2. 在MCU增加DMA模块(可以看作是MCU的协处理器)
    - DMA模块内部支持Operation FIFO用于存储所有的DMA操作(避免MCU Stall)
+   - Operation Format
+     - Length: 24 bits
+     - Acc1: 4 bits
+     - Acc2: 4 bits
 
-## 软件支持
+### 软件支持
 
 1. 寻找可以自定义的编码空间
    ![](https://s2.loli.net/2024/01/06/pqHErjFiw2NIPTn.png)
@@ -50,26 +54,17 @@ AXI笔记
    - 确定了opcode之后，还需要确定指令的编码格式，RISC-V一共有6种编码格式
      ![](https://s2.loli.net/2024/01/06/X7mDBRM9QF4526k.png)
    - 根据我们对该自定义指令的使用需求来确定编码格式:
-     - `U-Type`是最适合的，但是`U-Type`无法配合c程序使用
+     - `U-Type`是最适合的，但是`U-Type`在C程序里使用的时候不方便
+     - `R-Type`在C程序里使用是最方便的
 
-3. Instruction Format
-   1. rd: dma address
-   2. rs1: config memory start
-   3. rs2: config memory stop
-4. start
-5. feature:
-   1. don't need ALU calculation
-6. write to DMA: Custom from store instruction
-   1. Base(Config Memory Space), Offset(ACC Register Space), Valid
-   2. Q: why don't just use SW to write to DMA
-      A: Don't know yet, maybe some cycle benefits?
-      More clear function of the instruction
+3. [支持自定义指令集采用**内联汇编**的方法](https://cloud.tencent.com/developer/article/1886469)，具体有如下两种:
 
-## 软件支持自定义指令集
-
-1. [支持自定义指令集采用**嵌入式汇编**的方法](https://cloud.tencent.com/developer/article/1886469)，具体有如下两种:
-   - 利用.insn模板进行编程
+   - 利用.insn模板进行编程，该[网页](https://sourceware.org/binutils/docs/as/RISC_002dV_002dFormats.html)展示了各种类型的RISC-V指令的insn编码格式
+     ![](https://s2.loli.net/2024/01/06/7vtCFhK6sLZ9TGI.png)
    - 修改`binutils`让riscv gcc认识到这条指令
+
+4. 在c程序中使用该自定义令  
+   ![](https://s2.loli.net/2024/01/06/Fcn1d94imH7upgz.png)
 
 ====================================== 分割线 ============================================
 
