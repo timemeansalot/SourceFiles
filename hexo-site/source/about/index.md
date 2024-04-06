@@ -3,29 +3,12 @@ title: 关于我自己
 date: 2022-09-07 10:28:29 ---
 ---
 
+
+# 发育、发育、发育！！！！！！
+
 1. 选择<u>同行的人</u>很重要
 2. 我再也不会浪费时间在bilibili跟zhihu上面了，现在开始这两个平台的娱乐相关的推送，我都不看了，拿他们当学习平台使用。如果需要打发时间，我会选择看小说或者是看书、锻炼身体。
 3. 锻炼身体、开源<u>**节流**</u>
-
-> Exercise Times **I will not make the same mistake again!!!!!**
-> Latest Wrong Time: **Mon Oct 30 02:28:14 PM CST 2023**
-> I am a joker: Wed Nov 1 14:21:43 CST 2023, I fail in 2 days!!!
-> Again: Wed Nov 8 01:26:32 PM CST 2023, I fail in 7 days. Next Time I will hold on for 14 days
-> Again: Mon Nov 13 14:04:41 CST 2023, I fail in 5 days, terrible
-
-1. Thu Aug 31 23:36:26 CST 2023
-2. Thu Spt 07 13:23:18 CST 2023
-3. Mon Sep 18 15:26:51 CST 2023
-4. Thu Sep 21 16:37:35 CST 2023
-5. Sat Sep 23 02:18:31 CST 2023
-6. Wed Nov 22 13:31:47 CST 2023
-7. Mon Nov 27 14:19:47 CST 2023
-8. Mon Dec  4 13:51:15 CST 2023
-9. Fri Dec  8 16:20:05 CST 2023
-10. Tue Dec 12 13:32:59 CST 2023 <- I have been sticking to it for 7 days 😊 Tue Dec 19 14:26:56 CST 2023
-11. Thu Dec 21 19:25:13 CST 2023 <- fail again, **I stick for about 9 days**
-12. Fri Dec 22 14:43:52 CST 2023 <- fail again, **I stick for about 1 day**, I won't watch any of that information for 30 days!
-13. Thu Jan  4 13:05:15 CST 2024
 
 **start time:** Thu Oct 12 10:45:49 CST 2023
 **AI, Robots and Chips** is the key for current world
