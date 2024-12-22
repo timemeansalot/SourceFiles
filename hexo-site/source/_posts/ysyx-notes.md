@@ -1,11 +1,10 @@
 ---
 title: 一生一芯记录
 date: 2023-03-13 15:45:26
-top: true
 tags:
   - RISCV
   - YSYX
----
+--
 
 > 一生一芯学习讲义
 
